@@ -1,0 +1,2 @@
+# CollegeStratData
+Data for CollegeStrat
