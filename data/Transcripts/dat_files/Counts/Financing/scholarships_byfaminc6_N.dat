@@ -1,0 +1,6 @@
+quality6	inc_quartile1	inc_quartile2	inc_quartile3	inc_quartile4	inc_quartileALL
+1	1	2	1	1	5
+2	5	10	6	7	28
+3	2	4	7	8	21
+4	2	5	3	4	14
+All	10	21	17	20	68
