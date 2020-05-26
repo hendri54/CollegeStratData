@@ -48,5 +48,7 @@ function csv_to_matrix(csvFile)
 end
 
 
+# Sub-dir for test files, relative to `test`
+test_sub_dir() = "test_files";
 
 # -------------------

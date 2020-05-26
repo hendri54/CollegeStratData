@@ -11,47 +11,47 @@
 
 Plot data (and model) by [quality group, gpa quartile]
 """
-function plot_quality_gpa(ds :: DataSettings, dev :: Deviation,  plotModel :: Bool, 
-    filePath :: String)
+# function plot_quality_gpa(ds :: DataSettings, dev :: Deviation,  plotModel :: Bool, 
+#     filePath :: String)
 
-    p = plot_dev_xy(dev, quality_labels(n_colleges(ds)), 
-        gpa_labels(n_gpa(ds)), plotModel, filePath);
-    return p
-end
+#     p = plot_dev_xy(dev, quality_labels(n_colleges(ds)), 
+#         gpa_labels(n_gpa(ds)), plotModel, filePath);
+#     return p
+# end
 
 
 ## ----------------  Individual moments
 
 ## Mean time to dropout (conditional on dropping out)
 function time_to_drop_qual_gpa(ds :: DataSettings)
-    target = :timeToDrop_qgM;
-    rf = raw_time_to_drop_qual_gpa();
+    # target = :timeToDrop_qgM;
+    rf = raw_time_to_drop_qual_gpa(ds);
     m = read_matrix_by_xy(rf);
     # Interpolate a missing entry
     (m[4,1] == 0.0)  &&  (m[4,1] = m[3,1]);
     @assert all(m .< 6.0)  &&  all(m .>= 0.0)
-
-    return Deviation{Double}(name = target, dataV = m, modelV = m,
-        wtV = 1.0 ./ m,  scalarWt = 1.0 ./ length(m),
-        shortStr = "timeToDropByQualGpa",
-        longStr = "Mean time to dropping out, by quality, gpa", 
-        showPath = "timeToDropByQualGpa")
+    return m
+    # return Deviation{Double}(name = target, dataV = m, modelV = m,
+    #     wtV = 1.0 ./ m,  scalarWt = 1.0 ./ length(m),
+    #     shortStr = "timeToDropByQualGpa",
+    #     longStr = "Mean time to dropping out, by quality, gpa", 
+    #     showPath = "timeToDropByQualGpa")
 end
 
 
 ## Mass of freshmen by quality / gpa. Sums to 1.
 function mass_entry_qual_gpa(ds :: DataSettings)
-    target = :massEntry_qgM;
-    rf = raw_mass_entry_qual_gpa();
+    # target = :massEntry_qgM;
+    rf = raw_mass_entry_qual_gpa(ds);
     m = read_matrix_by_xy(rf);
     @assert all(m .< 1.0)  &&  all(m .> 0.0)
     @assert isapprox(sum(m), 1.0,  atol = 0.0001)
-
-    return Deviation{Double}(name = target, dataV = m, modelV = m,
-        scalarWt = 1.0 ./ sum(m),
-        shortStr = string(target),
-        longStr = "Mass of freshmen, by quality, gpa", 
-        showPath = "massEntryByQualGpa")
+    return m
+    # return Deviation{Double}(name = target, dataV = m, modelV = m,
+    #     scalarWt = 1.0 ./ sum(m),
+    #     shortStr = string(target),
+    #     longStr = "Mass of freshmen, by quality, gpa", 
+    #     showPath = "massEntryByQualGpa")
 end
 
 
@@ -61,23 +61,24 @@ end
 Graduation rates by [quality, gpa].
 """
 function grad_rate_qual_gpa(ds :: DataSettings)
-    target = :fracGrad_qgM;
+    # target = :fracGrad_qgM;
 
-    rf = raw_grad_rate_qual_gpa();
+    rf = raw_grad_rate_qual_gpa(ds);
     m = read_matrix_by_xy(data_file(rf));
     @assert all(m .<= 1.0)  &&  all(m .> 0.0)
 
     # Set to 0 for colleges that do not produce graduates
     m[no_grad_idx(ds), :] .= 0.0;
     # wtM = 1.0 ./ max.(0.1, m);
+    return m
 
-    d = Deviation{Double}(name = target, dataV = m, modelV = m,
-        scalarWt = 1.0 ./ length(m),
-        shortStr = string(target),
-        longStr = "Graduate rate, by quality, gpa", 
-        showPath = "fracGradQualGpa");
-    @assert validate_deviation(d)
-    return d
+    # d = Deviation{Double}(name = target, dataV = m, modelV = m,
+    #     scalarWt = 1.0 ./ length(m),
+    #     shortStr = string(target),
+    #     longStr = "Graduate rate, by quality, gpa", 
+    #     showPath = "fracGradQualGpa");
+    # @assert validate_deviation(d)
+    # return d
 end
 
 
@@ -86,16 +87,16 @@ end
 Hand copied (b/c we don't have NLSY79 data) from xls +++
 But need to adjust b/c grand mean should be lower for NLSY97
 =#
-function study_time_qual_gpa(ds :: DataSettings)
-    dataM = load_study_time_qual_gpa(ds; modelUnits = true);    
-    return Deviation{Double}(name = :studyTime_qgM, dataV = dataM, modelV = dataM,
-        scalarWt = 1.0 / sum(dataM),
-        shortStr = "studyTimeQualGpa",  
-        longStr = "Average study time by (quality, gpa)",
-        showPath = "studyTimeQualGpa");
-end
+# function study_time_qual_gpa(ds :: DataSettings)
+#     dataM = load_study_time_qual_gpa(ds; modelUnits = true);    
+#     return Deviation{Double}(name = :studyTime_qgM, dataV = dataM, modelV = dataM,
+#         scalarWt = 1.0 / sum(dataM),
+#         shortStr = "studyTimeQualGpa",  
+#         longStr = "Average study time by (quality, gpa)",
+#         showPath = "studyTimeQualGpa");
+# end
 
-function load_study_time_qual_gpa(ds :: DataSettings; modelUnits :: Bool = true)
+function study_time_qual_gpa(ds :: DataSettings)
     # Study time only
     studyM = [10.7	12.9	12.5	16.2;
             19.3	21.6	18.2	15.2;
@@ -116,23 +117,23 @@ function load_study_time_qual_gpa(ds :: DataSettings; modelUnits :: Bool = true)
     classM = classM .* dFactor;
 
     dataM = studyM .+ classM;
-    if modelUnits
-        dataM = hours_per_week_to_mtu(dataM);
-        validate_mtu(dataM);
-    end
+    # if modelUnits
+    #     dataM = hours_per_week_to_mtu(dataM);
+    #     validate_mtu(dataM);
+    # end
     return dataM
 end
 
 # In hours per week
-function mean_study_times_by_qual(ds :: DataSettings; modelUnits :: Bool = true)
-    st_qgM = load_study_time_qual_gpa(ds; modelUnits = modelUnits);
+function mean_study_times_by_qual(ds :: DataSettings)
+    st_qgM = study_time_qual_gpa(ds);
     st_qV = [mean_by_gpa(vec(st_qgM[ic,:]), ds)  for ic = 1 : n_colleges(ds)];
     return st_qV
 end
 
 # In hours per week
 function mean_study_time(ds :: DataSettings; modelUnits :: Bool = true)
-    st_qV = mean_study_times_by_qual(ds; modelUnits = modelUnits);
+    st_qV = mean_study_times_by_qual(ds);
     st = mean_by_qual(st_qV, ds);
     return st
 end

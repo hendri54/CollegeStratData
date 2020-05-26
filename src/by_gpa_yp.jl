@@ -1,8 +1,8 @@
 ## Read matrix by [HS GPA, parental income]
-# These are transposed in the raw files
+# These are transposed in the raw files. Transpose, but then make into a Matrix.
 function read_by_gpa_yp(ds :: DataSettings, fPath :: AbstractString)
 	df = read_by_xy(fPath);
-	m = data_matrix(df)';
+	m = Matrix{Float64}(data_matrix(df)');
 	return m
 end
 
@@ -52,7 +52,7 @@ end
 # end
 
 function load_entry_gpa_yp(ds :: DataSettings)
-	fPath = data_file(raw_entry_gpa_parental());
+	fPath = data_file(raw_entry_gpa_parental(ds));
 	m = read_by_gpa_yp(ds, fPath);
     @assert all(m .< 1.0)  &&  all(m .> 0.0)
     @assert size(m) == (n_gpa(ds), n_parental(ds))
@@ -71,7 +71,7 @@ end
 
 function mass_by_gpa_yp(ds :: DataSettings)
 	target = :mass_gpM;
-	fPath = data_file(raw_mass_gpa_parental());
+	fPath = data_file(raw_mass_gpa_parental(ds));
 	m = read_by_gpa_yp(ds, fPath);
     @assert all(m .< 0.5)  &&  all(m .> 0.0)
 	@assert size(m) == (n_gpa(ds), n_parental(ds))

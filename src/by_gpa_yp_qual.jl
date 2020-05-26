@@ -76,7 +76,7 @@ end
 # Load fraction by quality | [gpa, yp]. Conditional on entry or not.
 function load_qual_entry_gpa_yp(ds :: DataSettings, iCollege;
 	conditionalOnEntry :: Bool = false)
-	fPath = data_file(raw_qual_entry_gpa_parental(iCollege));
+	fPath = data_file(raw_qual_entry_gpa_parental(ds, iCollege));
 	m = read_by_gpa_yp(ds, fPath);
     @assert all(m .< 1.0)  &&  all(m .>= 0.0)
 	@assert size(m) == (n_gpa(ds), n_parental(ds))

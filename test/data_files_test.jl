@@ -1,8 +1,9 @@
 using EconometricsLH
 
 function data_files_test()
-    @testset "Data files" begin
-        rf = CollegeStratData.raw_wage_regr();
+	@testset "Data files" begin
+		ds = test_data_settings();
+        rf = CollegeStratData.raw_wage_regr(ds);
         rt = read_regression_file(data_file(rf));
         @test isa(rt, RegressionTable)
 		# @test isdir(CollegeStrat.raw_data_dir(:selfReport, :mean, :hsGrads))
@@ -27,9 +28,10 @@ end
 
 
 function raw_data_files_test()
-    @testset "Raw data files" begin
-        for rf in [CollegeStratData.raw_entry_qual_parental(),
-            CollegeStratData.raw_transfer_regr()]
+	@testset "Raw data files" begin
+		ds = test_data_settings();
+        for rf in [CollegeStratData.raw_entry_qual_parental(ds),
+            CollegeStratData.raw_transfer_regr(ds)]
 
             @test isfile(CollegeStratData.data_file(rf));
         end

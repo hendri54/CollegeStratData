@@ -19,7 +19,7 @@ mean_by_gpa(x_pV :: Vector{T1}, ds :: DataSettings) where T1 <: Number =
 mean_by_parental(x_pV :: Vector{T1}, ds :: DataSettings) where T1 <: Number = 
 	sum(x_pV .* parental_masses(ds));
 mean_by_qual(x_qV :: AbstractVector{T1}, ds :: DataSettings) where T1 <: Number =
-	sum(x_qV .* load_frac_enroll_by_qual(ds));
+	sum(x_qV .* frac_enroll_by_qual(ds));
 mean_by_gpa_yp(x_gpM :: Matrix{T1}, ds :: DataSettings) where T1 <: Number =
     sum(x_gpM .* mass_gpa_yp(ds));
 
@@ -59,6 +59,8 @@ Make named data settings.
 function make_data_settings(dsName :: Symbol)
 	if dsName == :default
 		return DataSettings()
+	elseif dsName == :test
+		return DataSettings()
 	else
 		error("Invalid name: $dsName")
 	end
@@ -66,6 +68,6 @@ end
 
 # Default data settings
 default_data_settings() = make_data_settings(:default);
-
+test_data_settings() = make_data_settings(:test);
 
 # --------------

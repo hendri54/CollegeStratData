@@ -3,7 +3,7 @@
 
 ## Read scalar moments from a single dedicated file
 # I currently created this as a dummy file
-function read_scalar_moments()
+function read_scalar_moments(ds :: DataSettings)
     fPath = joinpath(data_dir(), "scalar_moments.csv");
     csvFile = CSV.File(fPath, header = [:name, :value],  
         delim = ',', comment = commentStr);
@@ -16,8 +16,8 @@ end
 
 Read one scalar moments from the scalar moments file.
 """
-function read_scalar_moment(name :: String)
-    df = read_scalar_moments();
+function read_scalar_moment(ds :: DataSettings, name :: String)
+    df = read_scalar_moments(ds);
     outV = df[df.name .== name, :value];
     @assert length(outV) == 1
     outVal = outV[1];
@@ -27,7 +27,7 @@ end
 
 ## Graduation rate (conditional on entry)
 function grad_rate(ds :: DataSettings)
-    fPath = data_file(raw_grad_rate_qual_gpa());
+    fPath = data_file(raw_grad_rate_qual_gpa(ds));
     gradRate = read_all_from_delim_file(fPath);
     @assert check_float(gradRate, lb = 0.3, ub = 0.7);
     return gradRate
@@ -40,7 +40,7 @@ end
 ## Correlation HS GPA / parental income
 # in which units? +++
 function corr_gpa_yp(ds :: DataSettings)
-    corr = read_scalar_moment("corrGpaYp");
+    corr = read_scalar_moment(ds, "corrGpaYp");
     @assert corr > 0.3  &&  corr < 0.8
     return corr
     # return ScalarDeviation{Double}(name = :corrGpaYp, dataV = corr, modelV = 0.0,

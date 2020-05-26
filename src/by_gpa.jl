@@ -17,7 +17,7 @@
 function frac_enter_by_gpa(ds :: DataSettings)
     target = :fracEnter_gV;
     # Read COL totals b/c file is transposed
-    m = read_col_totals(raw_entry_gpa_parental());
+    m = read_col_totals(raw_entry_gpa_parental(ds));
     @assert all(m .> 0.0)  &&  all(m .< 1.0)
     @assert length(m) == n_gpa(ds)
     return m
@@ -33,7 +33,7 @@ Mean time to graduation by GPA.
 """
 function grad_rate_by_gpa(ds :: DataSettings)
     target = :fracGrad_gV;
-    rf = raw_grad_rate_qual_gpa();
+    rf = raw_grad_rate_qual_gpa(ds);
     m = read_col_totals(data_file(rf));
     @assert all(m .> 0.0)  &&  all(m .< 1.0)
     @assert length(m) == n_gpa(ds)
@@ -47,7 +47,7 @@ end
 # Contains one 0 cell that needs to be interpolated.
 function time_to_drop_by_gpa(ds :: DataSettings)
     target = :timeToDrop_gV;
-    rf = raw_time_to_drop_qual_gpa();
+    rf = raw_time_to_drop_qual_gpa(ds);
     m = read_col_totals(data_file(rf));
     @assert all(m .> 1.5)  &&  all(m .< 4.0)
     @assert length(m) == n_gpa(ds)
@@ -64,7 +64,7 @@ Mean time to graduation by GPA.
 """
 function time_to_grad_by_gpa(ds :: DataSettings)
     target = :timeToGrad_gV;
-    rf = raw_time_to_grad_qual_gpa();
+    rf = raw_time_to_grad_qual_gpa(ds);
     m = read_col_totals(data_file(rf));
     @assert all(m .> 3.0)  &&  all(m .< 7.0)
     @assert length(m) == n_gpa(ds)
@@ -81,7 +81,7 @@ Work hours, year 1, by GPA.
 """
 function work_hours_by_gpa(ds :: DataSettings)
     target = :workTime_gV;
-    rf = raw_work_hours_qual_gpa(ds.workTimeYear);
+    rf = raw_work_hours_qual_gpa(ds, ds.workTimeYear);
     m = read_col_totals(data_file(rf));
     @assert all(m .> 400.0)  &&  all(m .< 1800.0)
     @assert length(m) == n_gpa(ds)

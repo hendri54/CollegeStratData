@@ -1,34 +1,34 @@
 ## ----------------  Individual files
 
 # AFQT percentile by quality
-raw_afqt_pct_qual() =
+raw_afqt_pct_qual(ds :: DataSettings) =
     RawDataFile(:selfReport, :freshmen, :mean, "pctile_afqt.dat");
 
 # By quality / gpa
-raw_grad_rate_qual_gpa() = 
+raw_grad_rate_qual_gpa(ds :: DataSettings) = 
     RawDataFile(:transcript, :progress, :mean, "grad_rate.dat");
 # Transcript time to drop contains a 0 in one cell
-raw_time_to_drop_qual_gpa() = 
+raw_time_to_drop_qual_gpa(ds :: DataSettings) = 
     RawDataFile(:transcript, :progress, :mean, "time_to_drop.dat");
-raw_time_to_grad_qual_gpa() = 
+raw_time_to_grad_qual_gpa(ds :: DataSettings) = 
     RawDataFile(:transcript, :progress, :mean, "time_to_grad.dat");
-raw_work_hours_qual_gpa(year :: Integer) = 
+raw_work_hours_qual_gpa(ds :: DataSettings, year :: Integer) = 
     RawDataFile(:selfReport, :finance, :mean, "hours$year.dat")
-raw_net_price_qual_gpa(year :: Integer) =
+raw_net_price_qual_gpa(ds :: DataSettings, year :: Integer) =
     RawDataFile(:transcript, :finance, :mean, "net_price$year.dat");
-raw_credits_taken_qual_gpa(year :: Integer) = 
+raw_credits_taken_qual_gpa(ds :: DataSettings, year :: Integer) = 
     RawDataFile(:transcript, :progress, :mean, "creds_att$year.dat");
 
 # -----  By quality / parental
 
-raw_work_hours_qual_parental() =
+raw_work_hours_qual_parental(ds :: DataSettings) =
     RawDataFile(:selfReport, :finance, :mean, "hours_byfaminc1.dat");
 # Conditional on entry, fraction of students in each [quality, parental] cell
-raw_entry_qual_parental() =
+raw_entry_qual_parental(ds :: DataSettings) =
     RawDataFile(:transcript, :freshmen, :mean, "jointdist_qual_inc.dat");
-raw_frac_grad_qual_parental() =
+raw_frac_grad_qual_parental(ds :: DataSettings) =
     RawDataFile(:transcript, :progress, :mean, "grad_rate_inc.dat");
-raw_time_to_grad_qual_parental() =
+raw_time_to_grad_qual_parental(ds :: DataSettings) =
     RawDataFile(:transcript, :progress, :mean, "time_to_grad_inc.dat");
 
 
@@ -36,38 +36,38 @@ raw_time_to_grad_qual_parental() =
 # Data files have this transposed as [parental, gpa]
 
 # Entry rates [gpa, parental], but TRANSPOSED in data files!
-raw_entry_gpa_parental() =
+raw_entry_gpa_parental(ds :: DataSettings) =
     RawDataFile(:transcript, :hsGrads, :mean, "entrants.dat");
 # Fraction by quality, by [gpa, parental], TRANSPOSED in data files.
 # Conditional on entry.
-raw_qual_entry_gpa_parental(iCollege) =
+raw_qual_entry_gpa_parental(ds :: DataSettings, iCollege) =
     RawDataFile(:transcript, :freshmen, :mean, "prob_ent_$(iCollege).dat");
 # Mass of HSG by [parental, hs gpa]
-raw_mass_gpa_parental() =
+raw_mass_gpa_parental(ds :: DataSettings) =
     RawDataFile(:transcript, :hsGrads, :mean, "jointdist_inc_afqt_hsgrads.dat");
 
-raw_cum_loans_qual_year(year :: Integer) = 
+raw_cum_loans_qual_year(ds :: DataSettings, year :: Integer) = 
     RawDataFile(:transcript, :finance, :mean, "cumloans$year.dat");
 
 # Conditional on entry, fraction of students in each [quality, gpa] cell
-raw_mass_entry_qual_gpa() =
+raw_mass_entry_qual_gpa(ds :: DataSettings) =
     RawDataFile(:transcript, :freshmen, :mean, "jointdist_qual_afqt.dat");
 
 
 # -----  Regressions
 
 # Wage regressions pooling school groups. Self reports only.
-raw_wage_regr() = 
+raw_wage_regr(ds :: DataSettings) = 
     RawDataFile(:selfReport, :none, :regression, "loginc_reg3.dat");
 
 # Wage regression for graduates with college quality coefficients
-raw_wage_regr_grads() = 
+raw_wage_regr_grads(ds :: DataSettings) = 
     RawDataFile(:selfReport, :none, :regression, "loginc_reg2.dat");
 
-raw_transfer_regr() = 
+raw_transfer_regr(ds :: DataSettings) = 
     RawDataFile(:transcript, :none, :regression, "parental_transfers1_reg1.dat");
 
-raw_tuition_regr() = 
+raw_tuition_regr(ds :: DataSettings) = 
     RawDataFile(:transcript, :none, :regression, "net_price1_reg1.dat");
 
 

@@ -1,6 +1,7 @@
 function dataframe_xy_test()
 	@testset "DataFrameXY" begin
-		rf = CollegeStratData.raw_entry_gpa_parental();
+		ds = test_data_settings();
+		rf = CollegeStratData.raw_entry_gpa_parental(ds);
 		fPath = data_file(rf);
 		df = CollegeStratData.read_by_xy(fPath);
 		@test size(df) == (5,6)
@@ -32,7 +33,8 @@ end
 
 function dataframe_x_test()
 	@testset "DataFrame by X" begin
-		rf = CollegeStratData.raw_afqt_pct_qual();
+		ds = test_data_settings();
+		rf = CollegeStratData.raw_afqt_pct_qual(ds);
 		fPath = data_file(rf);
 		@test isfile(fPath)
 		d = CollegeStratData.read_by_x(fPath);
