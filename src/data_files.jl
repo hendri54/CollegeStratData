@@ -1,13 +1,23 @@
-base_dir() = joinpath(homedir(), "Documents", "projects", 
-	"p2019", "college_stratification");
+base_dir() = normpath(joinpath(@__DIR__,  "..", ".."));
+# joinpath(homedir(), "Documents", "projects", 
+# 	"p2019", "college_stratification");
 
 project_dir() = joinpath(base_dir(), "CollegeStratData");
 
 # Data files are stored here
 # Subdirs are the same as for raw data files
-function data_dir()
-    return joinpath(project_dir(), "data")
+function data_dir(ds :: DataSettings)
+    return joinpath(project_dir(), data_sub_dir(ds))
 end
+
+# function data_sub_dir(ds :: DataSettings)
+# 	if name(ds) == :default  ||  name(ds) == :test
+# 		d = "data";
+# 	else
+# 		error("Invalid: $ds");
+# 	end
+# 	return d
+# end
 
 
 ## ---------------  Regression files

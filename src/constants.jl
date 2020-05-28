@@ -23,10 +23,8 @@ const SchoolInt = UInt8
 
 ## -------------  Normalizations and Bounds
 
-# Time endowment (normalization)
-const TimeEndowment = 1.0
 # Number of data courses per model course
-const dataCoursesPerCourse = 1	
+# const dataCoursesPerCourse = 1	
 
 
 ## ------------  Data

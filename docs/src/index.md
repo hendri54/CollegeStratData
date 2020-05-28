@@ -1,10 +1,17 @@
 # CollegeStratData
 
-Construct data targets for calibration.
+Construct data targets for calibration of the CollegeStrat model.
 
-Settings are determined by [`DataSettings`](@ref)
+The raw data files come as delimited text files. This package lets the user load a data moment using a simple call to [`load_moment`](@ref). For example, `load_moment(ds, :fracGrad_gV)` loads the graduation rate by `gpa` or `afqt` group as a `Vector{Float64}`.
 
-Each data moment is loaded with [`load_moment`](@ref).
+The code admits multiple named sets of data files. Which ones are loaded is determined by the [`DataSettings`](@ref) object that is passed to `load_moment`.
+
+Data moments follow a consistent naming convention. The base name (e.g. `fracGrad`) indicates which moment is to be loaded (the fraction of entrants who graduate). The suffix indicates for which groups the moment is to be loaded. E.g., `fracGrad_gpM` loads by `gpa` and `parental` group. The groups are:
+
+* `g`: `gpa` or `afqt`
+* `p`: parental background
+* `q`: college quality
+* `t`: year in college
 
 
 ```@docs
@@ -12,20 +19,45 @@ DataSettings
 load_moment
 ```
 
+# DataSettings
 
-Read data from CSV files. Make them into named `Deviations` (using `ModelParams`).
+A `DataSettings` object is constructed with [`make_data_settings`](@ref).
 
-Everything is converted into model units.
+```@docs
+make_data_settings
+```
 
-Each deviation shows up in several places:
-1. `MomentTable` defines locations of data files
-2. each deviation has a function that constructs it (e.g. `entry_by_gpa_yp`)
-3. each deviation that is used in any of the model versions is listed in `make_deviation`
+The following functions give access to properties of the data:
 
-Adding a deviation
-1. Locate the moments in a green table in the excel files
-2. Locate the corresponding `dat` file
-3. Add an entry in 'MomentTable'
-4. Write a function that reads the `dat` file and converts it into a `Deviation`
+```@docs
+n_school
+n_colleges
+n_2year
+is_two_year
+two_year_colleges
+four_year_colleges
+can_graduate
+no_grad_idx
+grad_idx
+n_gpa
+n_parental
+hsgpa_ub
+parental_ub
+
+```
+
+# Raw Data Files
+
+The raw data files are created in delimited text format and stored in a nested directory structure in Dropbox. From there, they are imported using [`copy_raw_data_files`](@ref).
+
+For each data file, a function makes a [`RawDataFile`](@ref) object. It contains information where the file is to be found in the directory structure. 
+
+A mapping from data moments to raw data files is constructed in `raw_file_map`. This makes it easy to locate the data file that belongs to a given moment by simply calling [`raw_file_path`](@ref).
+
+```@docs
+RawDataFile
+copy_raw_data_files
+raw_file_path
+```
 
 ------------------

@@ -15,14 +15,11 @@
 
 # Entry rate by GPA
 function frac_enter_by_gpa(ds :: DataSettings)
-    target = :fracEnter_gV;
     # Read COL totals b/c file is transposed
-    m = read_col_totals(raw_entry_gpa_parental(ds));
+    m = read_col_totals(raw_file_path(ds, :fracEnter_gV));
     @assert all(m .> 0.0)  &&  all(m .< 1.0)
     @assert length(m) == n_gpa(ds)
     return m
-    # dev = frac_enter_dev(target, m, :gpa);
-    # return dev
 end
 
 
@@ -32,28 +29,20 @@ end
 Mean time to graduation by GPA.
 """
 function grad_rate_by_gpa(ds :: DataSettings)
-    target = :fracGrad_gV;
-    rf = raw_grad_rate_qual_gpa(ds);
-    m = read_col_totals(data_file(rf));
+    m = read_col_totals(raw_file_path(ds, :fracGrad_gV));
     @assert all(m .> 0.0)  &&  all(m .< 1.0)
     @assert length(m) == n_gpa(ds)
     return m
-    # dev = frac_grad_dev(target, m, :gpa);
-    # return dev
 end
 
 
 # Mean time to drop by quality / gpa
 # Contains one 0 cell that needs to be interpolated.
 function time_to_drop_by_gpa(ds :: DataSettings)
-    target = :timeToDrop_gV;
-    rf = raw_time_to_drop_qual_gpa(ds);
-    m = read_col_totals(data_file(rf));
+    m = read_col_totals(raw_file_path(ds, :timeToDrop_gV));
     @assert all(m .> 1.5)  &&  all(m .< 4.0)
     @assert length(m) == n_gpa(ds)
     return m
-    # dev = time_to_drop_dev(target, m, :gpa);
-    # return dev
 end
 
 
@@ -63,9 +52,7 @@ end
 Mean time to graduation by GPA.
 """
 function time_to_grad_by_gpa(ds :: DataSettings)
-    target = :timeToGrad_gV;
-    rf = raw_time_to_grad_qual_gpa(ds);
-    m = read_col_totals(data_file(rf));
+    m = read_col_totals(raw_file_path(ds, :timeToGrad_gV));
     @assert all(m .> 3.0)  &&  all(m .< 7.0)
     @assert length(m) == n_gpa(ds)
     return m

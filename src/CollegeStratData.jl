@@ -1,23 +1,24 @@
 module CollegeStratData
 
-using ArgCheck, DocStringExtensions, Parameters
+using ArgCheck, DocStringExtensions
 using CSV, DataFrames
 using CommonLH, EconometricsLH, FilesLH
 
 # DataSettings
-export DataSettings, default_data_settings, make_data_settings, test_data_settings
-export n_school, n_gpa, n_2year, n_colleges, n_parental, hsgpa_ub, parental_ub, hsgpa_masses, parental_masses, mass_gpa_yp, is_two_year, two_year_colleges, no_grad_idx, grad_idx, mean_by_gpa
+export DataSettings, make_data_settings, test_data_settings
+export n_school, n_gpa, n_2year, n_colleges, n_parental, hsgpa_ub, parental_ub, hsgpa_masses, parental_masses, mass_gpa_yp, can_graduate, is_two_year, two_year_colleges, four_year_colleges, no_grad_idx, grad_idx, mean_by_gpa
 
 # Helpers
-export regressor_name
+export regressor_name, const_regressor, const_regressor_name, regressor_string, regressor_strings, gpa_regressors, parental_regressors, quality_regressors, school_regressors
 
-# export MomentTable, make_moment_table, get_moment, has_moment
 # Data Files
 export copy_raw_data_files, data_file, read_regression_file
 
-# Scalar moments
+# Moments
 export load_moment
 export exper_profile, wage_regr_intercepts, workstart_earnings, wage_regr_grads
+
+export cdf_gpa_by_qual
 
 
 include("constants.jl")
@@ -62,6 +63,8 @@ moment_map() = Dict([
     :fracEnter_gV => frac_enter_by_gpa,
     :fracEnter_pV => frac_enter_by_parental,
     :fracEnter_gpM => load_entry_gpa_yp,
+    # Fraction in each quality among [gpa, yp] entrants
+    :fracEnter_gpqM => load_qual_entry_gpa_yp_all,
     :fracGrad => grad_rate,
     :fracGrad_gV => grad_rate_by_gpa,
     :fracGrad_qV => grad_rate_by_quality,
@@ -87,6 +90,8 @@ moment_map() = Dict([
     # Regressions
     :transferRegr => transfer_regr,
     :tuitionRegr => tuition_regr,
+    :wageRegrIntercepts => wage_regr_intercepts,
+    :wageRegrGrads => wage_regr_grads
 ]);
 
 """

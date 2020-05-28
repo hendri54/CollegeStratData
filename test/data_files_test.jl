@@ -1,5 +1,16 @@
 using EconometricsLH
 
+function directories_test()
+	@testset "Directories" begin
+		baseDir = CollegeStratData.base_dir();
+		@test endswith(baseDir, "college_stratification/")
+		@test isdir(baseDir)
+		projectDir = CollegeStratData.project_dir();
+		@test endswith(projectDir, "CollegeStratData")
+		@test isdir(projectDir)
+	end
+end
+
 function data_files_test()
 	@testset "Data files" begin
 		ds = test_data_settings();
@@ -34,7 +45,17 @@ function raw_data_files_test()
             CollegeStratData.raw_transfer_regr(ds)]
 
             @test isfile(CollegeStratData.data_file(rf));
-        end
+		end
+		
+		# Mapping of moments to files
+		rawMap = CollegeStratData.raw_file_map();
+		for mName in keys(rawMap)
+			rf = CollegeStratData.raw_file(ds, mName);
+			@test isa(rf, CollegeStratData.RawDataFile)
+			fPath = CollegeStratData.raw_file_path(ds, mName);
+			@test isfile(fPath)
+			# m = load_raw_file(ds, mName)
+		end
 
 		# copy_raw_data_files(trialRun = true);
     end
@@ -42,6 +63,7 @@ end
 
 
 @testset "DataFiles" begin
+	directories_test()
     data_files_test()
     raw_data_files_test()
 end

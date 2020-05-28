@@ -5,7 +5,10 @@
 
 Settings for data files. These are baked into the data construction (by Oksana), but should still be changeable.
 """
-@with_kw mutable struct DataSettings
+Base.@kwdef mutable struct DataSettings
+	name :: Symbol = :default
+	dataSubDir :: String = "data"
+	rawBaseDir :: String = "/Users/lutz/Dropbox/Dropout Policies/Data/empiricaltargets/NLSY 97 moments by AFQT"
     "Number of school groups"
     nSchool :: UInt8 = 3
 	"Number of colleges (qualities)"
@@ -49,6 +52,7 @@ struct RawDataFile
 	momentType :: Symbol
 	# E.g. "regression.dat"
 	rawFile  ::  String
+	ds :: DataSettings
 end
 
 

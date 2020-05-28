@@ -1,57 +1,21 @@
-## Read matrix by [quality, HS GPA]
-# read_by_quality_gpa(ds :: DataSettings, fPath :: AbstractString) =
-#     read_matrix_by_xy(fPath);
-
-# read_by_quality_gpa(ds :: DataSettings, target :: Symbol) =
-#     read_by_quality_gpa(ds, data_file(target));
-
-
-"""
-    plot_quality_gpa
-
-Plot data (and model) by [quality group, gpa quartile]
-"""
-# function plot_quality_gpa(ds :: DataSettings, dev :: Deviation,  plotModel :: Bool, 
-#     filePath :: String)
-
-#     p = plot_dev_xy(dev, quality_labels(n_colleges(ds)), 
-#         gpa_labels(n_gpa(ds)), plotModel, filePath);
-#     return p
-# end
-
-
 ## ----------------  Individual moments
 
 ## Mean time to dropout (conditional on dropping out)
 function time_to_drop_qual_gpa(ds :: DataSettings)
-    # target = :timeToDrop_qgM;
-    rf = raw_time_to_drop_qual_gpa(ds);
-    m = read_matrix_by_xy(rf);
+    m = read_matrix_by_xy(raw_file_path(ds, :timeToDrop_qgM));
     # Interpolate a missing entry
     (m[4,1] == 0.0)  &&  (m[4,1] = m[3,1]);
     @assert all(m .< 6.0)  &&  all(m .>= 0.0)
     return m
-    # return Deviation{Double}(name = target, dataV = m, modelV = m,
-    #     wtV = 1.0 ./ m,  scalarWt = 1.0 ./ length(m),
-    #     shortStr = "timeToDropByQualGpa",
-    #     longStr = "Mean time to dropping out, by quality, gpa", 
-    #     showPath = "timeToDropByQualGpa")
 end
 
 
 ## Mass of freshmen by quality / gpa. Sums to 1.
 function mass_entry_qual_gpa(ds :: DataSettings)
-    # target = :massEntry_qgM;
-    rf = raw_mass_entry_qual_gpa(ds);
-    m = read_matrix_by_xy(rf);
+    m = read_matrix_by_xy(raw_file_path(ds, :massEntry_qgM));
     @assert all(m .< 1.0)  &&  all(m .> 0.0)
     @assert isapprox(sum(m), 1.0,  atol = 0.0001)
     return m
-    # return Deviation{Double}(name = target, dataV = m, modelV = m,
-    #     scalarWt = 1.0 ./ sum(m),
-    #     shortStr = string(target),
-    #     longStr = "Mass of freshmen, by quality, gpa", 
-    #     showPath = "massEntryByQualGpa")
 end
 
 
@@ -61,24 +25,13 @@ end
 Graduation rates by [quality, gpa].
 """
 function grad_rate_qual_gpa(ds :: DataSettings)
-    # target = :fracGrad_qgM;
-
-    rf = raw_grad_rate_qual_gpa(ds);
-    m = read_matrix_by_xy(data_file(rf));
+    m = read_matrix_by_xy(raw_file_path(ds, :fracGrad_qgM));
     @assert all(m .<= 1.0)  &&  all(m .> 0.0)
 
     # Set to 0 for colleges that do not produce graduates
     m[no_grad_idx(ds), :] .= 0.0;
     # wtM = 1.0 ./ max.(0.1, m);
     return m
-
-    # d = Deviation{Double}(name = target, dataV = m, modelV = m,
-    #     scalarWt = 1.0 ./ length(m),
-    #     shortStr = string(target),
-    #     longStr = "Graduate rate, by quality, gpa", 
-    #     showPath = "fracGradQualGpa");
-    # @assert validate_deviation(d)
-    # return d
 end
 
 
@@ -132,7 +85,7 @@ function mean_study_times_by_qual(ds :: DataSettings)
 end
 
 # In hours per week
-function mean_study_time(ds :: DataSettings; modelUnits :: Bool = true)
+function mean_study_time(ds :: DataSettings)
     st_qV = mean_study_times_by_qual(ds);
     st = mean_by_qual(st_qV, ds);
     return st

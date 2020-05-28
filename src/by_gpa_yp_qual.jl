@@ -53,8 +53,7 @@
 # Load fraction by quality | [gpa, yp]
 # Not conditional on entry. As a matrix by [gpa, yp, quality] that matches
 # `StatsByXYQ.fracEnter_xyqM`
-
-# how to handle this? +++++++++
+# probably best to call those directly from CollegeStrat?
 function load_qual_entry_gpa_yp_all(ds :: DataSettings;
 	conditionalOnEntry :: Bool = false)
 	nc = n_colleges(ds);
@@ -66,13 +65,12 @@ function load_qual_entry_gpa_yp_all(ds :: DataSettings;
 	if conditionalOnEntry
 		# Should sum to 1 across qualities
 		qSumM = sum(fracEnter_xyqM, dims = 3);
-		check_float_array(qSumM, 0.998, 1.002)
+		@assert check_float_array(qSumM, 0.998, 1.002)
 	end
 	return fracEnter_xyqM
 end
 
 
-# how to handle this? ++++++++++
 # Load fraction by quality | [gpa, yp]. Conditional on entry or not.
 function load_qual_entry_gpa_yp(ds :: DataSettings, iCollege;
 	conditionalOnEntry :: Bool = false)
@@ -82,7 +80,7 @@ function load_qual_entry_gpa_yp(ds :: DataSettings, iCollege;
 	@assert size(m) == (n_gpa(ds), n_parental(ds))
 
 	if !conditionalOnEntry
-		entryM = load_entry_gpa_yp(ds);
+		entryM = load_moment(ds, :fracEnter_gpM);
 		m .*= entryM;
 	end
 	return m

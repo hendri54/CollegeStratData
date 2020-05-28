@@ -104,9 +104,7 @@ end
 
 ## Mean time to graduate by quality (conditional on graduation)
 function time_to_grad_by_quality(ds :: DataSettings)
-    # target = :timeToGrad_qV;
-    rf = raw_time_to_grad_qual_gpa(ds);
-    m = read_row_totals(data_file(rf));
+    m = read_row_totals(raw_file_path(ds, :timeToGrad_qV));
     @assert all(m .> 3.0)  &&  all(m .< 7.0)
     @assert length(m) == n_colleges(ds)
     # Set to 0 for 2 year colleges
@@ -263,7 +261,7 @@ end
 # Each entry means: The p10-th percentile in this college is the X-th percentile in the population.
 # Numbers are between 0 and 100
 function read_cdf_gpa_by_qual(ds :: DataSettings)
-    rawFn = RawDataFile(:transcript, :freshmen, :mean, "cdf_afqt_byquality.dat");
+    rawFn = RawDataFile(:transcript, :freshmen, :mean, "cdf_afqt_byquality.dat", ds);
     fPath = data_file(rawFn);
     df = read_delim_file_to_df(fPath);
     @check all_greater(df.quality2, 1)

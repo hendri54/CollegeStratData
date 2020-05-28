@@ -4,7 +4,7 @@
 ## Read scalar moments from a single dedicated file
 # I currently created this as a dummy file
 function read_scalar_moments(ds :: DataSettings)
-    fPath = joinpath(data_dir(), "scalar_moments.csv");
+    fPath = joinpath(data_dir(ds), "scalar_moments.csv");
     csvFile = CSV.File(fPath, header = [:name, :value],  
         delim = ',', comment = commentStr);
     return csvFile |> DataFrame!

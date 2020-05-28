@@ -3,7 +3,9 @@ using Test
 
 function data_settings_test()
     @testset "DataSettings" begin
-        ds = default_data_settings();
+		ds = CollegeStratData.test_data_settings();
+		println(ds);
+		println(CollegeStratData.settings_table(ds))
         @test n_school(ds) > 2
         @test n_colleges(ds) > 2
         @test n_2year(ds) < n_colleges(ds)

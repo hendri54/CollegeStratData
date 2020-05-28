@@ -53,8 +53,7 @@ end
 
 
 function time_to_grad_qual_parental(ds :: DataSettings)
-    rf = raw_time_to_grad_qual_parental(ds);
-    dataM = read_matrix_by_xy(data_file(rf));
+    dataM = read_matrix_by_xy(raw_file_path(ds, :timeToGrad_qpM));
 
     @assert check_float_array(dataM, 3.0, 7.0);
     @assert size(dataM) == (n_colleges(ds), n_parental(ds))
@@ -65,12 +64,6 @@ function time_to_grad_qual_parental(ds :: DataSettings)
     # wtM = 1.0 ./ dataM;
     # wtM[dataM .== 0.0] .= 0.0;
 
-    # target = :timeToGrad_qpM;
-    # d = Deviation{Double}(name = target, dataV = dataM,
-    #     modelV = dataM,  wtV = wtM, 
-    #     scalarWt = 0.3,  shortStr = String(target),
-    #     longStr = "Time to graduate by quality/parental",
-    #     showPath = "timeToGradQualityParental.txt")
 end
 
 

@@ -6,54 +6,15 @@ function read_by_gpa_yp(ds :: DataSettings, fPath :: AbstractString)
 	return m
 end
 
-
-# """
-# 	$(SIGNATURES)
-
-# IN
-# 	dev :: Deviation
-# 	plotModel :: Bool
-# 		If `false`, only plot data
-# 	filePath :: String
-# 		Complete file path without extension
-
-# Plot data and optionally model by [gpa, yp].
-# Returns plot object for further customization or saving.
-# """
-# function plot_gpa_yp(ds :: DataSettings, 
-# 	dev :: ModelParams.Deviation,  plotModel :: Bool,  filePath :: String)
-
-# 	p = plot_dev_xy(dev,  gpa_labels(ds), parental_labels(ds),  
-# 		plotModel,  filePath);
-# 	return p
-# end
-
-# fn_gpa_yp(baseName) = file_name(baseName, [:gpa, :parental], ".dat");
+read_by_gpa_yp(ds :: DataSettings, mName :: Symbol) =
+	read_by_gpa_yp(ds, raw_file_path(ds, mName));
 
 
 ## -------------  Individual moments
 
-# function dm_entry_gpa_yp()
-#     target = :fracEnter_gpM;
-#     return DataMoment(target, ModelStatistic(:fracEnter_xyM, :gpaYpS),  
-#         fn_gpa_yp("fracEnter"),  nothing,  
-#         entry_by_gpa_yp, plot_gpa_yp)
-# end
-
-## College entry rates by HS GPA / parental income
-# function entry_by_gpa_yp(ds :: DataSettings)
-# 	target = :fracEnter_gpM;
-# 	m = load_entry_gpa_yp(ds);
-	# return Deviation{Double}(name = target, dataV = m, modelV = m,
-	# 	scalarWt = 3.0 ./ length(m),
-	# 	shortStr = string(target),
-	# 	longStr = "Entry rates by HSgpa/parental background",
-	# 	showPath = fn_gpa_yp("fracEnter"))
-# end
 
 function load_entry_gpa_yp(ds :: DataSettings)
-	fPath = data_file(raw_entry_gpa_parental(ds));
-	m = read_by_gpa_yp(ds, fPath);
+	m = read_by_gpa_yp(ds, :fracEnter_gpM);
     @assert all(m .< 1.0)  &&  all(m .> 0.0)
     @assert size(m) == (n_gpa(ds), n_parental(ds))
 	return m
@@ -70,9 +31,7 @@ end
 # end
 
 function mass_by_gpa_yp(ds :: DataSettings)
-	target = :mass_gpM;
-	fPath = data_file(raw_mass_gpa_parental(ds));
-	m = read_by_gpa_yp(ds, fPath);
+	m = read_by_gpa_yp(ds, :mass_gpM);
     @assert all(m .< 0.5)  &&  all(m .> 0.0)
 	@assert size(m) == (n_gpa(ds), n_parental(ds))
 	@check sum(m) ≈ 1.0

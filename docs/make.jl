@@ -11,7 +11,7 @@ makedocs(
     # checkdocs = :exports,
 )
 
-deploydocs(
-    repo = "github.com/hendri54/CollegeStratData.jl.git",
-    push_preview = true
-)
+# deploydocs(
+#     repo = "github.com/hendri54/CollegeStratData.jl.git",
+#     push_preview = true
+# )
