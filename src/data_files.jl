@@ -1,7 +1,8 @@
 
-@noinline base_dir() = normpath(joinpath(@__DIR__,  "..", ".."));
+# This cannot hang off CollegeStratData b/c that directory may not be available on the server.
+# @noinline base_dir() = normpath(joinpath(@__DIR__,  "..", ".."));
 
-# joinpath(homedir(), "Documents", "projects", 
+base_dir() = joinpath(homedir(), "Documents", "projects", 
 	# "p2019", "college_stratification");
 
 
@@ -10,7 +11,7 @@ project_dir() = joinpath(base_dir(), "CollegeStratData");
 # Data files are stored here
 # Subdirs are the same as for raw data files
 function data_dir(ds :: DataSettings)
-    return joinpath(project_dir(), data_sub_dir(ds))
+    return joinpath(base_dir(), data_sub_dir(ds))
 end
 
 # function data_sub_dir(ds :: DataSettings)

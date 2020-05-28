@@ -1,7 +1,0 @@
-# Scalar data moments
-# Correlation HS GPA / parental income
-corrGpaYp, 0.63
-# Fraction of college entrants
-fracEnter, 0.70
-# Fraction of entrants who graduate
-fracGrad, 0.51
