@@ -1,7 +1,9 @@
-base_dir() = joinpath(homedir(), "Documents", "projects", 
-	"p2019", "college_stratification");
 
-# ++++++  normpath(joinpath(@__DIR__,  "..", ".."));
+@noinline base_dir() = normpath(joinpath(@__DIR__,  "..", ".."));
+
+# joinpath(homedir(), "Documents", "projects", 
+	# "p2019", "college_stratification");
+
 
 project_dir() = joinpath(base_dir(), "CollegeStratData");
 
