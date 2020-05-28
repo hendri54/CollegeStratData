@@ -1,6 +1,7 @@
-base_dir() = normpath(joinpath(@__DIR__,  "..", ".."));
-# joinpath(homedir(), "Documents", "projects", 
-# 	"p2019", "college_stratification");
+base_dir() = joinpath(homedir(), "Documents", "projects", 
+	"p2019", "college_stratification");
+
+# ++++++  normpath(joinpath(@__DIR__,  "..", ".."));
 
 project_dir() = joinpath(base_dir(), "CollegeStratData");
 
