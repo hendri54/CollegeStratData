@@ -2,9 +2,7 @@
 # This cannot hang off CollegeStratData b/c that directory may not be available on the server.
 # @noinline base_dir() = normpath(joinpath(@__DIR__,  "..", ".."));
 
-base_dir() = joinpath(homedir(), "Documents", "projects", 
-	# "p2019", "college_stratification");
-
+base_dir() = joinpath(homedir(), "Documents", "projects", "p2019", "college_stratification");
 
 project_dir() = joinpath(base_dir(), "CollegeStratData");
 
