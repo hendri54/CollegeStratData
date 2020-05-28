@@ -11,7 +11,7 @@ project_dir() = joinpath(base_dir(), "CollegeStratData");
 # Data files are stored here
 # Subdirs are the same as for raw data files
 function data_dir(ds :: DataSettings)
-    return joinpath(base_dir(), data_sub_dir(ds))
+    return joinpath(base_dir(), "CollegeStrat", data_sub_dir(ds))
 end
 
 # function data_sub_dir(ds :: DataSettings)
