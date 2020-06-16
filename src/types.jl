@@ -8,7 +8,8 @@ Settings for data files. These are baked into the data construction (by Oksana),
 Base.@kwdef mutable struct DataSettings
 	name :: Symbol = :default
 	dataSubDir :: String = "data"
-	rawBaseDir :: String = "/Users/lutz/Dropbox/Dropout Policies/Data/empiricaltargets/NLSY 97 moments by AFQT"
+	# Raw data files live here
+	rawBaseDir :: String
     "Number of school groups"
     nSchool :: UInt8 = 3
 	"Number of colleges (qualities)"
@@ -43,7 +44,7 @@ Raw data files sit in a nested directory structure, such as
 `SelfReport/dat_files/Means/HS_Char/`
 The object contains info for constructing the path.
 """
-struct RawDataFile
+mutable struct RawDataFile
 	# :self or :transcript
 	selfOrTranscript  ::  Symbol
 	# E.g. :finance

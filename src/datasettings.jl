@@ -113,11 +113,6 @@ List of colleges from which students can graduate.
 grad_idx(ds :: DataSettings) =
 	findall(cIdx -> can_graduate(ds, cIdx),  1 : n_colleges(ds))
 
-# courses_data_to_model(nCourses) = 
-# 	nCourses ./ dataCoursesPerCourse;
-# courses_model_to_data(ds :: DataSettings, nCourses) = 
-# 	nCourses .* dataCoursesPerCourse;
-
 credits_to_courses(ds :: DataSettings, nCredits) = 
 	nCredits ./ ds.creditsPerCourse;
 courses_to_credits(ds :: DataSettings, nCourses) = 
@@ -136,9 +131,13 @@ Make named data settings. Each defines at least:
 """
 function make_data_settings(dsName :: Symbol)
 	if dsName == :default
-		return DataSettings(name = :default)
+		rawDir = joinpath(raw_base_dir(), "Updated Types", 
+			"NLSY 97 moments by AFQT");
+		return DataSettings(name = :default, rawBaseDir = rawDir)
 	elseif dsName == :test
-		return DataSettings(name = :test)
+		rawDir = joinpath(raw_base_dir(), "Updated Types", 
+			"NLSY 97 moments by AFQT");
+		return DataSettings(name = :test, rawBaseDir = rawDir)
 	else
 		error("Invalid name: $dsName")
 	end

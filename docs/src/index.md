@@ -4,7 +4,7 @@ Construct data targets for calibration of the CollegeStrat model.
 
 The raw data files come as delimited text files. This package lets the user load a data moment using a simple call to [`load_moment`](@ref). For example, `load_moment(ds, :fracGrad_gV)` loads the graduation rate by `gpa` or `afqt` group as a `Vector{Float64}`.
 
-The code admits multiple named sets of data files. Which ones are loaded is determined by the [`DataSettings`](@ref) object that is passed to `load_moment`.
+The code admits multiple named sets of data files. Which ones are loaded is determined by the [`DataSettings`](@ref) object that is passed to `load_moment`. To define a new set of data moments, create an entry in [`make_data_settings`](@ref) that points at the correct directory in Dropbox.
 
 Data moments follow a consistent naming convention. The base name (e.g. `fracGrad`) indicates which moment is to be loaded (the fraction of entrants who graduate). The suffix indicates for which groups the moment is to be loaded. E.g., `fracGrad_gpM` loads by `gpa` and `parental` group. The groups are:
 
@@ -17,15 +17,12 @@ Data moments follow a consistent naming convention. The base name (e.g. `fracGra
 ```@docs
 DataSettings
 load_moment
+make_data_settings
 ```
 
 # DataSettings
 
 A `DataSettings` object is constructed with [`make_data_settings`](@ref).
-
-```@docs
-make_data_settings
-```
 
 The following functions give access to properties of the data:
 

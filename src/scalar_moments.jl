@@ -49,6 +49,17 @@ function corr_gpa_yp(ds :: DataSettings)
 end
 
 
+# Number of college entrants in the sample
+# Useful for computing std errors
+function n_entrants(ds :: DataSettings)
+    cntM = read_matrix_by_xy(count_file(ds, :fracEnter_gpM));
+    cnt = round(Int, sum(cntM));
+    @assert 4000 < cnt < 7_000
+    return cnt
+end
+
+
+
 ## Average study time
 #=
 We have NLSY79 moments in xls, but not 97 moments.

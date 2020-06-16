@@ -1,4 +1,3 @@
-
 # This cannot hang off CollegeStratData b/c that directory may not be available on the server.
 # @noinline base_dir() = normpath(joinpath(@__DIR__,  "..", ".."));
 
@@ -20,6 +19,9 @@ end
 # 	end
 # 	return d
 # end
+
+# Base dir for raw data files. Individual sets of data files hang off this.
+raw_base_dir() = "/Users/lutz/Dropbox/Dropout Policies/Data/empiricaltargets";
 
 
 ## ---------------  Regression files

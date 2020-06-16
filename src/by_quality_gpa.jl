@@ -1,8 +1,10 @@
 ## ----------------  Individual moments
 
 ## Mean time to dropout (conditional on dropping out)
+# Some small cells
 function time_to_drop_qual_gpa(ds :: DataSettings)
     m = read_matrix_by_xy(raw_file_path(ds, :timeToDrop_qgM));
+    # cntM = read_matrix_by_xy(count_file(ds, :timeToDrop_qgM));
     # Interpolate a missing entry
     (m[4,1] == 0.0)  &&  (m[4,1] = m[3,1]);
     @assert all(m .< 6.0)  &&  all(m .>= 0.0)

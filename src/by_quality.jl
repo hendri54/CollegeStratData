@@ -2,27 +2,6 @@
 # Since there is no switching in the model, several statstics do not make sense for two year colleges. They are set to 0 in model and data.
 
 
-# Plot model and data by quality / year
-# function plot_quality_year(ds :: DataSettings, dev :: Deviation,  plotModel :: Bool, 
-#     filePath :: String)
-
-#     T = size(get_data_values(dev), 2);
-#     p = plot_dev_xy(dev, quality_labels(n_colleges(ds)), 
-#         year_labels(T), plotModel, filePath);
-#     return p
-# end
-
-
-# Plot data (and model) by [quality group, parental quartile]
-# function plot_quality_yp(ds :: DataSettings, dev :: Deviation,  plotModel :: Bool, 
-#     filePath :: String)
-
-#     p = plot_dev_xy(dev, quality_labels(n_colleges(ds)), 
-#         parental_labels(n_parental(ds)), plotModel, filePath);
-#     return p
-# end
-
-
 # -------------  Individual moments
 
 
@@ -40,28 +19,6 @@ function college_tuition(ds :: DataSettings)
     # return tuitionV
 end
 
-
-## Net price of college by quality
-# function net_college_price(ds :: DataSettings)
-#     m = college_tuition(ds; modelUnits = true);
-#     target = :netPriceQual;
-#     dev = Deviation{Double}(name = target, dataV = m, modelV = m,
-#         wtV = 1.0 ./ m,  scalarWt = 1.5 / length(m),
-#         shortStr = String(target),
-#         longStr = "Net price by college quality", 
-#         showPath = "netPriceByQuality.txt")
-#     return dev
-
-# end
-
-
-## Hours worked, year 1
-# function work_hours_by_quality(ds :: DataSettings)
-#     m = mean_work_hours_by_qual(ds; modelUnits = true);
-#     target = :workTime_qV;
-#     dev = work_hours_dev(target, m, :quality);
-#     return dev
-# end
 
 # Mean work hours PER YEAR
 function work_hours_by_qual(ds :: DataSettings)
@@ -150,6 +107,8 @@ end
 #         showPath = "fracEnrollByQuality.txt")
 # end
 
+
+# Enrollment by quality, sums to 1
 function frac_enroll_by_qual(ds :: DataSettings)
     rf = raw_entry_qual_parental(ds);
     dataV = read_row_totals(data_file(rf));

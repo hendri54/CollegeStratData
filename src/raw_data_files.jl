@@ -84,6 +84,8 @@ dGroup = Dict([:finance => "Financing",  :freshmen => "Fresh_Char",
 	:hsGrads => "HS_Char",  :progress => "Progress",  :none => ""]);
 
 data_settings(rf :: RawDataFile) = rf.ds;
+set_moment_type(rf :: RawDataFile, momentType :: Symbol) = 
+    rf.momentType = momentType;
 
 
 ## ---------  Mapping moments to raw data files
@@ -91,7 +93,7 @@ data_settings(rf :: RawDataFile) = rf.ds;
 """
     $(SIGNATURES)
 
-Retrieve raw file path from moment name.
+Retrieve raw file path from moment name. The optional `momentType` argument allows the user to load counts or std deviations instead of means for moments where those exist.
 """
 function raw_file_path(ds :: DataSettings, mName :: Symbol)
     return data_file(raw_file(ds, mName));
@@ -123,6 +125,20 @@ function raw_file(ds :: DataSettings, mName :: Symbol)
     rf = fileMap[mName](ds);
     return rf
 end
+
+# File with counts for a given data moment
+function count_file(ds :: DataSettings, mName :: Symbol)
+    rf = raw_file(ds, mName);
+    set_moment_type(rf, :count);
+    return rf
+end
+
+function std_file(ds :: DataSettings, mName :: Symbol)
+    rf = raw_file(ds, mName);
+    set_moment_type(rf, :std);
+    return rf
+end
+    
 
 
 ## --------  Directories
@@ -158,7 +174,20 @@ data_sub_dir(selfReportOrTranscript :: Symbol,  momentType :: Symbol,
     joinpath(dSelfTranscript[selfReportOrTranscript],  "dat_files", 
 		dMomentType[momentType],  dGroup[momentGroup])
 
-file_name(rf :: RawDataFile) = rf.rawFile;
+function file_name(rf :: RawDataFile)
+    fn = rf.rawFile;
+    if rf.momentType == :count
+        # `_N` appended to name (why??)
+        fn2, fExt = splitext(fn);
+        fn = fn2 * "_N" * fExt;
+    elseif rf.momentType == :std
+        # `_SD` appended to name (why??)
+        fn2, fExt = splitext(fn);
+        fn = fn2 * "_SD" * fExt;
+    end
+    return fn
+end
+
 
 """
     $(SIGNATURES)

@@ -15,7 +15,7 @@ read_by_gpa_yp(ds :: DataSettings, mName :: Symbol) =
 
 function load_entry_gpa_yp(ds :: DataSettings)
 	m = read_by_gpa_yp(ds, :fracEnter_gpM);
-    @assert all(m .< 1.0)  &&  all(m .> 0.0)
+	@assert all(m .< 1.0)  &&  all(m .> 0.0)
     @assert size(m) == (n_gpa(ds), n_parental(ds))
 	return m
 end

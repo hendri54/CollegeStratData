@@ -48,14 +48,14 @@ function make_target_test()
 		
 		# By qual/gpa
 		d4 = load_moment(ds, :timeToDrop_qgM);
-		@test all(d4 .> 1.0)  &&  all(d4 .< 6.0)
+		@test all(d4 .>= 1.0)  &&  all(d4 .< 6.0)
 		# Two values, depending on whether we use transcripts or self reports
         @test isapprox(d4[1,2], 2.8366325, atol = 0.01) || 
             isapprox(d4[1,2], 1.8828769, atol = 0.01)
 
 		d5 = load_moment(ds, :workTime_pV);
 		@test all(d5 .> 400.0)  &&  all(d5 .< 1800.0)
-		@test isapprox(d5[2], 1056.0529, atol = 1.0)
+		@test isapprox(d5[2], 1000.0, atol = 100.0)
 
 		d6 = load_moment(ds, :cumLoans_qtM);
 		@test d6[2,3] > 8000.0  #  ≈ 8146.27

@@ -15,7 +15,7 @@ export regressor_name, const_regressor, const_regressor_name, regressor_string, 
 export copy_raw_data_files, data_file, read_regression_file
 
 # Moments
-export load_moment
+export load_moment, n_entrants
 export exper_profile, wage_regr_intercepts, workstart_earnings, wage_regr_grads
 
 export cdf_gpa_by_qual

@@ -2,8 +2,8 @@ using EconometricsLH
 
 function directories_test()
 	@testset "Directories" begin
-		baseDir = CollegeStratData.base_dir();
-		@test endswith(baseDir, "college_stratification/")
+		baseDir = rstrip(CollegeStratData.base_dir(), '/');
+		@test endswith(baseDir, "college_stratification")
 		@test isdir(baseDir)
 		projectDir = CollegeStratData.project_dir();
 		@test endswith(projectDir, "CollegeStratData")

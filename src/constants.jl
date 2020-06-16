@@ -41,7 +41,7 @@ const dbgMedium = true
 const dbgHigh = true
 
 # Required Julia version (as a version string)
-const minVersion = "1.3"
+const minVersion = "1.4"
 
 
 
