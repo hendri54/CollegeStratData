@@ -71,6 +71,7 @@ moment_map() = Dict([
     :fracGrad_qpM => frac_grad_qual_parental,
     :fracGrad_qgM => grad_rate_qual_gpa,
     :fracQual_qpM => frac_qual_by_parental,
+    :fracQual_qgM => frac_qual_by_gpa,
     :gpaMean_qV => afqt_mean_by_quality,
     :mass_gpM => mass_by_gpa_yp,
     :massEntry_qgM => mass_entry_qual_gpa,

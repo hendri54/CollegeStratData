@@ -12,6 +12,20 @@ function time_to_drop_qual_gpa(ds :: DataSettings)
 end
 
 
+## Fraction in each quality, conditional on entry, by gpa
+function frac_qual_by_gpa(ds :: DataSettings)
+    rf = raw_entry_qual_gpa(ds);
+    dataV = read_matrix_by_xy(data_file(rf));
+    @assert check_float_array(dataV, 0.001, 1.0);
+    @check sum(dataV) ≈ 1.0
+
+    # Make conditional on entry (columns sum to 1)
+    dataV = dataV ./ sum(dataV, dims = 1);
+    @assert all(isapprox.(sum(dataV, dims = 1), 1.0))
+    return dataV
+end
+
+
 ## Mass of freshmen by quality / gpa. Sums to 1.
 function mass_entry_qual_gpa(ds :: DataSettings)
     m = read_matrix_by_xy(raw_file_path(ds, :massEntry_qgM));

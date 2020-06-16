@@ -13,11 +13,6 @@ function frac_qual_by_parental(ds :: DataSettings)
     dataV = dataV ./ sum(dataV, dims = 1);
     @assert all(isapprox.(sum(dataV, dims = 1), 1.0))
     return dataV
-    # d = Deviation{Double}(name = target, dataV = dataV,
-    #     modelV = dataV,  
-    #     scalarWt = 0.2,  shortStr = String(target),
-    #     longStr = "Fraction each quality by parental",
-    #     showPath = "fracQualityByParental.txt")
 end
 
 
@@ -31,15 +26,6 @@ function frac_grad_qual_parental(ds :: DataSettings)
     # zero out 2 year colleges
     dataM[two_year_colleges(ds), :] .= 0.0;
     return dataM
-    # wtM = ones(size(dataM));
-    # wtM[dataM .== 0.0] .= 0.0;
-
-    # target = :fracGrad_qpM;
-    # d = Deviation{Double}(name = target, dataV = dataM,
-    #     modelV = dataM,  wtV = wtM, 
-    #     scalarWt = 0.4,  shortStr = String(target),
-    #     longStr = "Graduation rate by quality/parental",
-    #     showPath = "fracGradQualityParental.txt")
 end
 
 

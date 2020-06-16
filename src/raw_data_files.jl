@@ -5,6 +5,9 @@ raw_afqt_pct_qual(ds :: DataSettings) =
     RawDataFile(:selfReport, :freshmen, :mean, "pctile_afqt.dat", ds);
 
 # By quality / gpa
+# Conditional on entry, fraction of students in each [quality, gpa] cell
+raw_entry_qual_gpa(ds :: DataSettings) =
+    RawDataFile(:transcript, :freshmen, :mean, "jointdist_qual_afqt.dat", ds);
 raw_grad_rate_qual_gpa(ds :: DataSettings) = 
     RawDataFile(:transcript, :progress, :mean, "grad_rate.dat", ds);
 # Transcript time to drop contains a 0 in one cell
