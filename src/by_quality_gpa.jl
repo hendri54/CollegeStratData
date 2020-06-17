@@ -3,35 +3,53 @@
 ## Mean time to dropout (conditional on dropping out)
 # Some small cells
 function time_to_drop_qual_gpa(ds :: DataSettings)
-    m = read_matrix_by_xy(raw_file_path(ds, :timeToDrop_qgM));
+    load_fct = 
+        mt -> read_matrix_by_xy(raw_time_to_drop_qual_gpa(ds; momentType = mt));
+    m, ses, cnts = mean_from_xy(load_fct);
+
+    # m = read_matrix_by_xy(raw_file_path(ds, :timeToDrop_qgM));
     # cntM = read_matrix_by_xy(count_file(ds, :timeToDrop_qgM));
     # Interpolate a missing entry
-    (m[4,1] == 0.0)  &&  (m[4,1] = m[3,1]);
+    # (m[4,1] == 0.0)  &&  (m[4,1] = m[3,1]);
     @assert all(m .< 6.0)  &&  all(m .>= 0.0)
-    return m
+    return m, ses, cnts
 end
 
 
 ## Fraction in each quality, conditional on entry, by gpa
 function frac_qual_by_gpa(ds :: DataSettings)
-    rf = raw_entry_qual_gpa(ds);
-    dataV = read_matrix_by_xy(data_file(rf));
+    dataV = read_matrix_by_xy(raw_entry_qual_gpa(ds));
     @assert check_float_array(dataV, 0.001, 1.0);
     @check sum(dataV) ≈ 1.0
 
     # Make conditional on entry (columns sum to 1)
     dataV = dataV ./ sum(dataV, dims = 1);
     @assert all(isapprox.(sum(dataV, dims = 1), 1.0))
-    return dataV
+    nc = size(dataV, 1);
+
+    # Counts by GPA
+    cntV = read_row_totals(raw_entry_qual_gpa(ds; momentType = :count));
+    @assert length(cntV) == size(dataV, 2)
+    cnts = repeat(cntV', outer = (nc, 1));
+    @assert size(cnts) == size(dataV)
+
+    ses = ses_from_choice_probs(dataV, cnts);
+    cnts = round.(Int, cnts);
+    return dataV, ses, cnts
 end
 
 
 ## Mass of freshmen by quality / gpa. Sums to 1.
 function mass_entry_qual_gpa(ds :: DataSettings)
     m = read_matrix_by_xy(raw_file_path(ds, :massEntry_qgM));
+    # SES treats this as a discrete choice problem with total count.
+    cnts = read_matrix_by_xy(raw_file_path(ds, :massEntry_qgM; momentType = :count));
+    cnts = fill(sum(cnts), size(cnts));
     @assert all(m .< 1.0)  &&  all(m .> 0.0)
     @assert isapprox(sum(m), 1.0,  atol = 0.0001)
-    return m
+    ses = ses_from_choice_probs(m, cnts);
+    cnts = round.(Int, cnts);
+    return m, ses, cnts
 end
 
 
@@ -41,13 +59,17 @@ end
 Graduation rates by [quality, gpa].
 """
 function grad_rate_qual_gpa(ds :: DataSettings)
-    m = read_matrix_by_xy(raw_file_path(ds, :fracGrad_qgM));
+    load_fct = 
+        mt -> read_matrix_by_xy(raw_file_path(ds, :fracGrad_qgM; momentType = mt));
+    m, ses, cnts = choice_prob_from_xy(load_fct);
+    # m = read_matrix_by_xy(raw_file_path(ds, :fracGrad_qgM));
     @assert all(m .<= 1.0)  &&  all(m .> 0.0)
 
     # Set to 0 for colleges that do not produce graduates
     m[no_grad_idx(ds), :] .= 0.0;
+    cnts[no_grad_idx(ds), :] .= 0;
     # wtM = 1.0 ./ max.(0.1, m);
-    return m
+    return m, ses, cnts
 end
 
 
@@ -90,21 +112,32 @@ function study_time_qual_gpa(ds :: DataSettings)
     #     dataM = hours_per_week_to_mtu(dataM);
     #     validate_mtu(dataM);
     # end
-    return dataM
+
+    # These are made up
+    ses = ones(size(dataM));
+    cnts = fill(100, size(dataM)...);
+
+    @check size(dataM) == (n_colleges(ds), n_gpa(ds))
+
+    return dataM, ses, cnts
 end
 
 # In hours per week
 function mean_study_times_by_qual(ds :: DataSettings)
-    st_qgM = study_time_qual_gpa(ds);
+    st_qgM, _ = study_time_qual_gpa(ds);
     st_qV = [mean_by_gpa(vec(st_qgM[ic,:]), ds)  for ic = 1 : n_colleges(ds)];
-    return st_qV
+    @check size(st_qV) == (n_colleges(ds), )
+    @assert all(st_qV .> 7.0)
+    ses = ones(size(st_qV));
+    cnts = fill(100, size(st_qV));
+    return st_qV, ses, cnts
 end
 
 # In hours per week
 function mean_study_time(ds :: DataSettings)
-    st_qV = mean_study_times_by_qual(ds);
+    st_qV, _ = mean_study_times_by_qual(ds);
     st = mean_by_qual(st_qV, ds);
-    return st
+    return st, 1.0, 100
 end
 
 # -----------------

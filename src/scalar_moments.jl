@@ -27,13 +27,11 @@ end
 
 ## Graduation rate (conditional on entry)
 function grad_rate(ds :: DataSettings)
-    fPath = data_file(raw_grad_rate_qual_gpa(ds));
-    gradRate = read_all_from_delim_file(fPath);
+    gradRate = read_all_from_delim_file(raw_grad_rate_qual_gpa(ds));
+    cnt = read_all_from_delim_file(raw_grad_rate_qual_gpa(ds; momentType = :count));
     @assert check_float(gradRate, lb = 0.3, ub = 0.7);
-    return gradRate
-    # return ScalarDeviation{Double}(name = :fracGrad,  dataV = gradRate,  modelV = 0.0,
-    #     wtV = 3.0,  shortStr = "fracGrad",  
-    #     longStr = "Graduation rate conditional on entry")
+    ses = (gradRate * (1.0 - gradRate) / cnt) ^ 0.5;
+    return gradRate, ses, cnt
 end
 
 
@@ -42,7 +40,7 @@ end
 function corr_gpa_yp(ds :: DataSettings)
     corr = read_scalar_moment(ds, "corrGpaYp");
     @assert corr > 0.3  &&  corr < 0.8
-    return corr
+    return corr, 0.0, 1000
     # return ScalarDeviation{Double}(name = :corrGpaYp, dataV = corr, modelV = 0.0,
     #     wtV = 1.0 ./ corr,
     #     shortStr = "corrGpaYp", longStr = "Correlation HSgpa/parental background")

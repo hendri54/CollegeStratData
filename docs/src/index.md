@@ -6,6 +6,8 @@ The raw data files come as delimited text files. This package lets the user load
 
 The code admits multiple named sets of data files. Which ones are loaded is determined by the [`DataSettings`](@ref) object that is passed to `load_moment`. To define a new set of data moments, create an entry in [`make_data_settings`](@ref) that points at the correct directory in Dropbox.
 
+For each data moment, standard errors are constructed. For choice fractions, such as the fraction of students who choose each college quality, the multinomial formula `sqrt(p * (1-p) / n)` is used. For sample means, such as average time to graduate, the standard error is `std(x) / sqrt(n)`.
+
 Data moments follow a consistent naming convention. The base name (e.g. `fracGrad`) indicates which moment is to be loaded (the fraction of entrants who graduate). The suffix indicates for which groups the moment is to be loaded. E.g., `fracGrad_gpM` loads by `gpa` and `parental` group. The groups are:
 
 * `g`: `gpa` or `afqt`
@@ -40,7 +42,6 @@ n_gpa
 n_parental
 hsgpa_ub
 parental_ub
-
 ```
 
 # Raw Data Files

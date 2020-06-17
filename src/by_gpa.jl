@@ -16,10 +16,18 @@
 # Entry rate by GPA
 function frac_enter_by_gpa(ds :: DataSettings)
     # Read COL totals b/c file is transposed
-    m = read_col_totals(raw_file_path(ds, :fracEnter_gV));
+    load_fct = 
+        mt -> read_col_totals(raw_entry_gpa_parental(ds; momentType = mt));
+    m, ses, cnts = choice_prob_from_xy(load_fct);
+    # m, ses, cnts = choice_prob_from_col_total(ds, :fracEnter_gV);
+    # m = read_col_totals(raw_file_path(ds, :fracEnter_gV));
     @assert all(m .> 0.0)  &&  all(m .< 1.0)
     @assert length(m) == n_gpa(ds)
-    return m
+
+    # cnts = read_col_totals(raw_file_path(ds, :fracEnter_gV; momentType = :count));
+    @assert all(cnts .> 100)
+    # ses = (m .* (1.0 .- m) ./ cnts) .^ 0.5;
+    return m, ses, cnts
 end
 
 
@@ -29,20 +37,30 @@ end
 Mean time to graduation by GPA.
 """
 function grad_rate_by_gpa(ds :: DataSettings)
-    m = read_col_totals(raw_file_path(ds, :fracGrad_gV));
+    load_fct = 
+        mt -> read_col_totals(raw_grad_rate_qual_gpa(ds; momentType = mt));
+    m, ses, cnts = choice_prob_from_xy(load_fct);
+    # m, ses, cnts = choice_prob_from_col_total(ds, :fracGrad_gV);
+    # m = read_col_totals(raw_file_path(ds, :fracGrad_gV));
     @assert all(m .> 0.0)  &&  all(m .< 1.0)
     @assert length(m) == n_gpa(ds)
-    return m
+    @assert all(cnts .> 100)
+    return m, ses, cnts
 end
 
 
 # Mean time to drop by quality / gpa
 # Contains one 0 cell that needs to be interpolated.
 function time_to_drop_by_gpa(ds :: DataSettings)
-    m = read_col_totals(raw_file_path(ds, :timeToDrop_gV));
+    load_fct = 
+        mt -> read_col_totals(raw_time_to_drop_qual_gpa(ds; momentType = mt));
+    m, ses, cnts = mean_from_xy(load_fct);
+    # m, ses, cnts = mean_from_col_total(ds, :timeToDrop_gV);
+    # m = read_col_totals(raw_file_path(ds, :timeToDrop_gV));
     @assert all(m .> 1.5)  &&  all(m .< 4.0)
     @assert length(m) == n_gpa(ds)
-    return m
+    @assert all(cnts .> 100)
+    return m, ses, cnts
 end
 
 
@@ -52,12 +70,15 @@ end
 Mean time to graduation by GPA.
 """
 function time_to_grad_by_gpa(ds :: DataSettings)
-    m = read_col_totals(raw_file_path(ds, :timeToGrad_gV));
+    load_fct = 
+        mt -> read_col_totals(raw_time_to_grad_qual_gpa(ds; momentType = mt));
+    m, ses, cnts = mean_from_xy(load_fct);
+    # m, ses, cnts = mean_from_col_total(ds, :timeToGrad_gV);
+    # m = read_col_totals(raw_file_path(ds, :timeToGrad_gV));
     @assert all(m .> 3.0)  &&  all(m .< 7.0)
     @assert length(m) == n_gpa(ds)
-    return m
-    # dev = time_to_grad_dev(target, m, :gpa);
-    # return dev
+    @assert all(cnts .> 30)
+    return m, ses, cnts
 end
 
 
@@ -67,18 +88,19 @@ end
 Work hours, year 1, by GPA.
 """
 function work_hours_by_gpa(ds :: DataSettings)
-    target = :workTime_gV;
-    rf = raw_work_hours_qual_gpa(ds, ds.workTimeYear);
-    m = read_col_totals(data_file(rf));
+    # m, ses, cnts = mean_from_col_total(ds, :workTime_gV);
+    # target = :workTime_gV;
+    m = read_col_totals(raw_work_hours_qual_gpa(ds, ds.workTimeYear));
+    stdV = read_col_totals(
+        raw_work_hours_qual_gpa(ds, ds.workTimeYear; momentType = :std));
+    cnts = read_col_totals(
+        raw_work_hours_qual_gpa(ds, ds.workTimeYear; momentType = :count));
+    ses = stdV ./ (max.(cnts, 1.0) .^ 0.5);
+    cnts = round.(Int, cnts);
     @assert all(m .> 400.0)  &&  all(m .< 1800.0)
     @assert length(m) == n_gpa(ds)
-    return m
-    # # Make model units
-    # m = hours_data_to_mtu(m, :hoursPerYear);
-
-    # # Scalar weight as sum = scale by 1/mean and 1/length
-    # dev = work_hours_dev(target, m, :gpa);
-    # return dev
+    @assert all(cnts .> 100)
+    return m, ses, cnts
 end
 
 # ------------------

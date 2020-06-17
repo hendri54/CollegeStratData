@@ -151,9 +151,16 @@ function read_all_from_delim_file(fPath :: String)
 	r = select_all_row(df);
 	c = select_all_column(df);
 	x = df[r, c];
-	@assert check_float(x)
+	if isa(x, AbstractFloat)
+		@assert check_float(x)
+	else
+		@assert isa(x, Integer)
+	end
 	return x
 end
+
+read_all_from_delim_file(rf :: RawDataFile) = 
+	read_all_from_delim_file(data_file(rf));
 
 
 """

@@ -54,33 +54,47 @@
 # Not conditional on entry. As a matrix by [gpa, yp, quality] that matches
 # `StatsByXYQ.fracEnter_xyqM`
 # probably best to call those directly from CollegeStrat?
+# check std errors ++++++
 function load_qual_entry_gpa_yp_all(ds :: DataSettings;
 	conditionalOnEntry :: Bool = false)
+
+	# Counts should depend on conditionalOnEntry +++
+	_, _, cnt_xyM = load_entry_gpa_yp(ds);
+
 	nc = n_colleges(ds);
 	fracEnter_xyqM = zeros(Double, n_gpa(ds), n_parental(ds), nc);
+	cnt_xyqM = zeros(Int, n_gpa(ds), n_parental(ds), nc);
+
 	for ic = 1 : nc
 		fracEnter_xyqM[:,:,ic] = load_qual_entry_gpa_yp(ds, ic; 
-			conditionalOnEntry = conditionalOnEntry);
+			conditionalOnEntry = conditionalOnEntry, momentType = :mean);
+		cnt_xyqM[:,:,ic] = cnt_xyM;
 	end
 	if conditionalOnEntry
 		# Should sum to 1 across qualities
 		qSumM = sum(fracEnter_xyqM, dims = 3);
 		@assert check_float_array(qSumM, 0.998, 1.002)
 	end
-	return fracEnter_xyqM
+
+	ses_xyqM = ses_from_choice_probs(fracEnter_xyqM, cnt_xyqM);
+
+	return fracEnter_xyqM, ses_xyqM, cnt_xyqM
 end
 
 
 # Load fraction by quality | [gpa, yp]. Conditional on entry or not.
 function load_qual_entry_gpa_yp(ds :: DataSettings, iCollege;
-	conditionalOnEntry :: Bool = false)
-	fPath = data_file(raw_qual_entry_gpa_parental(ds, iCollege));
+	conditionalOnEntry :: Bool = false, momentType :: Symbol = :mean)
+	fPath = data_file(
+		raw_qual_entry_gpa_parental(ds, iCollege; momentType = momentType));
 	m = read_by_gpa_yp(ds, fPath);
-    @assert all(m .< 1.0)  &&  all(m .>= 0.0)
+	if momentType == :mean
+		@assert all(m .< 1.0)  &&  all(m .>= 0.0)
+	end
 	@assert size(m) == (n_gpa(ds), n_parental(ds))
 
 	if !conditionalOnEntry
-		entryM = load_moment(ds, :fracEnter_gpM);
+		entryM, _ = load_moment(ds, :fracEnter_gpM);
 		m .*= entryM;
 	end
 	return m

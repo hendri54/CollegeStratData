@@ -7,68 +7,76 @@
 
 ## Tuition (out of pocket). Average by college type
 function college_tuition(ds :: DataSettings)
-    rf = raw_net_price_qual_gpa(ds, ds.tuitionYear);
-    tuitionV = read_row_totals(data_file(rf));
+    load_fct =  mt -> read_row_totals(
+        raw_net_price_qual_gpa(ds, ds.tuitionYear; momentType = mt));
+    tuitionV, ses, cnts = mean_from_xy(load_fct);
+    # rf = raw_net_price_qual_gpa(ds, ds.tuitionYear);
+    # tuitionV = read_row_totals(data_file(rf));
     @assert all(tuitionV .> 400.0)  &&  all(tuitionV .< 20000.0)
     @assert length(tuitionV) == n_colleges(ds)
-    return tuitionV
-    # if modelUnits
-    #     # In model dollars
-    #     tuitionV = dollars_data_to_model(tuitionV, :perYear);
-    # end
-    # return tuitionV
+    return tuitionV, ses, cnts
 end
 
 
 # Mean work hours PER YEAR
 function work_hours_by_qual(ds :: DataSettings)
-    rf = raw_work_hours_qual_gpa(ds, ds.workTimeYear);
-    m = read_row_totals(data_file(rf));
+    load_fct = 
+        mt -> read_row_totals(raw_work_hours_qual_parental(ds; momentType = mt));
+    m, ses, cnts = mean_from_xy(load_fct);
+    # m, ses, cnts = mean_from_row_total(ds, :workTime_qV);
+    # rf = raw_work_hours_qual_gpa(ds, ds.workTimeYear);
+    # m = read_row_totals(data_file(rf));
     @assert all(m .> 400.0)  &&  all(m .< 1800.0)
     @assert length(m) == n_colleges(ds)
-    # modelUnits  &&  (m = hours_data_to_mtu(m, :hoursPerYear));
-    return m
+    @assert all(cnts .> 100)
+    return m, ses, cnts
 end
 
 
 ## Graduation rate by quality
 function grad_rate_by_quality(ds :: DataSettings)
-    # target = :fracGrad_qV;
-    rf = raw_grad_rate_qual_gpa(ds);
-    m = read_row_totals(data_file(rf));
-    @assert all(m .> 0.0)  &&  all(m .< 1.0)
+    load_fct = 
+        mt -> read_row_totals(raw_grad_rate_qual_gpa(ds; momentType = mt));
+    m, ses, cnts = choice_prob_from_xy(load_fct);
+    # m, ses, cnts = choice_prob_from_row_total(ds, :fracGrad_qV);
+    # rf = raw_grad_rate_qual_gpa(ds);
+    # m = read_row_totals(data_file(rf));
+    # @assert all(m .> 0.0)  &&  all(m .< 1.0)
     @assert length(m) == n_colleges(ds)
     # Set to 0 for 2 year colleges
     m[no_grad_idx(ds)] .= 0.0;
-    return m
-    # dev = frac_grad_dev(target, m, :quality);
-    # return dev
+    cnts[no_grad_idx(ds)] .= 0.0;
+    return m, ses, cnts
 end
 
 
 ## Mean time to drop out by quality
 function time_to_drop_by_quality(ds :: DataSettings)
-    # target = :timeToDrop_qV;
-    rf = raw_time_to_drop_qual_gpa(ds);
-    m = read_row_totals(data_file(rf));
+    load_fct = 
+        mt -> read_row_totals(raw_time_to_drop_qual_gpa(ds; momentType = mt));
+    m, ses, cnts = mean_from_xy(load_fct);
+    # m, ses, cnts = mean_from_row_total(ds, :timeToDrop_qV);
+    # rf = raw_time_to_drop_qual_gpa(ds);
+    # m = read_row_totals(data_file(rf));
     @assert all(m .> 1.4)  &&  all(m .< 4.0)
     @assert length(m) == n_colleges(ds)
-    return m
-    # dev = time_to_drop_dev(target, m, :quality);
-    # return dev
+    return m, ses, cnts
 end
 
 
 ## Mean time to graduate by quality (conditional on graduation)
 function time_to_grad_by_quality(ds :: DataSettings)
-    m = read_row_totals(raw_file_path(ds, :timeToGrad_qV));
+    load_fct = 
+        mt -> read_row_totals(raw_time_to_grad_qual_gpa(ds; momentType = mt));
+    m, ses, cnts = mean_from_xy(load_fct);
+    # m, ses, cnts = mean_from_row_total(ds, :timeToGrad_qV);
+    # m = read_row_totals(raw_file_path(ds, :timeToGrad_qV));
     @assert all(m .> 3.0)  &&  all(m .< 7.0)
     @assert length(m) == n_colleges(ds)
     # Set to 0 for 2 year colleges
     m[no_grad_idx(ds)] .= 0.0;
-    return m
-    # dev = time_to_grad_dev(target, m, :quality);
-    # return dev
+    cnts[no_grad_idx(ds)] .= 0;
+    return m, ses, cnts
 end
 
 
@@ -77,16 +85,18 @@ function afqt_mean_by_quality(ds :: DataSettings)
     # target = :gpaMean_qV;
     rf = raw_afqt_pct_qual(ds);
     m = read_vector_by_x(data_file(rf)) ./ 100.0;
-    # m = read_by_quality(ds, data_file(rf)) ./ 100.0;
     @assert isa(m, Vector{Double})
 	@argcheck size(m) == (n_colleges(ds), )
 	@assert all(m .> 0.0)  &&  all(m .< 1.0)
-	return m
-    # return Deviation{Double}(name = target, dataV = m, modelV = m,
-    #     scalarWt = 1.0 / sum(m),
-    #     shortStr = String(target),
-    #     longStr = "Mean AFQT percentile by college quality", 
-    #     showPath = "afqtMeanByQuality.txt")
+
+    rfCnts = raw_afqt_pct_qual(ds; momentType = :count);
+    cnts = read_vector_by_x(data_file(rfCnts));
+    @assert all(cnts .> 100)
+
+    ses = m ./ (cnts .^ 0.5);
+    cnts = round.(Int, cnts);
+    # m = read_by_quality(ds, data_file(rf)) ./ 100.0;
+	return m, ses, cnts
 end
 
 
@@ -110,11 +120,15 @@ end
 
 # Enrollment by quality, sums to 1
 function frac_enroll_by_qual(ds :: DataSettings)
-    rf = raw_entry_qual_parental(ds);
-    dataV = read_row_totals(data_file(rf));
-    @assert check_float_array(dataV, 0.05, 1.0);
-    @check sum(dataV) ≈ 1.0
-    return dataV
+    load_fct = 
+        mt -> read_row_totals(raw_entry_qual_parental(ds; momentType = mt));
+    m, ses, cnts = choice_prob_from_xy(load_fct);
+    # dataV, ses, cnts = choice_prob_from_row_total(ds, :fracEnroll_qV);
+    # rf = raw_entry_qual_parental(ds);
+    # dataV = read_row_totals(data_file(rf));
+    @assert check_float_array(m, 0.05, 1.0);
+    @check sum(m) ≈ 1.0
+    return m, ses, cnts
 end
 
 
@@ -135,36 +149,31 @@ function cum_loans_qual_year(ds :: DataSettings)
 
     T = ds.Tmax;
     outM = zeros(n_colleges(ds), T);
+    sesM = zeros(n_colleges(ds), T);
+    cntM = zeros(Int, n_colleges(ds), T);
     for t = 1 : T
-        outM[:, t] = cum_loans_qual(ds, t);
+        outM[:, t], sesM[:,t], cntM[:,t] = cum_loans_qual(ds, t);
     end
 
     # Ignore 2 year colleges after year 2 while there is no switching
     outM[two_year_colleges(ds), 3 : end] .= 0.0;
-    return outM
-    # # wtM = 1.0 ./ max.(0.1, outM);
-    # wtM = fill(1.0 / mean(outM), size(outM));
-    # wtM[outM .== 0.0] .= 0.0;
-
-    # # Only years available in data are to be compared
-    # idxV = collect(axes(outM));
-
-    # d = Deviation{Double}(name = target, dataV = outM, modelV = outM,
-    #     wtV = wtM,  scalarWt = 0.6,  idxV = idxV,
-    #     shortStr = String(target),
-    #     longStr = "Cumulative loans by quality, year (unconditional)",
-    #     showPath = "cumLoansQualYear.dat");
-    # return d
+    cntM[two_year_colleges(ds), 3 : end] .= 0;
+    return outM, sesM, cntM
 end
 
 # The same for one year
 function cum_loans_qual(ds :: DataSettings,  t :: Integer)
-    rawFn = raw_cum_loans_qual_year(ds, t);
-    m = read_row_totals(data_file(rawFn));
-    # if modelUnits
-    #     m = dollars_data_to_model(m, :perYear);
-    # end
-    return m :: Vector{Float64}
+    load_fct = 
+        mt -> read_row_totals(raw_cum_loans_qual_year(ds, t; momentType = mt));
+    m, ses, cnts = mean_from_xy(load_fct);
+    # m, ses, cnts = mean_from_row_total(load_fct);
+    # rawFn = raw_cum_loans_qual_year(ds, t);
+    # m = read_row_totals(raw_cum_loans_qual_year(ds, t));
+    # cnts = read_row_totals(raw_cum_loans_qual_year(ds, t; momentType = :count));
+    # stdV = read_row_totals(raw_cum_loans_qual_year(ds, t; momentType = :std));
+    # ses = stdV ./ (max.(1.0, cnts) .^ 0.5);
+    # cnts = round.(Int, cnts);
+    return m, ses, cnts
 end
 
 
@@ -176,16 +185,18 @@ end
 #         courses_tried_qual_year, plot_quality_year);
 # end
 
+
 function courses_tried_qual(ds :: DataSettings, t :: Integer)
-    rawFn = raw_credits_taken_qual_gpa(ds, t);
-    v = read_row_totals(data_file(rawFn));
-    @assert check_float_array(v, 1.0, 50.0)
-    @assert length(v) == n_colleges(ds)
-    v = credits_to_courses(ds, v);
-    # if modelUnits
-    #     v = courses_data_to_model(v);
-    # end
-    return v
+    load_fct = 
+        mt -> read_row_totals(raw_credits_taken_qual_gpa(ds, t; momentType = mt));
+    m, ses, cnts = mean_from_xy(load_fct);
+    # m, ses, cnts = mean_from_row_total(load_fct);
+    # rawFn = raw_credits_taken_qual_gpa(ds, t);
+    # v = read_row_totals(data_file(rawFn));
+    @assert check_float_array(m, 1.0, 50.0)
+    @assert length(m) == n_colleges(ds)
+    m = credits_to_courses(ds, m);
+    return m, ses, cnts
 end
 
 
@@ -196,22 +207,16 @@ function courses_tried_qual_year(ds :: DataSettings)
 
     T = ds.Tmax;
     outM = zeros(n_colleges(ds), T);
+    sesM = zeros(n_colleges(ds), T);
+    cntsM = zeros(Int, n_colleges(ds), T);
     for t = 1 : T
-        outM[:, t] = courses_tried_qual(ds, t);
+        outM[:, t], sesM[:,t], cntsM[:,t] = courses_tried_qual(ds, t);
     end
 
     # Ignore 2 year colleges after year 2 while there is no switching
     outM[two_year_colleges(ds), 3 : end] .= 0.0;
-    return outM
-    # # Only years available in data are to be compared
-    # idxV = collect(axes(outM));
-
-    # d = Deviation{Double}(name = target, dataV = outM, modelV = outM,
-    #     wtV = 1.0 ./ max.(0.1, outM),  scalarWt = 0.5,  idxV = idxV,
-    #     shortStr = String(target),
-    #     longStr = "Courses tried by [qual, year]",
-    #     showPath = "coursesTriedQualYear.dat");
-    # return d
+    cntsM[two_year_colleges(ds), 3 : end] .= 0.0;
+    return outM, sesM, cntsM
 end
 
 
@@ -219,12 +224,15 @@ end
 # Each row is a percentile (e.g. p10 is the 10th percentile of GPA in each college).
 # Each entry means: The p10-th percentile in this college is the X-th percentile in the population.
 # Numbers are between 0 and 100
-function read_cdf_gpa_by_qual(ds :: DataSettings)
-    rawFn = RawDataFile(:transcript, :freshmen, :mean, "cdf_afqt_byquality.dat", ds);
+function read_cdf_gpa_by_qual(ds :: DataSettings; momentType :: Symbol = :mean)
+    rawFn = RawDataFile(:transcript, :freshmen, momentType, 
+        "cdf_afqt_byquality.dat", ds);
     fPath = data_file(rawFn);
     df = read_delim_file_to_df(fPath);
-    @check all_greater(df.quality2, 1)
-    @check all_at_most(df.quality4, 100)
+    if momentType == :mean
+        @check all_greater(df.quality2, 1)
+        @check all_at_most(df.quality4, 100)
+    end
     return df
 end
 
@@ -235,7 +243,7 @@ end
 function cdf_gpa_by_qual(ds :: DataSettings, 
     percentileV :: AbstractVector, qualityV :: AbstractVector)
 
-    df = read_cdf_gpa_by_qual(ds);
+    df = read_cdf_gpa_by_qual(ds; momentType = :mean);
     pctColV = df[!, :pctile];
     np = length(percentileV);
     nq = length(qualityV);

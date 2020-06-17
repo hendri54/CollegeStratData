@@ -12,7 +12,7 @@ export n_school, n_gpa, n_2year, n_colleges, n_parental, hsgpa_ub, parental_ub, 
 export regressor_name, const_regressor, const_regressor_name, regressor_string, regressor_strings, gpa_regressors, parental_regressors, quality_regressors, school_regressors
 
 # Data Files
-export copy_raw_data_files, data_file, read_regression_file
+export copy_raw_data_files, data_file, read_regression_file, raw_file
 
 # Moments
 export load_moment, n_entrants
@@ -99,6 +99,8 @@ moment_map() = Dict([
 	$(SIGNATURES)
 
 Load a data moment by name.
+
+For regression moments, this returns a `RegressionTable`. For other moments, it returns means, std errors of means, and cell counts.
 """
 function load_moment(ds :: DataSettings, mName :: Symbol)
     mm = moment_map();

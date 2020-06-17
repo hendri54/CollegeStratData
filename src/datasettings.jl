@@ -60,8 +60,14 @@ mean_by_gpa(x_pV :: Vector{T1}, ds :: DataSettings) where T1 <: Number =
 	sum(x_pV .* hsgpa_masses(ds));
 mean_by_parental(x_pV :: Vector{T1}, ds :: DataSettings) where T1 <: Number = 
 	sum(x_pV .* parental_masses(ds));
-mean_by_qual(x_qV :: AbstractVector{T1}, ds :: DataSettings) where T1 <: Number =
-	sum(x_qV .* frac_enroll_by_qual(ds));
+
+function mean_by_qual(x_qV :: AbstractVector{T1}, 
+	ds :: DataSettings) where T1 <: Number
+	
+	enroll_qV, _ = frac_enroll_by_qual(ds);
+	return sum(x_qV .* enroll_qV);
+end
+
 mean_by_gpa_yp(x_gpM :: Matrix{T1}, ds :: DataSettings) where T1 <: Number =
     sum(x_gpM .* mass_gpa_yp(ds));
 

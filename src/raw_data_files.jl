@@ -1,60 +1,66 @@
 ## ----------------  Individual files
 
 # AFQT percentile by quality
-raw_afqt_pct_qual(ds :: DataSettings) =
-    RawDataFile(:selfReport, :freshmen, :mean, "pctile_afqt.dat", ds);
+raw_afqt_pct_qual(ds :: DataSettings; momentType :: Symbol = :mean) =
+    RawDataFile(:selfReport, :freshmen, momentType, "pctile_afqt.dat", ds);
 
 # By quality / gpa
 # Conditional on entry, fraction of students in each [quality, gpa] cell
-raw_entry_qual_gpa(ds :: DataSettings) =
-    RawDataFile(:transcript, :freshmen, :mean, "jointdist_qual_afqt.dat", ds);
-raw_grad_rate_qual_gpa(ds :: DataSettings) = 
-    RawDataFile(:transcript, :progress, :mean, "grad_rate.dat", ds);
+raw_entry_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) =
+    RawDataFile(:transcript, :freshmen, momentType, "jointdist_qual_afqt.dat", ds);
+raw_grad_rate_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) = 
+    RawDataFile(:transcript, :progress, momentType, "grad_rate.dat", ds);
 # Transcript time to drop contains a 0 in one cell
-raw_time_to_drop_qual_gpa(ds :: DataSettings) = 
-    RawDataFile(:transcript, :progress, :mean, "time_to_drop.dat", ds);
-raw_time_to_grad_qual_gpa(ds :: DataSettings) = 
-    RawDataFile(:transcript, :progress, :mean, "time_to_grad.dat", ds);
-raw_work_hours_qual_gpa(ds :: DataSettings, year :: Integer) = 
-    RawDataFile(:selfReport, :finance, :mean, "hours$year.dat", ds)
-raw_net_price_qual_gpa(ds :: DataSettings, year :: Integer) =
-    RawDataFile(:transcript, :finance, :mean, "net_price$year.dat", ds);
-raw_credits_taken_qual_gpa(ds :: DataSettings, year :: Integer) = 
-    RawDataFile(:transcript, :progress, :mean, "creds_att$year.dat", ds);
+raw_time_to_drop_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) = 
+    RawDataFile(:transcript, :progress, momentType, "time_to_drop.dat", ds);
+raw_time_to_grad_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) = 
+    RawDataFile(:transcript, :progress, momentType, "time_to_grad.dat", ds);
+raw_work_hours_qual_gpa(ds :: DataSettings, year :: Integer; 
+    momentType :: Symbol = :mean) = 
+    RawDataFile(:selfReport, :finance, momentType, "hours$year.dat", ds)
+raw_net_price_qual_gpa(ds :: DataSettings, year :: Integer; 
+    momentType :: Symbol = :mean) =
+    RawDataFile(:transcript, :finance, momentType, "net_price$year.dat", ds);
+raw_credits_taken_qual_gpa(ds :: DataSettings, year :: Integer;
+    momentType :: Symbol = :mean) = 
+    RawDataFile(:transcript, :progress, momentType, "creds_att$year.dat", ds);
 
 # -----  By quality / parental
 
-raw_work_hours_qual_parental(ds :: DataSettings) =
-    RawDataFile(:selfReport, :finance, :mean, "hours_byfaminc1.dat", ds);
+raw_work_hours_qual_parental(ds :: DataSettings; momentType :: Symbol = :mean) =
+    RawDataFile(:selfReport, :finance, momentType, "hours_byfaminc1.dat", ds);
 # Conditional on entry, fraction of students in each [quality, parental] cell
-raw_entry_qual_parental(ds :: DataSettings) =
-    RawDataFile(:transcript, :freshmen, :mean, "jointdist_qual_inc.dat", ds);
-raw_frac_grad_qual_parental(ds :: DataSettings) =
-    RawDataFile(:transcript, :progress, :mean, "grad_rate_inc.dat", ds);
-raw_time_to_grad_qual_parental(ds :: DataSettings) =
-    RawDataFile(:transcript, :progress, :mean, "time_to_grad_inc.dat", ds);
+raw_entry_qual_parental(ds :: DataSettings; momentType :: Symbol = :mean) =
+    RawDataFile(:transcript, :freshmen, momentType, "jointdist_qual_inc.dat", ds);
+raw_frac_grad_qual_parental(ds :: DataSettings; momentType :: Symbol = :mean) =
+    RawDataFile(:transcript, :progress, momentType, "grad_rate_inc.dat", ds);
+raw_time_to_grad_qual_parental(ds :: DataSettings; momentType :: Symbol = :mean) =
+    RawDataFile(:transcript, :progress, momentType, "time_to_grad_inc.dat", ds);
 
 
 # ------  by [gpa, parental]
 # Data files have this transposed as [parental, gpa]
 
 # Entry rates [gpa, parental], but TRANSPOSED in data files!
-raw_entry_gpa_parental(ds :: DataSettings) =
-    RawDataFile(:transcript, :hsGrads, :mean, "entrants.dat", ds);
+raw_entry_gpa_parental(ds :: DataSettings; momentType :: Symbol = :mean) =
+    RawDataFile(:transcript, :hsGrads, momentType, "entrants.dat", ds);
 # Fraction by quality, by [gpa, parental], TRANSPOSED in data files.
 # Conditional on entry.
-raw_qual_entry_gpa_parental(ds :: DataSettings, iCollege) =
-    RawDataFile(:transcript, :freshmen, :mean, "prob_ent_$(iCollege).dat", ds);
+raw_qual_entry_gpa_parental(ds :: DataSettings, iCollege; 
+    momentType :: Symbol = :mean) =
+    RawDataFile(:transcript, :freshmen, momentType, "prob_ent_$(iCollege).dat", ds);
 # Mass of HSG by [parental, hs gpa]
-raw_mass_gpa_parental(ds :: DataSettings) =
-    RawDataFile(:transcript, :hsGrads, :mean, "jointdist_inc_afqt_hsgrads.dat", ds);
+raw_mass_gpa_parental(ds :: DataSettings; momentType :: Symbol = :mean) =
+    RawDataFile(:transcript, :hsGrads, momentType, 
+        "jointdist_inc_afqt_hsgrads.dat", ds);
 
-raw_cum_loans_qual_year(ds :: DataSettings, year :: Integer) = 
-    RawDataFile(:transcript, :finance, :mean, "cumloans$year.dat", ds);
+raw_cum_loans_qual_year(ds :: DataSettings, year :: Integer; 
+    momentType :: Symbol = :mean) = 
+    RawDataFile(:transcript, :finance, momentType, "cumloans$year.dat", ds);
 
 # Conditional on entry, fraction of students in each [quality, gpa] cell
-raw_mass_entry_qual_gpa(ds :: DataSettings) =
-    RawDataFile(:transcript, :freshmen, :mean, "jointdist_qual_afqt.dat", ds);
+raw_mass_entry_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) =
+    RawDataFile(:transcript, :freshmen, momentType, "jointdist_qual_afqt.dat", ds);
 
 
 # -----  Regressions
@@ -98,34 +104,49 @@ set_moment_type(rf :: RawDataFile, momentType :: Symbol) =
 
 Retrieve raw file path from moment name. The optional `momentType` argument allows the user to load counts or std deviations instead of means for moments where those exist.
 """
-function raw_file_path(ds :: DataSettings, mName :: Symbol)
-    return data_file(raw_file(ds, mName));
+function raw_file_path(ds :: DataSettings, mName :: Symbol; momentType = nothing)
+    if isnothing(momentType)
+        rf = raw_file(ds, mName);
+    else
+        rf = raw_file(ds, mName; momentType = momentType);
+    end
+    return data_file(rf)
 end
 
 # Map moment names into functions that make raw file paths
 raw_file_map() = Dict([
+    :fracEnroll_qV => raw_entry_qual_parental,
     :fracEnter_gV => raw_entry_gpa_parental,
     :fracEnter_pV => raw_entry_gpa_parental,
     :fracEnter_gpM => raw_entry_gpa_parental,
+    :fracGrad => raw_grad_rate_qual_gpa,
     :fracGrad_gV => raw_grad_rate_qual_gpa,
+    :fracGrad_qV => raw_grad_rate_qual_gpa,
     :fracGrad_gpM => raw_frac_grad_qual_parental,
     :fracGrad_qgM => raw_grad_rate_qual_gpa,
     :mass_gpM => raw_mass_gpa_parental,
     :massEntry_qgM => raw_mass_entry_qual_gpa,
     :timeToDrop_gV => raw_time_to_drop_qual_gpa,
+    :timeToDrop_qV => raw_time_to_drop_qual_gpa,
     :timeToDrop_qgM => raw_time_to_drop_qual_gpa,
     :timeToGrad_qV => raw_time_to_grad_qual_gpa,
     :timeToGrad_gV => raw_time_to_grad_qual_gpa,
     :timeToGrad_ggM => raw_time_to_grad_qual_gpa,
     :timeToGrad_qpM => raw_time_to_grad_qual_parental,
     :workTime_pV => raw_work_hours_qual_parental,
+    :workTime_qV => raw_work_hours_qual_parental,
     :workTime_qpM => raw_work_hours_qual_parental
 ]);
 
 # Make a RawDataFile from a moment name
-function raw_file(ds :: DataSettings, mName :: Symbol)
+function raw_file(ds :: DataSettings, mName :: Symbol; momentType = nothing)
     fileMap = raw_file_map();
-    rf = fileMap[mName](ds);
+    rf_fct = fileMap[mName];
+    if isnothing(momentType)
+        rf = rf_fct(ds);
+    else
+        rf = rf_fct(ds; momentType = momentType);
+    end
     return rf
 end
 
