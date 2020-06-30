@@ -12,7 +12,7 @@ export n_school, n_gpa, n_2year, n_colleges, n_parental, hsgpa_ub, parental_ub, 
 export regressor_name, const_regressor, const_regressor_name, regressor_string, regressor_strings, gpa_regressors, parental_regressors, quality_regressors, school_regressors
 
 # Data Files
-export copy_raw_data_files, data_file, read_regression_file, raw_file
+export data_file, missing_file_list, read_regression_file, raw_file
 
 # Moments
 export load_moment, n_entrants
@@ -56,7 +56,7 @@ Mapping of data moment names to functions that load them.
 The user can then simply call `load_moment` to load any moment.
 """
 moment_map() = Dict([
-    :corrGpaYp => corr_gpa_yp,
+    # :corrGpaYp => corr_gpa_yp,
     :coursesTried_qtM => courses_tried_qual_year,
     :cumLoans_qtM => cum_loans_qual_year,
     :fracEnroll_qV => frac_enroll_by_qual,

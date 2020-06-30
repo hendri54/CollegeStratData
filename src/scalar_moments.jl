@@ -1,4 +1,3 @@
-# This needs to be updated +++++
 # Scalar moment file currently does not exist. Oksana needs to make it.
 
 ## Read scalar moments from a single dedicated file

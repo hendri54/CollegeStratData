@@ -6,7 +6,7 @@
 function frac_qual_by_parental(ds :: DataSettings)
     # This is enrollment by [quality, parental]
     dataV = read_matrix_by_xy(raw_entry_qual_parental(ds));
-    @assert check_float_array(dataV, 0.01, 1.0);
+    @assert check_float_array(dataV, 0.005, 1.0);
     @check sum(dataV) ≈ 1.0
     nr = size(dataV, 1);
 

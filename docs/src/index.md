@@ -1,6 +1,6 @@
 # CollegeStratData
 
-Construct data targets for calibration of the CollegeStrat model.
+This package loads data targets for calibration of the CollegeStrat model.
 
 The raw data files come as delimited text files. This package lets the user load a data moment using a simple call to [`load_moment`](@ref). For example, `load_moment(ds, :fracGrad_gV)` loads the graduation rate by `gpa` or `afqt` group as a `Vector{Float64}`.
 
@@ -46,7 +46,9 @@ parental_ub
 
 # Raw Data Files
 
-The raw data files are created in delimited text format and stored in a nested directory structure in Dropbox. From there, they are imported using [`copy_raw_data_files`](@ref).
+The raw data files are created in delimited text format and stored in a nested directory structure in a `github` repo. From there, they are imported to `CollegeStrat/data` by simply copying entire directories.
+
+To do: automatic loading of data files from github.
 
 For each data file, a function makes a [`RawDataFile`](@ref) object. It contains information where the file is to be found in the directory structure. 
 
@@ -54,7 +56,6 @@ A mapping from data moments to raw data files is constructed in `raw_file_map`. 
 
 ```@docs
 RawDataFile
-copy_raw_data_files
 raw_file_path
 ```
 

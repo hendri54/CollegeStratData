@@ -113,7 +113,10 @@ function wage_regr_grads(ds :: DataSettings)
     fPath = data_file(raw_wage_regr_grads(ds));
     rt = read_regression_file(fPath);
     # Now we just have intercept and school dummies (HSG = default)
-    drop_regressors!(rt, [:exp, :exp2_over10, :started_2y]);
+    drop_regressors!(rt, [:exp, :exp2_over10]);
+    if has_regressor(rt, :started_2y)
+        drop_regressor!(rt, :started_2y);
+    end
 
     # Adjust constant to match model units
     # S.e. is in "percent" and does not change

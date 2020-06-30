@@ -1,15 +1,15 @@
 using CommonLH, EconometricsLH, Test
 
-function load_moments_test()
+function load_moments_test(dsName)
     @testset "Load moments" begin
-        ds = test_data_settings();
+        ds = make_data_settings(dsName);
         gradRate, ses, cnt = load_moment(ds, :fracGrad);
 		@test check_float(gradRate, lb = 0.4, ub = 0.7)
 		@test check_float(ses, lb = 0.01, ub = 0.1)
 		@test cnt > 1000
 
-        corrGP, _ = load_moment(ds, :corrGpaYp)
-        @test check_float(corrGP, lb = 0.3, ub = 0.7)
+        # corrGP, _ = load_moment(ds, :corrGpaYp)
+        # @test check_float(corrGP, lb = 0.3, ub = 0.7)
 
         mm = CollegeStratData.moment_map();
 		for mName in keys(mm)
@@ -45,9 +45,9 @@ end
 # Test making individual data moments
 # There is no point testing each one. Test one of each "kind" (e.g. by gpa/yp)
 # and then test making the entire moment vector with deviations
-function make_target_test()
+function make_target_test(dsName)
 	@testset "Make target" begin
-		ds = test_data_settings();
+		ds = make_data_settings(dsName);
 		d1, _ = load_moment(ds, :fracEnter_gpM);
 		@test all(d1 .> 0.0)  &&  all(d1 .< 1.0)
 		@test isapprox(d1[2,1], 0.37, atol = 0.01)
@@ -59,7 +59,7 @@ function make_target_test()
 		# Read from file by quality only
 		d3, _ = load_moment(ds, :gpaMean_qV);
 		@test all(d3 .> 0.0)  &&  all(d3 .< 1.0)
-		@test isapprox(d3[2], 0.5847987, atol = 0.01)
+		@test isapprox(d3[2], 0.58, atol = 0.02)
 		
 		# By qual/gpa
 		d4, ses, cnts = load_moment(ds, :timeToDrop_qgM);
@@ -107,9 +107,9 @@ function make_target_test()
 end
 
 
-function worker_moments_test()
+function worker_moments_test(dsName)
 	@testset "Worker moments" begin
-		ds = test_data_settings();
+		ds = make_data_settings(dsName);
 		yV = exper_profile(ds, 2, T = 30);
 		@test length(yV) == 30
 		@test all(yV .>= 0.0)
@@ -151,9 +151,11 @@ end
 
 
 @testset "Load data moments" begin
-    load_moments_test()
-    make_target_test()
-    worker_moments_test()
+	for dsName ∈ CollegeStratData.data_settings_list()
+		load_moments_test(dsName)
+		make_target_test(dsName)
+		worker_moments_test(dsName)
+	end
     regr_file_test()
 end
 

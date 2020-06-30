@@ -2,19 +2,22 @@
 
 # AFQT percentile by quality
 raw_afqt_pct_qual(ds :: DataSettings; momentType :: Symbol = :mean) =
-    RawDataFile(:selfReport, :freshmen, momentType, "pctile_afqt.dat", ds);
+    RawDataFile(:selfReport, :freshmen, momentType, 
+        file_name(ds, "pctile", :afqt, ".dat"), ds);
 
 # By quality / gpa
 # Conditional on entry, fraction of students in each [quality, gpa] cell
 raw_entry_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) =
     RawDataFile(:transcript, :freshmen, momentType, "jointdist_qual_afqt.dat", ds);
 raw_grad_rate_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) = 
-    RawDataFile(:transcript, :progress, momentType, "grad_rate.dat", ds);
+    RawDataFile(:transcript, :progress, momentType, 
+        file_name(ds, "grad_rate", :afqt, ".dat"), ds);
 # Transcript time to drop contains a 0 in one cell
 raw_time_to_drop_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) = 
     RawDataFile(:transcript, :progress, momentType, "time_to_drop.dat", ds);
 raw_time_to_grad_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) = 
-    RawDataFile(:transcript, :progress, momentType, "time_to_grad.dat", ds);
+    RawDataFile(:transcript, :progress, momentType, 
+        file_name(ds, "time_to_grad", :afqt, ".dat"), ds);
 raw_work_hours_qual_gpa(ds :: DataSettings, year :: Integer; 
     momentType :: Symbol = :mean) = 
     RawDataFile(:selfReport, :finance, momentType, "hours$year.dat", ds)
@@ -165,6 +168,23 @@ end
     
 
 
+## Make a list of missing data files
+function missing_file_list(ds)
+    missList = Vector{String}();
+    # Mapping of moments to files
+    rawMap = raw_file_map();
+    for mName in keys(rawMap)
+        rf = raw_file(ds, mName);
+        @assert isa(rf, CollegeStratData.RawDataFile)
+        fPath = raw_file_path(ds, mName);
+        if !isfile(fPath)
+            push!(missList, fPath);
+        end
+    end
+    return missList
+end
+
+
 ## --------  Directories
 
 
@@ -213,18 +233,18 @@ function file_name(rf :: RawDataFile)
 end
 
 
-"""
-    $(SIGNATURES)
+# """
+#     $(SIGNATURES)
 
-Copy raw data files from Dropbox to local dir.
-This only needs to be done when data files get updated.
-Not all moments have raw data files. Those are skipped.
-"""
-function copy_raw_data_files(ds :: DataSettings; trialRun :: Bool = false)
-    println("\nCopying raw data files to local dir");
-    srcDir = raw_data_base_dir(ds);
-    tgDir = data_dir(ds);
-    rsync_dir(srcDir, tgDir;  trialRun = trialRun,  doDelete = false);
-end
+# Copy raw data files from Dropbox to local dir.
+# This only needs to be done when data files get updated.
+# Not all moments have raw data files. Those are skipped.
+# """
+# function copy_raw_data_files(ds :: DataSettings; trialRun :: Bool = false)
+#     println("\nCopying raw data files to local dir");
+#     srcDir = raw_data_base_dir(ds);
+#     tgDir = data_dir(ds);
+#     rsync_dir(srcDir, tgDir;  trialRun = trialRun,  doDelete = false);
+# end
 
 # ---------------

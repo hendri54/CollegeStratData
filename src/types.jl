@@ -7,9 +7,12 @@ Settings for data files. These are baked into the data construction (by Oksana),
 """
 Base.@kwdef mutable struct DataSettings
 	name :: Symbol = :default
-	dataSubDir :: String = "data"
+	# Data dir relative to `data_dir()`
+	dataSubDir :: String
 	# Raw data files live here
-	rawBaseDir :: String
+	# rawBaseDir :: String
+	# Uses afqt or gpa
+	afqtGpa :: String = "afqt"
     "Number of school groups"
     nSchool :: UInt8 = 3
 	"Number of colleges (qualities)"
