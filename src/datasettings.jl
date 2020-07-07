@@ -126,21 +126,32 @@ courses_to_credits(ds :: DataSettings, nCourses) =
 
 
 # Return gpa or afqt suffix for files, whichever is used
-afqt_suffix(ds :: DataSettings) = "_" * (ds.afqtGpa);
-parental_suffix(ds :: DataSettings) = "_faminc";
+afqt_string(ds :: DataSettings) = ds.afqtGpa;
+afqt_suffix(ds :: DataSettings) = "_" * afqt_string(ds);
+parental_suffix(ds :: DataSettings) = "_inc";
+quality_suffix(ds :: DataSettings) = "_q";
+grad_drop_suffix(ds :: DataSettings) = "_outcome";
 
 function file_suffix(ds :: DataSettings, suffix :: Symbol)
 	if suffix ∈ (:gpa, :afqt)
 		return afqt_suffix(ds);
 	elseif suffix ∈ (:parental, :yp)
 		return parental_suffix(ds);
+	elseif suffix ∈ (:qual, :quality)
+		return quality_suffix(ds);
+	elseif suffix ∈ (:outcome, :gradDrop)
+		return grad_drop_suffix(ds);
 	else
 		error("Invalid suffix: $suffix")
 	end
 end
 
+function file_suffix(ds :: DataSettings, suffixV :: AbstractVector{Symbol})
+	return *([file_suffix(ds, suffixV[j])  for j = 1 : length(suffixV)]...)
+end
+
 function file_name(ds :: DataSettings, baseName :: String, 
-	suffix :: Symbol, fExt :: String)
+	suffix, fExt :: String = ".dat")
 
 	return baseName * file_suffix(ds, suffix) * fExt;
 end

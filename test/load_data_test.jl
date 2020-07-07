@@ -103,6 +103,12 @@ function make_target_test(dsName)
 
         coursesM, _ = load_moment(ds, :coursesTried_qtM);
 		@test size(coursesM, 1) == n_colleges(ds)
+
+		# Courses by [grad outcome, year]]
+		courses_otM, _ = load_moment(ds, :coursesTried_otM);
+		@test size(courses_otM, 1) == 2
+		@test all(6.0 .< courses_otM[1,:] .< 10.0)
+		@test all(9.0 .< courses_otM[2,:] .< 14.0)
 	end
 end
 

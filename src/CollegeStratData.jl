@@ -41,6 +41,7 @@ include("by_quality.jl")
 include("by_quality_parental.jl")
 include("by_quality_gpa.jl")
 include("by_parental.jl")
+include("by_grad_year.jl");
 include("regression_moments.jl")
 
 # Processing all moments (must come last)
@@ -57,6 +58,7 @@ The user can then simply call `load_moment` to load any moment.
 """
 moment_map() = Dict([
     # :corrGpaYp => corr_gpa_yp,
+    :coursesTried_otM => courses_tried_grad_year,
     :coursesTried_qtM => courses_tried_qual_year,
     :cumLoans_qtM => cum_loans_qual_year,
     :fracEnroll_qV => frac_enroll_by_qual,

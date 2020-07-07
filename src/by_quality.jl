@@ -134,19 +134,10 @@ end
 
 
 ## --------------  By quality / year
-
 # Multiple raw data files
-# function dm_cum_loans_qual_year()
-#     target = :cumLoans_qtM;
-#     return DataMoment(target, ModelStatistic(:cumLoans_gtM, :qualYearS),
-#         file_name("cumLoans", [:quality, :year], ".dat"),  nothing,
-#         cum_loans_qual_year,  plot_quality_year);
-# end
 
 # Cumulative loans by [quality, year]
 function cum_loans_qual_year(ds :: DataSettings)
-    # target = :cumLoans_qtM;
-
     T = ds.Tmax;
     outM = zeros(n_colleges(ds), T);
     sesM = zeros(n_colleges(ds), T);
@@ -166,13 +157,6 @@ function cum_loans_qual(ds :: DataSettings,  t :: Integer)
     load_fct = 
         mt -> read_row_totals(raw_cum_loans_qual_year(ds, t; momentType = mt));
     m, ses, cnts = mean_from_xy(load_fct);
-    # m, ses, cnts = mean_from_row_total(load_fct);
-    # rawFn = raw_cum_loans_qual_year(ds, t);
-    # m = read_row_totals(raw_cum_loans_qual_year(ds, t));
-    # cnts = read_row_totals(raw_cum_loans_qual_year(ds, t; momentType = :count));
-    # stdV = read_row_totals(raw_cum_loans_qual_year(ds, t; momentType = :std));
-    # ses = stdV ./ (max.(1.0, cnts) .^ 0.5);
-    # cnts = round.(Int, cnts);
     return m, ses, cnts
 end
 
@@ -190,12 +174,10 @@ function courses_tried_qual(ds :: DataSettings, t :: Integer)
     load_fct = 
         mt -> read_row_totals(raw_credits_taken_qual_gpa(ds, t; momentType = mt));
     m, ses, cnts = mean_from_xy(load_fct);
-    # m, ses, cnts = mean_from_row_total(load_fct);
-    # rawFn = raw_credits_taken_qual_gpa(ds, t);
-    # v = read_row_totals(data_file(rawFn));
     @assert check_float_array(m, 1.0, 50.0)
     @assert length(m) == n_colleges(ds)
     m = credits_to_courses(ds, m);
+    ses = credits_to_courses(ds, ses);
     return m, ses, cnts
 end
 
@@ -226,7 +208,7 @@ end
 # Numbers are between 0 and 100
 function read_cdf_gpa_by_qual(ds :: DataSettings; momentType :: Symbol = :mean)
     rawFn = RawDataFile(:transcript, :freshmen, momentType, 
-        "cdf_afqt_byquality.dat", ds);
+        file_name(ds, "inv_cdf", [:afqt, :qual]), ds);
     fPath = data_file(rawFn);
     df = read_delim_file_to_df(fPath);
     if momentType == :mean
