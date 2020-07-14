@@ -1,12 +1,13 @@
 name = "CollegeStratData"
 uuid = "7279015e-32d5-4a9c-a3a2-56f8f226bc2c"
 authors = ["hendri54 <hendricksl@protonmail.com>"]
-version = "0.2.3"
+version = "0.2.4"
 
 [deps]
 ArgCheck = "dce04be8-c92d-5529-be00-80e4d2c0e197"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CommonLH = "96c8dc4a-d23f-53b2-b478-aad5d5ab80bd"
+DataCollegeStrat = "bddd1445-09e8-4f50-b5c6-f025e4379dde"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"

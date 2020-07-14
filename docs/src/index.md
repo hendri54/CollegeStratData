@@ -46,9 +46,9 @@ parental_ub
 
 # Raw Data Files
 
-The raw data files are created in delimited text format and stored in a nested directory structure in a `github` repo. From there, they are imported to `CollegeStrat/data` by simply copying entire directories.
+The raw data files are created in delimited text format and stored in a nested directory structure in the `DataCollegeStrat` package. That package exports a single function, `data_dir`, which tells the other code where the data files live. When `DataCollegeStrat` is `add`ed, `Pkg` downloads the entire repo (including data files) into a hidden directory that `data_dir` points to.
 
-To do: automatic loading of data files from github.
+When the data files are updated: Push a new version number to github and `Pkg.update` in `CollegeStratData`.
 
 For each data file, a function makes a [`RawDataFile`](@ref) object. It contains information where the file is to be found in the directory structure. 
 

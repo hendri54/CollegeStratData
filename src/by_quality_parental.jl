@@ -46,7 +46,7 @@ end
 
 # function load_frac_grad_qual_parental(ds :: DataSettings)
 #     rf = raw_frac_grad_qual_parental();
-#     dataM = CollegeStrat.read_matrix_by_xy(CollegeStrat.data_file(rf));
+#     dataM = CollegeStratData.read_matrix_by_xy(CollegeStratData.data_file(rf));
 #     @assert check_float_array(dataM, 0.0, 1.0);
 #     @assert size(dataM) == (n_colleges(ds), n_parental(ds))
 #     return dataM
@@ -69,7 +69,7 @@ end
 
 # function load_time_to_grad_qual_parental(ds :: DataSettings)
 #     rf = raw_time_to_grad_qual_parental();
-#     dataM = CollegeStrat.read_matrix_by_xy(CollegeStrat.data_file(rf));
+#     dataM = CollegeStratData.read_matrix_by_xy(CollegeStratData.data_file(rf));
 
 #     @assert check_float_array(dataM, 3.0, 7.0);
 #     @assert size(dataM) == (n_colleges(ds), n_parental(ds))

@@ -3,6 +3,7 @@ module CollegeStratData
 using ArgCheck, DocStringExtensions
 using CSV, DataFrames
 using CommonLH, EconometricsLH, FilesLH
+using DataCollegeStrat
 
 # DataSettings
 export DataSettings, make_data_settings, test_data_settings

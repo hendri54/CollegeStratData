@@ -86,7 +86,7 @@ function make_target_test(dsName)
 		@test all(diff(d7a, dims = 2) .>= 0.0)
 
 		# test_header("Scalar moments");
-		# df = CollegeStrat.read_scalar_moments();
+		# df = CollegeStratData.read_scalar_moments();
 		# @test isa(df, DataFrame)
 
 		# corr1 = load_moment(ds, :corrGpaYp);
@@ -96,8 +96,8 @@ function make_target_test(dsName)
 		@test all(tuitionV .> 500.0)
 		@test all(tuitionV .< 50000.0)
 
-		# rf = CollegeStrat.raw_mass_entry_qual_gpa();
-		# @test isfile(CollegeStrat.data_file(rf))
+		# rf = CollegeStratData.raw_mass_entry_qual_gpa();
+		# @test isfile(CollegeStratData.data_file(rf))
 		m, _ = load_moment(ds, :massEntry_qgM);
 		@test size(m) == (n_colleges(ds), n_gpa(ds))
 
