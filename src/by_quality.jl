@@ -132,6 +132,15 @@ function frac_enroll_by_qual(ds :: DataSettings)
 end
 
 
+function frac_local_by_quality(ds :: DataSettings)
+    # temporary code +++++
+    m = [0.63, 0.41, 0.26, 0.15];
+    ses = fill(0.1, size(m));
+    cnts = fill(1000, size(m));
+    return m, ses, cnts
+end
+
+
 
 ## --------------  By quality / year
 # Multiple raw data files
