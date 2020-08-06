@@ -6,22 +6,42 @@ Zero for first year of experience.
 
 Most robust to simply store the profile (0 intercept) as a vector
 by schooling.
-
-update for multiple profiles +++++
 """
-function exper_profile(ds :: DataSettings, s :: Integer; T :: Integer = 60)
-    fPath = data_file(raw_wage_regr(ds));
-    rt = read_regression_file(fPath);
-    bExp = get_coefficient(rt, "exp");
-    bExp2 = get_coefficient(rt, "exp2_over10");
+function exper_profile(ds :: DataSettings, s :: Symbol; T :: Integer = 60)
+    wr = wage_regr_settings(ds);
+    # @assert 1 ≤ s ≤ n_school(ds);
+    @assert n_school(wr) == n_school(ds)
+
+    if length(exper_groups(wr)) == 1
+        # temporarily hard coded +++++
+        bExpV = [0.1644, -0.202, 0.1395, -0.0371];
+        # fPath = data_file(raw_wage_regr(ds));
+        # rt = read_regression_file(fPath);
+        # bExpV = [get_coefficient(rt, "exp"), 
+        #     get_coefficient(rt, "exp2_over10")];
+    elseif exper_groups(wr) == [[:HSG, :CD], [:CG]]
+        # Hard coded. Update when new data files available +++++
+        if s ∈ (:HSG, :CD, :SC)
+            bExpV = [0.1802, -0.2323, 0.1618, -0.0424];
+        elseif s == :CG
+            bExpV = [0.1801, -0.3322, 0.3523, -0.1429];
+        else
+            error("Invalid $s");
+        end
+    else
+        error("Invalid $wr");
+    end
+    @assert length(bExpV) == max_exper_exponent(wr);
 
     outV = zeros(T);
-    # Estimated on 15 years of experience
-    expMax = 15;
+    # Estimated on about 12 years of experience
+    expMax = max_exper(wr);
     xV = 0 : (expMax - 1);
-    outV[1 : expMax] = bExp .* xV .+ bExp2 .* (xV .^ 2) ./ 10.0;
+    for j = 1 : length(bExpV)
+        outV[1 : expMax] .+= bExpV[j] .* (xV .^ j) ./ (10.0 ^ (j-1));
+    end
     # Assumed constant after 15 years of experience
-    outV[(expMax + 1) : end] .= outV[15];
+    outV[(expMax + 1) : end] .= outV[expMax];
     return outV :: Vector{Float64}
 end
 
@@ -39,18 +59,43 @@ It is legitimate to match these intercepts to model wages of workers with experi
 Substantive test is plotting the implied wage profiles.
 """
 function wage_regr_intercepts(ds :: DataSettings)
-    # Regression deviations use RegressionTables as inputs
-    fPath = data_file(raw_wage_regr(ds));
-    rt = read_regression_file(fPath);
-    # Now we just have intercept and school dummies (HSG = default)
-    drop_regressors!(rt, [:exp, :exp2_over10]);
+    wr = wage_regr_settings(ds);
+    # @assert 1 ≤ s ≤ n_school(ds);
+    @assert n_school(wr) == n_school(ds)
+
+    if length(exper_groups(wr)) == 1
+        # temporarily hard coded +++++
+        fPath = joinpath(pkgdir(CollegeStratData), "wage_regression1_by_hand.dat");
+        rt = read_regression_file(fPath);
+
+        # Regression deviations use RegressionTables as inputs
+        # fPath = data_file(raw_wage_regr(ds));
+        # rt = read_regression_file(fPath);
+        # # Now we just have intercept and school dummies (HSG = default)
+        # drop_regressors!(rt, [:exp, :exp2_over10]);
+    elseif exper_groups(wr) == [[:HSG, :CD], [:CG]]
+        # temporarily hard coded +++++
+        fPath = joinpath(pkgdir(CollegeStratData), "wage_regression_by_hand.dat");
+        rt = read_regression_file(fPath);
+    else
+        error("Invalid $wr");
+    end
     return rt
 end
 
 
-# Predicted earnings at given experience and worker characteristics (at work start)
-# Also works for regression for grads. Just set `iSchool = 0` because that regressor is not available for grads.
-function workstart_earnings(rt :: RegressionTable, afqtGroup :: Integer, iSchool :: Integer;   quality :: Integer = 0)
+"""
+    $(SIGNATURES)
+
+Predicted earnings at given experience and worker characteristics (at work start)
+Also works for regression for grads. Just set `iSchool = 0` because that regressor is not available for grads.
+
+# Arguments
+- `quality`: last college quality. Not available for all regressions. Then ignored.
+- `parental`: parental income group. Not available for all regressions. Then ignored.
+"""
+function workstart_earnings(rt :: RegressionTable, afqtGroup :: Integer, 
+    iSchool :: Integer;   quality :: Integer = 0,  parental :: Integer = 0)
 
     logEarn = get_coefficient(rt, :cons)
     if afqtGroup > 1
@@ -59,13 +104,15 @@ function workstart_earnings(rt :: RegressionTable, afqtGroup :: Integer, iSchool
     if iSchool > 1
         logEarn += get_coefficient(rt, Symbol("school$iSchool"));
     end
-    if quality > 1
-        logEarn += get_coefficient(rt, Symbol("last_type$quality"));
+    cQuality = Symbol("last_type$quality");
+    if quality > 1  &&  has_regressor(rt, cQuality)
+        logEarn += get_coefficient(rt, cQuality);
+    end
+    cParental = Symbol("parental$parental");
+    if parental > 1  &&  has_regressor(rt, cParental)
+        logEarn += get_coefficient(rt, cParental);
     end
     earn = exp(logEarn);
-    # if !modelUnits
-    #     earn = dollars_model_to_data(earn, :perYear);
-    # end
     return earn
 end
 

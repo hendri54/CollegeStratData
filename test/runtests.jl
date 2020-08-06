@@ -2,6 +2,8 @@ using CollegeStratData
 using Test
 
 @testset "All" begin
+    include("wage_regr_test.jl")
+    include("school_groups_test.jl")
     include("datasettings_test.jl")
     include("helper_test.jl")
     include("data_files_test.jl")

@@ -24,6 +24,8 @@ export cdf_gpa_by_qual
 
 include("constants.jl")
 include("types.jl")
+include("school_groups.jl");
+include("wage_regressions.jl")
 include("datasettings.jl")
 
 # Data handling routines. Must come first.

@@ -1,11 +1,17 @@
 name(ds :: DataSettings) = ds.name;
+# Returns the object defining school groups
+school_groups(ds :: DataSettings) = ds.sGroups;
+# Returns the defined school groups as symbols
+s_groups(ds :: DataSettings) = s_groups(school_groups(ds));
+wage_regr_settings(ds :: DataSettings) = ds.wageRegressions;
+use_parental_dummies(ds :: DataSettings) = use_parental_dummies(ds.wageRegressions);
 
 """
 $(SIGNATURES)
 
 Number of school groups (e.g. HSG, SC, CG). For wage regressions.
 """
-n_school(ds :: DataSettings) = ds.nSchool;
+n_school(ds :: DataSettings) = n_school(school_groups(ds));
 
 """
 	$(SIGNATURES)
@@ -125,6 +131,8 @@ courses_to_credits(ds :: DataSettings, nCourses) =
 	nCourses .* ds.creditsPerCourse;
 
 
+## --------------  Files
+
 # Return gpa or afqt suffix for files, whichever is used
 afqt_string(ds :: DataSettings) = ds.afqtGpa;
 afqt_suffix(ds :: DataSettings) = "_" * afqt_string(ds);
@@ -159,7 +167,7 @@ end
 ## --------------  Individual settings
 
 # List of data settings names. Useful for testing.
-data_settings_list() = [:default, :uneven];
+data_settings_list() = [:default, :uneven, :twoProfiles];
 
 
 """
@@ -179,18 +187,45 @@ function make_data_settings(dsName :: Symbol; baseDir :: String = "")
 		# 	"college_stratification", "CollegeStrat", "data");
 	end
 	srcDir = "NLSY 97 moments by AFQT";
+
 	if dsName ∈ (:default, :test)
 		subDir = "Updated Types";
-	elseif dsName == :uneven
+	elseif dsName ∈ (:uneven, :twoProfiles)
 		subDir = "Uneven Types";
 	else
 		error("Invalid name: $dsName")
 	end
-	return DataSettings(name = dsName, dataSubDir = joinpath(subDir, srcDir),
-		baseDir = baseDir)
+	
+	if dsName == :twoProfiles
+		wageRegr = wage_regressions_two();
+	else
+		wageRegr = default_wage_regressions();
+	end
+	
+	ds = DataSettings(name = dsName, dataSubDir = joinpath(subDir, srcDir),
+		baseDir = baseDir,
+		wageRegressions = wageRegr)
+	@assert validate_ds(ds);
+	return ds
 end
 
 test_data_settings() = make_data_settings(:test);
+
+
+function validate_ds(ds :: DataSettings) 
+	isValid = true;
+	wr = wage_regr_settings(ds);
+	sg = school_groups(ds);
+	if !isequal(s_groups(wr), s_groups(sg))
+		@warn """
+			School groups and wage regression settings do not match
+			$sg
+			$wr
+			"""
+		isValid = false;
+	end
+	return isValid;
+end
 
 
 ## --------  Directories

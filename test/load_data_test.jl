@@ -116,11 +116,12 @@ end
 function worker_moments_test(dsName)
 	@testset "Worker moments" begin
 		ds = make_data_settings(dsName);
-		yV = exper_profile(ds, 2, T = 30);
+		yV = exper_profile(ds, :HSG, T = 30);
+		yV = exper_profile(ds, :CG, T = 30);
 		@test length(yV) == 30
 		@test all(yV .>= 0.0)
 		@test all(yV .< 1.5)
-		@test all(diff(yV[1:14]) .> 0)
+		@test all(diff(yV[1:10]) .> 0)
 		@test yV[1] ≈ 0.0
 
 		rt = wage_regr_intercepts(ds);

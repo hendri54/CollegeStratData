@@ -1,6 +1,38 @@
 ## ------------  Types
 
 """
+	$(SIGNATURES)
+
+School groups in the data.
+"""
+abstract type AbstractSchoolGroups end
+
+# HSG, CD, CG
+struct SchoolGroups3 <: AbstractSchoolGroups end
+
+
+"""
+	$(SIGNATURES)
+
+Settings for experience profiles.
+
+Wage regressions for intercepts regress log fixed effect on:
+- schooling dummies
+- gpa dummies
+- parental dummies 
+"""
+Base.@kwdef mutable struct WageRegressions 
+	# Max experience in the data
+	maxExper :: UInt8 = 12
+	# School groups in each experience profile
+	experGroupV :: Vector{Vector{Symbol}} = [[:HSG, :CD, :CG]]
+	# Highest exponenent in experience profile
+	maxExperExponent :: UInt8 = 2
+	useParentalDummies :: Bool = true
+end
+
+
+"""
 	DataSettings
 
 Settings for data files. These are baked into the data construction (by Oksana), but should still be changeable.
@@ -13,8 +45,10 @@ Base.@kwdef mutable struct DataSettings
 	dataSubDir :: String
 	# Uses afqt or gpa
 	afqtGpa :: String = "afqt"
-    "Number of school groups"
-    nSchool :: UInt8 = 3
+	# School groups
+	sGroups :: AbstractSchoolGroups = SchoolGroups3()
+	# Wage regression settings
+	wageRegressions :: WageRegressions = default_wage_regressions()
 	"Number of colleges (qualities)"
     nColleges :: CollInt = 4
     "Number of two year colleges"
