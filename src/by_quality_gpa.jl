@@ -88,7 +88,7 @@ But need to adjust b/c grand mean should be lower for NLSY97
 # end
 
 function study_time_qual_gpa(ds :: DataSettings)
-    # Study time only
+    # Study time only, by quality, gpa
     studyM = [10.7	12.9	12.5	16.2;
             19.3	21.6	18.2	15.2;
             19.3	13.1	19.5	20.2;

@@ -53,6 +53,8 @@ function read_regression_file(fPath :: String)
 	return rt
 end
 
+read_regression_file(rf :: RawDataFile) = 
+	read_regression_file(data_file(rf));
 
 # function read_regression_file(dm :: DataMoment)
 # 	return read_regression_file(data_file(dm))
@@ -71,7 +73,9 @@ row_header(j :: Integer) = "$j";
 all_row_header() = "All";
 
 
-## ----------  Column Headers
+## ----------  Column Headers in cross-tab files
+# Regression files have different headers.
+# This determines what is read from disk. Output cross-tabs do not have headers.
 
 # all_col_header(dxy :: DelimXyFile) = all_col_header(dxy.colCat);
 
@@ -86,6 +90,7 @@ end
 
 all_col_header_gpa() = :afqt_quartileALL;
 
+# This does NOT apply to regression files!
 function col_header(colCat :: Symbol, j :: Integer)
     if colCat == :gpa
         hd = Symbol("afqt_quartile$j");

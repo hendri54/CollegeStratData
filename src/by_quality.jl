@@ -2,6 +2,24 @@
 # Since there is no switching in the model, several statstics do not make sense for two year colleges. They are set to 0 in model and data.
 
 
+# Read a percentile vector (values between 0 and 100).
+# Std deviations are constructed from counts.
+function read_pct_by_quality(ds :: DataSettings, rawFileFct)
+    m = read_vector_by_x(data_file(rawFileFct(:mean))) ./ 100.0;
+    @assert isa(m, Vector{Double})
+	@argcheck size(m) == (n_colleges(ds), )
+	@assert all(m .> 0.0)  &&  all(m .< 1.0)
+
+    cnts = read_vector_by_x(data_file(rawFileFct(:count)));
+    @assert all(cnts .> 100)
+    @assert size(m) == size(cnts)
+
+    ses = m ./ (cnts .^ 0.5);
+    cnts = round.(Int, cnts);
+    return m, ses, cnts
+end
+
+
 # -------------  Individual moments
 
 
@@ -83,18 +101,21 @@ end
 ## Mean AFQT percentile
 function afqt_mean_by_quality(ds :: DataSettings)
     # target = :gpaMean_qV;
-    rf = raw_afqt_pct_qual(ds);
-    m = read_vector_by_x(data_file(rf)) ./ 100.0;
-    @assert isa(m, Vector{Double})
+    rawFileFct = mt -> raw_afqt_pct_qual(ds; momentType = mt);
+    m, ses, cnts = read_pct_by_quality(ds :: DataSettings, rawFileFct);
+
+    # rf = raw_afqt_pct_qual(ds);
+    # m = read_vector_by_x(data_file(rawFileFct(:mean))) ./ 100.0;
+    # @assert isa(m, Vector{Double})
 	@argcheck size(m) == (n_colleges(ds), )
 	@assert all(m .> 0.0)  &&  all(m .< 1.0)
 
-    rfCnts = raw_afqt_pct_qual(ds; momentType = :count);
-    cnts = read_vector_by_x(data_file(rfCnts));
-    @assert all(cnts .> 100)
+    # rfCnts = raw_afqt_pct_qual(ds; momentType = :count);
+    # cnts = read_vector_by_x(data_file(rawFileFct(:count)));
+    # @assert all(cnts .> 100)
 
-    ses = m ./ (cnts .^ 0.5);
-    cnts = round.(Int, cnts);
+    # ses = m ./ (cnts .^ 0.5);
+    # cnts = round.(Int, cnts);
     # m = read_by_quality(ds, data_file(rf)) ./ 100.0;
 	return m, ses, cnts
 end
@@ -133,10 +154,22 @@ end
 
 
 function frac_local_by_quality(ds :: DataSettings)
-    # temporary code +++++
-    m = [0.63, 0.41, 0.26, 0.15];
-    ses = fill(0.1, size(m));
-    cnts = fill(1000, size(m));
+    rawFileFct = mt -> raw_frac_local_qual(ds; momentType = mt);
+    # Cannot use this b/c std errors are constructed differently
+    # m, ses, cnts = read_pct_by_quality(ds :: DataSettings, rawFileFct);
+
+    m = read_vector_by_x(data_file(rawFileFct(:mean)));
+    cnts = read_vector_by_x(data_file(rawFileFct(:count)));
+    cnts = round.(Int, cnts);
+    ses = read_vector_by_x(data_file(rawFileFct(:std)));
+
+    @assert isa(m, Vector{Double})
+	@argcheck size(m) == (n_colleges(ds), )
+	@assert all(m .> 0.0)  &&  all(m .< 1.0)
+    @assert all(cnts .> 100)
+    @assert size(m) == size(cnts)
+    @assert size(ses) == size(m)
+
     return m, ses, cnts
 end
 

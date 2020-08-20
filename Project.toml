@@ -1,7 +1,7 @@
 name = "CollegeStratData"
 uuid = "7279015e-32d5-4a9c-a3a2-56f8f226bc2c"
 authors = ["hendri54 <hendricksl@protonmail.com>"]
-version = "0.2.6"
+version = "0.2.7"
 
 [deps]
 ArgCheck = "dce04be8-c92d-5529-be00-80e4d2c0e197"

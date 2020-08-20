@@ -5,7 +5,11 @@ raw_afqt_pct_qual(ds :: DataSettings; momentType :: Symbol = :mean) =
     RawDataFile(:selfReport, :freshmen, momentType, 
         file_name(ds, "afqt_pctile", :qual), ds);
 
-# By quality / gpa
+raw_frac_local_qual(ds :: DataSettings; momentType :: Symbol = :mean) =
+    RawDataFile(:transcript, :freshmen, momentType, 
+        file_name(ds, "frac_loc_50", [:qual]), ds);
+
+# ----------  By quality / gpa
 # Conditional on entry, fraction of students in each [quality, gpa] cell
 raw_entry_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) =
     RawDataFile(:transcript, :freshmen, momentType, 
@@ -101,13 +105,9 @@ raw_mass_gpa_parental(ds :: DataSettings; momentType :: Symbol = :mean) =
 
 # -----  Regressions
 
-# Wage regressions pooling school groups. Self reports only.
-raw_wage_regr(ds :: DataSettings) = 
-    RawDataFile(:selfReport, :none, :regression, "loginc_reg3.dat", ds);
-
 # Wage regression for graduates with college quality coefficients
-raw_wage_regr_grads(ds :: DataSettings) = 
-    RawDataFile(:selfReport, :none, :regression, "loginc_reg2.dat", ds);
+# raw_wage_regr_grads(ds :: DataSettings) = 
+#     RawDataFile(:selfReport, :none, :regression, "loginc_reg2.dat", ds);
 
 raw_transfer_regr(ds :: DataSettings) = 
     RawDataFile(:transcript, :none, :regression, "parental_transfers1_reg1.dat", ds);

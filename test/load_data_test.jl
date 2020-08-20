@@ -1,4 +1,7 @@
 using CommonLH, EconometricsLH, Test
+using CollegeStratData
+
+csd = CollegeStratData;
 
 function load_moments_test(dsName)
     @testset "Load moments" begin
@@ -99,10 +102,10 @@ function make_target_test(dsName)
 		# rf = CollegeStratData.raw_mass_entry_qual_gpa();
 		# @test isfile(CollegeStratData.data_file(rf))
 		m, _ = load_moment(ds, :massEntry_qgM);
-		@test size(m) == (n_colleges(ds), n_gpa(ds))
+		@test size(m) == (csd.n_colleges(ds), csd.n_gpa(ds))
 
         coursesM, _ = load_moment(ds, :coursesTried_qtM);
-		@test size(coursesM, 1) == n_colleges(ds)
+		@test size(coursesM, 1) == csd.n_colleges(ds)
 
 		# Courses by [grad outcome, year]]
 		courses_otM, _ = load_moment(ds, :coursesTried_otM);

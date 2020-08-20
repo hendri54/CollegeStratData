@@ -23,6 +23,17 @@ function courses_tried_grad(ds :: DataSettings,  t :: Integer)
     m, ses, cnts = mean_from_xy(load_fct);
     m = credits_to_courses(ds, m);
     ses = credits_to_courses(ds, ses);
+
+    # Temporary fix: data files have too many columns +++++
+    if (length(m) == 4)  ||  (length(ses) == 4)
+        m = m[1 : 2];
+        ses = ses[1 : 2];
+        cnts = cnts[1 : 2];
+    end
+    @assert length(m) == 2  "Invalid $m"
+    @assert length(ses) == 2  "Invalid $ses"
+    @assert length(cnts) == 2  "Invalid $cnts"
+
     return m, ses, cnts
 end
 

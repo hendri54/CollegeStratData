@@ -48,15 +48,32 @@ parental_ub
 
 The raw data files are created in delimited text format and stored in a nested directory structure in the `DataCollegeStrat` package. That package exports a single function, `data_dir`, which tells the other code where the data files live. When `DataCollegeStrat` is `add`ed, `Pkg` downloads the entire repo (including data files) into a hidden directory that `data_dir` points to.
 
-When the data files are updated: Push a new version number to github and `Pkg.update` in `CollegeStratData`.
-
 For each data file, a function makes a [`RawDataFile`](@ref) object. It contains information where the file is to be found in the directory structure. 
 
 A mapping from data moments to raw data files is constructed in `raw_file_map`. This makes it easy to locate the data file that belongs to a given moment by simply calling [`raw_file_path`](@ref).
 
+## Updating data files:
+
+When the data files are updated: Simply copy the directory for a given set of moments, such as "uneven types", from `Dropbox` into the package directory. Bump the package version. Register. Upload to github.
+
+The new data versions will be used only when `DataCollegeStrat` is `update`d in `CollegeStratData`. It is therefore easy to roll back to previous data versions (which correspond to package versions).
+
+It is a good idea to first `dev DataCollegeStrat` and make sure all tests pass. Then commit the new data and update the version number.
+
+
 ```@docs
 RawDataFile
 raw_file_path
+```
+
+## Returned RegressionTable Objects
+
+Regressions are returned as `RegressionTable` objects (from `EconometricsLH`).
+
+Regressor names are independent of how things are named inside the raw files (which tends to change over time). They are looked up by [`output_col_header`](@ref).
+
+```@docs
+output_col_header
 ```
 
 ------------------

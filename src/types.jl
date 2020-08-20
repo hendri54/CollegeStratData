@@ -86,7 +86,7 @@ mutable struct RawDataFile
 	selfOrTranscript  ::  Symbol
 	# E.g. :finance
 	group  ::  Symbol
-	# E.g. :mean or :regression
+	# E.g. :mean or :regression; :std for std deviations
 	momentType :: Symbol
 	# E.g. "regression.dat"
 	rawFile  ::  String
