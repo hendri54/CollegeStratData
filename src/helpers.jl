@@ -91,20 +91,73 @@ end
 ## -------------  Regressions
 
 """
+    $(SIGNATURES)
+
+Retrieve a regression coefficient. Ignores default dummies (j < 2). 
+Optional: allow for missing regressors.
+Assumes that regressors have been renamed.
+"""
+function get_regr_coef(rt :: RegressionTable, colCat :: Symbol, j :: Integer;
+    errorIfMissing :: Bool = true)
+
+    if j < 2
+        rCoef = 0.0;
+    else
+        rName = regressor_name(colCat, j);
+        if has_regressor(rt, rName)
+            rCoef = get_coefficient(rt, rName);
+        elseif errorIfMissing
+            error("Cannot retrieve $rName from $rt");
+        else
+            rCoef = 0.0;
+        end
+    end
+    @assert isa(rCoef, Float64)
+    return rCoef
+end
+
+function get_intercept(rt :: RegressionTable)
+    return get_coefficient(rt, :cons)
+end
+
+
+"""
 	$(SIGNATURES)
 
-Make name of a dummy regressor, such as `:school2`
+Column headers for RegressionTable objects. Regardless of names in regression files (which have a tendency to change over time), this is what will be returned.
+
+## Example
+```
+regressor_name(:gpa, 2) == :afqt2
+```
+"""
+function regressor_name(colCat :: Symbol, j :: Integer)
+    return Symbol(regressor_string(colCat, j))
+end
+
+regressor_names(varName :: Symbol, jMax :: Integer) = 
+    [regressor_name(varName, j)  for j = 1 : jMax];
+
+regressor_names(varName :: Symbol, jV :: AbstractVector) = 
+    [regressor_name(varName, j)  for j ∈ jV];
+
+"""
+	$(SIGNATURES)
+
+Make name of a dummy regressor, such as `:school2`.
 
 Example:
-    `regressor_name(:gpa, 2)` -> "afqt2"
+    `regressor_string(:gpa, 2)` -> "afqt2"
 """
 function regressor_string(varName :: Symbol, idx :: Integer)
     if varName ∈ (:gpa, :afqt)
         regName = "afqt$idx";
     elseif varName == :parental
-        regName = "inc_quartile$idx"
+        regName = "parental$idx"
     elseif varName ∈ (:quality, :school)
         regName = "$varName$idx";
+    elseif varName == :lastColl
+        regName = "last_type$idx";
     else
         error("Invalid varName: $varName")
     end
@@ -115,20 +168,21 @@ regressor_strings(varName :: Symbol, idx) =
     [regressor_string(varName, idx1)  for idx1 in idx];
 
 # Symbol output
-regressor_name(varName :: Symbol, idx :: Integer) = 
-    Symbol(regressor_string(varName, idx));
 const_regressor_name() = :cons;
 
-# All regressors for given fields
+# All regressors for given fields. As returned to the outside, not as loaded from disk.
 gpa_regressors(ds :: DataSettings) = 
-    regressor_strings(:gpa, 1 : n_gpa(ds));
+    regressor_names(:gpa, 1 : n_gpa(ds));
 parental_regressors(ds :: DataSettings) = 
-    regressor_strings(:parental, 1 : n_parental(ds));
+    regressor_names(:parental, 1 : n_parental(ds));
 quality_regressors(ds :: DataSettings) = 
-    regressor_strings(:quality, 1 : n_colleges(ds));
+    regressor_names(:quality, 1 : n_colleges(ds));
 school_regressors(ds :: DataSettings) = 
-    regressor_strings(:school, 1 : n_school(ds));
+    regressor_names(:school, 1 : n_school(ds));
 const_regressor() = "cons";
+
+
+## ------------  Other
 
 """
 	$(SIGNATURES)

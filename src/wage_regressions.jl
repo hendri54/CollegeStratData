@@ -40,7 +40,7 @@ end
 """
     $(SIGNATURES)
 
-Column headers for regression files. These are the headers that are in the raw files. What is returned is determined by `output_col_header`.
+Column headers for regression files. These are the headers that are in the raw files. What is returned is determined by `regressor_name`.
 Different from cross-tabs.
 """
 function regr_col_header(colCat :: Symbol, j :: Integer)
@@ -68,39 +68,15 @@ regr_col_headers(colCat :: Symbol, jMax :: Integer) =
     [regr_col_header(colCat, j)  for j = 1 : jMax];
 
 
-"""
-	$(SIGNATURES)
-
-Column headers for RegressionTable objects. Regardless of names in regression files (which have a tendency to change over time), this is what will be returned.
-
-## Example
-```
-output_col_header(:gpa, 2) == :afqt2
-```
-"""
-function output_col_header(colCat :: Symbol, j :: Integer)
-    if colCat ∈ (:gpa, :afqt)
-        hd = Symbol("afqt$j");
-    elseif colCat == :parental
-        hd = Symbol("parental$j");
-    elseif colCat == :school
-        hd = Symbol("school$j");
-    else
-        error("Invalid: $colCat")
-    end
-    return hd
-end
-
-
 # Rename regressors so that output names match loaded names
 # Does nothing if regressor does not exist or does not need to be renamed.
 function rename_regressors(rt :: RegressionTable, colCat :: Symbol)
-    oldName = regr_col_header(colCat, 1);
-    newName = output_col_header(colCat, 1);
+    oldName = regr_col_header(colCat, 2);
+    newName = regressor_name(colCat, 2);
     if (oldName != newName)  &&  has_regressor(rt, oldName)
         for j = 1 : 10
             oldName = regr_col_header(colCat, j);
-            newName = output_col_header(colCat, j);
+            newName = regressor_name(colCat, j);
             if has_regressor(rt, oldName)
                 EconometricsLH.rename_regressor(rt, oldName, newName);
             end
@@ -114,32 +90,6 @@ function rename_regressors(rt :: RegressionTable)
     for colCat ∈ (:afqt, :parental, :school)
         rename_regressors(rt, colCat);
     end
-end
-
-
-# Retrieve a regression coefficient. Ignores default dummies (j < 2). 
-# Optional: allow for missing regressors
-function get_regr_coef(rt :: RegressionTable, colCat :: Symbol, j :: Integer;
-    errorIfMissing :: Bool = true)
-
-    if j < 2
-        rCoef = 0.0;
-    else
-        rName = regr_col_header(colCat, j);
-        if has_regressor(rt, rName)
-            rCoef = get_coefficient(rt, rName);
-        elseif errorIfMissing
-            error("Cannot retrieve $rName from $rt");
-        else
-            rCoef = 0.0;
-        end
-    end
-    @assert isa(rCoef, Float64)
-    return rCoef
-end
-
-function get_intercept(rt :: RegressionTable)
-    return get_coefficient(rt, :cons)
 end
 
 

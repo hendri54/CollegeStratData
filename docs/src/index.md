@@ -60,6 +60,8 @@ The new data versions will be used only when `DataCollegeStrat` is `update`d in 
 
 It is a good idea to first `dev DataCollegeStrat` and make sure all tests pass. Then commit the new data and update the version number.
 
+Sometimes `DataCollegeStrat` gets stuck at an old version when `CollegeStratData` is updated in `CollegeStrat` (why?). Then `add` and `rm DataCollegeStrat` and make sure the version number was bumped.
+
 
 ```@docs
 RawDataFile
@@ -72,8 +74,12 @@ Regressions are returned as `RegressionTable` objects (from `EconometricsLH`).
 
 Regressor names are independent of how things are named inside the raw files (which tends to change over time). They are looked up by [`output_col_header`](@ref).
 
+Regression coefficients can be retrieved without directly referring to names using [`get_intercept`](@ref) and [`get_regr_coef`](@ref).
+
 ```@docs
 output_col_header
+get_intercept
+get_regr_coef
 ```
 
 ------------------

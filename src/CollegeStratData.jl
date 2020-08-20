@@ -18,6 +18,7 @@ export data_file, missing_file_list, read_regression_file, raw_file
 # Moments
 export load_moment, n_entrants
 export exper_profile, wage_regr_intercepts, workstart_earnings, wage_regr_grads
+export get_regr_coef, get_intercept
 
 export cdf_gpa_by_qual
 

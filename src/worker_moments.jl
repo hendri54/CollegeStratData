@@ -101,6 +101,8 @@ end
 Predicted earnings at given experience and worker characteristics (at work start)
 Also works for regression for grads. Just set `iSchool = 0` because that regressor is not available for grads.
 
+Assumes that coefficients have been renamed.
+
 # Arguments
 - `quality`: last college quality. Not available for all regressions. Then ignored.
 - `parental`: parental income group. Not available for all regressions. Then ignored.
@@ -120,7 +122,7 @@ end
 
 
 ## ------------  Wage regressions; grads; with quality dummies
-
+# Omitted category is the first quality from which one can graduate.
 function wage_regr_grads(ds :: DataSettings)
     wr = wage_regr_settings(ds);
     @assert n_school(wr) == n_school(ds)
@@ -129,6 +131,12 @@ function wage_regr_grads(ds :: DataSettings)
     rf = RawDataFile(:selfReport, :none, :regression, fn, ds);
     rt = read_regression_file(rf);
     rename_regressors(rt);
+
+    # Cannot grad from q1
+    @assert !has_regressor(rt, regressor_name(:lastColl, 1))
+    # Check that last lastColl is the default category
+    @assert !has_regressor(rt, regressor_name(:lastColl, 2))
+    @assert has_regressor(rt, regressor_name(:lastColl, n_colleges(ds)))
     return rt
 end
 
