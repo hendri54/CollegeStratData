@@ -1,7 +1,7 @@
 module CollegeStratData
 
 using ArgCheck, DocStringExtensions
-using CSV, DataFrames
+using CSV, DataFrames, DelimitedFiles
 using CommonLH, EconometricsLH, FilesLH
 using DataCollegeStrat
 
@@ -10,10 +10,11 @@ export DataSettings, make_data_settings, test_data_settings
 export n_school, n_gpa, n_2year, n_colleges, n_parental, hsgpa_ub, parental_ub, hsgpa_masses, parental_masses, mass_gpa_yp, can_graduate, is_two_year, two_year_colleges, four_year_colleges, no_grad_idx, grad_idx, mean_by_gpa
 
 # Helpers
-export regressor_name, const_regressor, const_regressor_name, regressor_string, regressor_strings, gpa_regressors, parental_regressors, quality_regressors, school_regressors
+export regressor_name, regressor_string, regressor_strings, gpa_regressors, parental_regressors, quality_regressors, school_regressors
 
 # Data Files
 export data_file, missing_file_list, read_regression_file, raw_file
+export file_name_differences, compare_dirs
 
 # Moments
 export load_moment, n_entrants
@@ -24,6 +25,8 @@ export cdf_gpa_by_qual
 
 
 include("constants.jl")
+
+# Types
 include("types.jl")
 include("school_groups.jl");
 include("wage_regressions.jl")
@@ -33,7 +36,8 @@ include("datasettings.jl")
 include("raw_data_files.jl")
 include("data_files.jl")
 include("delim_xy_file.jl")
-include("delim_single_col.jl")
+include("delim_single_col.jl");
+include("regression_files.jl");
 
 # Individual data moments
 include("scalar_moments.jl")

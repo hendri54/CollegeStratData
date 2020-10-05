@@ -261,4 +261,21 @@ function settings_table(ds :: DataSettings)
 end
 
 
+## -----------  Other
+
+function n_groups(ds :: DataSettings, group :: Symbol)
+	if group ∈ (:gpa, :afqt)
+		n = n_gpa(ds);
+	elseif group == :parental
+		n = n_parental(ds);
+	elseif group == :quality
+		n = n_colleges(ds);
+	elseif group == :school
+		n = n_school(ds);
+	else
+		error("Unknown group $group");
+	end
+	return n
+end
+
 # --------------

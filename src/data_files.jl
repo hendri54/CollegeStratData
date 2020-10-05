@@ -48,7 +48,9 @@ function read_regression_file(fPath :: String)
 	@assert df[iSe, cStat] == "se"
 	seV = df[iSe, 2:end];
 
+	# Regressor names
 	nameV = propertynames(df)[2 : end];
+	@assert validate_regressor_names(nameV)
 	rt = RegressionTable(nameV, Vector{Float64}(coeffV), Vector{Float64}(seV));
 	return rt
 end

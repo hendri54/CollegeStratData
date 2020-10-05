@@ -132,12 +132,28 @@ function wage_regr_grads(ds :: DataSettings)
     rt = read_regression_file(rf);
     rename_regressors(rt);
 
-    # Cannot grad from q1
-    @assert !has_regressor(rt, regressor_name(:lastColl, 1))
-    # Check that last lastColl is the default category
-    @assert !has_regressor(rt, regressor_name(:lastColl, 2))
-    @assert has_regressor(rt, regressor_name(:lastColl, n_colleges(ds)))
+    @assert validate_wage_regr_grads(ds, rt)  """
+        Invalid wage regression for graduates.
+        $ds
+        $data_file(rf)
+    """
     return rt
+end
+
+function validate_wage_regr_grads(ds :: DataSettings, rt :: RegressionTable)
+    isValid = true;
+    # Cannot grad from q1
+    if has_regressor(rt, regressor_name(:lastColl, 1))
+        @warn "Should not have regressor lastColl1"
+        isValid = false;
+    end
+    # Check that last lastColl is the default category
+    if has_regressor(rt, regressor_name(:lastColl, 2))  ||
+        !has_regressor(rt, regressor_name(:lastColl, n_colleges(ds)))
+        @warn "Wrong default category"
+        isValid = false;
+    end
+    return isValid
 end
 
 # -----------

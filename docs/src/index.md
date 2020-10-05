@@ -52,7 +52,7 @@ For each data file, a function makes a [`RawDataFile`](@ref) object. It contains
 
 A mapping from data moments to raw data files is constructed in `raw_file_map`. This makes it easy to locate the data file that belongs to a given moment by simply calling [`raw_file_path`](@ref).
 
-## Updating data files:
+## Updating data files
 
 When the data files are updated: Simply copy the directory for a given set of moments, such as "uneven types", from `Dropbox` into the package directory. Bump the package version. Register. Upload to github.
 
@@ -62,22 +62,31 @@ It is a good idea to first `dev DataCollegeStrat` and make sure all tests pass. 
 
 Sometimes `DataCollegeStrat` gets stuck at an old version when `CollegeStratData` is updated in `CollegeStrat` (why?). Then `add` and `rm DataCollegeStrat` and make sure the version number was bumped.
 
+To check that data files are usable:
+
+* [`missing_file_list`](@ref) makes sure that all files are present. This is run *after* copying new data files.
+* [`file_name_differences`](@ref) creates a list with files that are present in new data compared with existing data.
+* [`compare_dirs`](@ref) checks that all delimited files in two directories have matching headers.
+
 
 ```@docs
 RawDataFile
 raw_file_path
+missing_file_list
+file_name_differences
+compare_dirs
 ```
 
 ## Returned RegressionTable Objects
 
 Regressions are returned as `RegressionTable` objects (from `EconometricsLH`).
 
-Regressor names are independent of how things are named inside the raw files (which tends to change over time). They are looked up by [`output_col_header`](@ref).
+Regressor names are independent of how things are named inside the raw files (which tends to change over time). They are looked up by [`regressor_name`](@ref).
 
 Regression coefficients can be retrieved without directly referring to names using [`get_intercept`](@ref) and [`get_regr_coef`](@ref).
 
 ```@docs
-output_col_header
+regressor_name
 get_intercept
 get_regr_coef
 ```

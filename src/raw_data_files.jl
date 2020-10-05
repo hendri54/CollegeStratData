@@ -200,8 +200,13 @@ function std_file(ds :: DataSettings, mName :: Symbol)
 end
     
 
+"""
+	$(SIGNATURES)
 
-## Make a list of missing data files
+Make a list of missing data files. Returns a String vector.
+Only handles files in `raw_file_map`.
+This is not perfect. It only checks for files containing means (not counts or std deviations). But useful for spotting that files have been unexpectedly renamed.
+"""
 function missing_file_list(ds)
     missList = Vector{String}();
     # Mapping of moments to files
@@ -215,6 +220,110 @@ function missing_file_list(ds)
         end
     end
     return missList
+end
+
+
+"""
+	$(SIGNATURES)
+
+Generate a list of files that differ (in name only) between existing data (as stored in `DataCollegeStrat` somewhere in `.julia`) and new data (in `Dropbox`).
+This should be run before importing the new data files.
+"""
+function file_name_differences(ds :: DataSettings)
+    newDir = dropbox_dir(ds);
+    @assert isdir(newDir);
+
+    io = stdout;
+    println(io, "\nFile name differences for $ds:");
+    println(io, "  Comparing existing data dir with new data in Dropbox.");
+    println(io, "  Old:  $(data_dir(ds))");
+    println(io, "  New:  $newDir");
+    dir_diff_report(data_dir(ds), newDir);  # add io argument
+    return nothing
+end
+
+# Base dir for new data files in dropbox. Only used for checking new files before import.
+dropbox_base_dir() = "/Users/lutz/Dropbox/Dropout Policies/Data/empiricaltargets";
+
+dropbox_dir(ds :: DataSettings) = joinpath(dropbox_base_dir(), data_sub_dir(ds));
+
+
+"""
+	$(SIGNATURES)
+
+Compare all `dat` files in existing data directory with the corresponding `Dropbox` directory. Useful before new data files are imported.
+"""
+function compare_dirs(ds :: DataSettings; io = stdout)
+    compare_dirs(data_dir(ds), dropbox_dir(ds));
+end
+
+
+"""
+	$(SIGNATURES)
+
+Compare all `dat` files for two base directories. Report files where headers do not match. Useful for checking new data files before importing.
+"""
+function compare_dirs(dir1 :: AbstractString, dir2 :: AbstractString; 
+    io = stdout)
+
+    @assert isdir(dir1)
+    @assert isdir(dir2)
+    fList = files_in_dir(dir1);
+    if isempty(fList)
+        println(io, "Empty directory");
+        return nothing
+    end
+
+    allValid = true;
+    for f ∈ fList
+        _, fExt = splitext(f);
+        if fExt ∈ (".dat", )
+            newFile = joinpath(dir2, f);
+            if !isfile(newFile)
+                println(io, "Not found: $newFile");
+            else
+                isValid = compare_delim_files(joinpath(dir1, f), newFile; io = io);
+                if !isValid
+                    allValid = false;
+                    println(io, "  in $f");
+                end
+            end
+        end
+    end
+    return allValid
+end
+
+
+"""
+	$(SIGNATURES)
+
+Compare two delimited files. Report discrepancies in headers and dimensions.
+Useful for checking new data files before importing.
+Tries to never error. Just report.
+"""
+function compare_delim_files(fn1, fn2; io = stdout)
+    isValid = true;
+    if !isfile(fn1)
+        println(io, "Not found: $fn1");
+        isValid = false;
+    elseif !isfile(fn2)
+        println(io, "Not found: $fn2");
+        isValid = false;
+    end
+    if isValid
+        m1 = readdlm(fn1);
+        m2 = readdlm(fn2);
+        if !isequal(m1[1,:], m2[1,:])
+            println(io, "Col header mismatch");
+            println(io, "    Old: ", m1[1,:]);
+            println(io, "    New: ", m2[1,:]);
+            isValid = false;
+        elseif !isequal(m1[:,1], m2[:, 1])
+            println(io, "Row header mismatch");
+            isValid = false;
+        end
+    end
+    return isValid
 end
 
 
