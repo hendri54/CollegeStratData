@@ -60,7 +60,15 @@ The new data versions will be used only when `DataCollegeStrat` is `update`d in 
 
 It is a good idea to first `dev DataCollegeStrat` and make sure all tests pass. Then commit the new data and update the version number.
 
-Sometimes `DataCollegeStrat` gets stuck at an old version when `CollegeStratData` is updated in `CollegeStrat` (why?). Then `add` and `rm DataCollegeStrat` and make sure the version number was bumped.
+Sometimes `DataCollegeStrat` gets stuck at an old version when `CollegeStratData` is updated in `CollegeStrat` (why?). Then 
+
+```julia
+add DataCollegeStrat
+up DataCollegeStrat
+rm DataCollegeStrat
+```
+
+and make sure the version number was bumped.
 
 To check that data files are usable:
 
