@@ -98,6 +98,11 @@ end
 regressor_strings(varName :: Symbol, idx) = 
     [regressor_string(varName, idx1)  for idx1 in idx];
 
+"""
+	$(SIGNATURES)
+
+Name of intercept regressor in raw data files.
+"""
 intercept_name() = :cons;
 
 # All regressors for given fields. As returned to the outside, not as loaded from disk.
