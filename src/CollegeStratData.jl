@@ -70,11 +70,13 @@ moment_map() = Dict([
     :coursesTried_qtM => courses_tried_qual_year,
     :cumLoans_qtM => cum_loans_qual_year,
     :fracEnroll_qV => frac_enroll_by_qual,
+    :fracEnrollUncond_qV => frac_enroll_uncond_by_qual,
     :fracEnter_gV => frac_enter_by_gpa,
     :fracEnter_pV => frac_enter_by_parental,
     :fracEnter_gpM => load_entry_gpa_yp,
     # Fraction in each quality among [gpa, yp] entrants
     :fracEnter_gpqM => load_qual_entry_gpa_yp_all,
+    :fracEnter => frac_enter,
     :fracGrad => grad_rate,
     :fracGrad_gV => grad_rate_by_gpa,
     :fracGrad_qV => grad_rate_by_quality,

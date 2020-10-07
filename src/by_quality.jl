@@ -121,24 +121,6 @@ function afqt_mean_by_quality(ds :: DataSettings)
 end
 
 
-## Fraction of enrollment by quality (conditional on entry)
-# function dm_frac_enroll_by_quality()
-#     return DataMoment(:fracEnroll_qV,  ModelStatistic(:fracEnroll_gV, :qualS),
-#         file_name("fracEnroll", :quality, ".dat"), nothing,
-#         frac_enroll_by_quality,  show_dev_by_quality);
-# end
-
-# function frac_enroll_by_quality(ds :: DataSettings)
-#     dataV = load_frac_enroll_by_qual(ds);
-#     target = :fracEnroll_qV;
-#     d = Deviation{Double}(name = target, dataV = dataV,
-#         modelV = dataV,  
-#         scalarWt = 2.0,  shortStr = String(target),
-#         longStr = "Fraction enrollment by quality (conditional)",
-#         showPath = "fracEnrollByQuality.txt")
-# end
-
-
 # Enrollment by quality, sums to 1
 function frac_enroll_by_qual(ds :: DataSettings)
     load_fct = 
@@ -150,6 +132,18 @@ function frac_enroll_by_qual(ds :: DataSettings)
     @assert check_float_array(m, 0.05, 1.0);
     @check sum(m) ≈ 1.0
     return m, ses, cnts
+end
+
+
+# Fraction of HSG who enter each quality, unconditional.
+function frac_enroll_uncond_by_qual(ds :: DataSettings)
+    fracEnter, _ = load_moment(ds, :fracEnter);
+    fracEnroll_qV, ses, cnts = load_moment(ds, :fracEnroll_qV);
+    @assert sum(fracEnroll_qV) ≈ 1.0
+    fracEnter_qV = fracEnroll_qV .* fracEnter;
+    ses .*= fracEnter;
+    @assert isapprox(sum(fracEnter_qV), fracEnter, rtol = 0.001)
+    return fracEnter_qV, ses, cnts
 end
 
 
