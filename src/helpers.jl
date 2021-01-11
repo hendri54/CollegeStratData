@@ -4,7 +4,7 @@
 # test this +++++
 function ses_from_choice_probs(probs, cnts)
     @assert all(0.0 .<= probs .<= 1.0)
-    ses = (probs .* (1.0 .- probs) ./ max.(1.0, cnts)) .^ 0.5;
+    ses = (probs .* (1.0 .- probs) ./ (max.(1.0, cnts)) .^ 0.5);
     return ses
 end
 

@@ -228,17 +228,29 @@ end
 
 Generate a list of files that differ (in name only) between existing data (as stored in `DataCollegeStrat` somewhere in `.julia`) and new data (in `Dropbox`).
 This should be run before importing the new data files.
+
+Excludes files that refer to public or private colleges.
 """
 function file_name_differences(ds :: DataSettings)
     newDir = dropbox_dir(ds);
     @assert isdir(newDir);
 
-    io = stdout;
-    println(io, "\nFile name differences for $ds:");
-    println(io, "  Comparing existing data dir with new data in Dropbox.");
-    println(io, "  Old:  $(data_dir(ds))");
-    println(io, "  New:  $newDir");
-    dir_diff_report(data_dir(ds), newDir);  # add io argument
+    fName = "file_name_differences.txt";
+    logFn = joinpath(out_dir(ds), fName);
+    open(logFn, "w") do io
+        println(io, "\nFile name differences for $ds:");
+        println(io, "  Comparing existing data dir with new data in Dropbox.");
+        println(io, "  Old:  $(data_dir(ds))");
+        println(io, "  New:  $newDir");
+        dir_diff_report(data_dir(ds), newDir; io = io,
+            exclude = ["_PRI", "_PUB"]);  # add io argument
+    end
+
+    # Mirror on screen
+    for line in eachline(logFn)
+        println(line);
+    end
+    println("Results written to $logFn");
     return nothing
 end
 
@@ -253,8 +265,18 @@ dropbox_dir(ds :: DataSettings) = joinpath(dropbox_base_dir(), data_sub_dir(ds))
 
 Compare all `dat` files in existing data directory with the corresponding `Dropbox` directory. Useful before new data files are imported.
 """
-function compare_dirs(ds :: DataSettings; io = stdout)
-    compare_dirs(data_dir(ds), dropbox_dir(ds));
+function compare_dirs(ds :: DataSettings)
+    fName = "compare_dirs.txt";
+    logFn = joinpath(out_dir(ds), fName);
+    open(logFn, "w") do io
+        compare_dirs(data_dir(ds), dropbox_dir(ds); io = io);
+    end
+
+    # Mirror on screen
+    for line in eachline(logFn)
+        println(line);
+    end
+    println("Results written to $logFn");
 end
 
 

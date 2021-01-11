@@ -131,7 +131,7 @@ Different from cross-tabs.
 """
 function regr_col_header(colCat :: Symbol, j :: Integer)
     if colCat ∈ (:gpa, :afqt)
-        hd = "afqt$j";  # was "quartile" +++++
+        hd = "afqt$j"; 
     elseif colCat == :parental
         hd = "inc_quartile$j";
     elseif colCat == :school

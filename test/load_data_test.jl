@@ -57,7 +57,7 @@ function make_target_test(dsName)
 
 		# Read from file by quality / gpa
 		d2, _ = load_moment(ds, :fracGrad_gV);
-		@test isapprox(d2[2], 0.29254061, atol = 0.01)
+		@test 0.24 < d2[2] < 0.3
 
 		# Read from file by quality only
 		d3, _ = load_moment(ds, :gpaMean_qV);
@@ -68,12 +68,10 @@ function make_target_test(dsName)
 		d4, ses, cnts = load_moment(ds, :timeToDrop_qgM);
 		@test all((d4 .>= 1.0)  .|  (cnts .== 0))  &&  all(d4 .< 6.0)
 		# Two values, depending on whether we use transcripts or self reports
-        @test isapprox(d4[1,2], 2.8366325, atol = 0.01) || 
-            isapprox(d4[1,2], 1.8828769, atol = 0.01)
+        @test isapprox(d4[1,2], 1.8, atol = 0.1)
 
 		d5, _ = load_moment(ds, :workTime_pV);
-		@test all(d5 .> 400.0)  &&  all(d5 .< 1800.0)
-		@test isapprox(d5[2], 1000.0, atol = 100.0)
+		@test all(d5 .> 600.0)  &&  all(d5 .< 1200.0)
 
 		d6, _ = load_moment(ds, :cumLoans_qtM);
 		@test d6[2,3] > 8000.0  #  ≈ 8146.27
@@ -96,7 +94,7 @@ function make_target_test(dsName)
 		# @test isa(corr1, ScalarDeviation)
 
 		tuitionV, _ = load_moment(ds, :tuition_qV);
-		@test all(tuitionV .> 500.0)
+		@test all(tuitionV .> 400.0)
 		@test all(tuitionV .< 50000.0)
 
 		# rf = CollegeStratData.raw_mass_entry_qual_gpa();

@@ -177,7 +177,7 @@ Make named data settings. Each defines at least:
 
 - `dataSubDir`: sub directory where copied data files are stored.
 
-The optional argument `baseDir` points to the directory where the data files live. This defaults to `CollegeStrat/data` so that the data travel with the main repo.
+The optional argument `baseDir` points to the directory where the data files live. This defaults to `DataCollegeStrat.data_dir()` so that the data travel with the main repo.
 Other than this setting, the code is location independent.
 """
 function make_data_settings(dsName :: Symbol; baseDir :: String = "")
@@ -235,10 +235,16 @@ function data_dir(ds :: DataSettings)
     return joinpath(base_dir(ds), data_sub_dir(ds))
 end
 
+# This lives in DataCollegeStrat package.
 base_dir(ds :: DataSettings) = ds.baseDir;
 	# joinpath(homedir(), "Documents", "projects", "p2019", "college_stratification");
 
 data_sub_dir(ds :: DataSettings) = ds.dataSubDir;
+
+pkg_dir() = normpath(joinpath(@__DIR__, ".."));
+
+# Diagnostic output reports go here
+out_dir(ds :: DataSettings) = joinpath(pkg_dir(), "out");
 
 
 ## ----------  Show

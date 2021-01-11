@@ -60,7 +60,7 @@ The new data versions will be used only when `DataCollegeStrat` is `update`d in 
 
 It is a good idea to first `dev DataCollegeStrat` and make sure all tests pass. Then commit the new data and update the version number.
 
-Sometimes `DataCollegeStrat` gets stuck at an old version when `CollegeStratData` is updated in `CollegeStrat` (why?). Then 
+Sometimes `DataCollegeStrat` gets stuck at an old version when `CollegeStratData` is updated in `CollegeStrat` (why?). The try the following:
 
 ```julia
 add DataCollegeStrat
@@ -68,13 +68,23 @@ up DataCollegeStrat
 rm DataCollegeStrat
 ```
 
-and make sure the version number was bumped.
+Afterwards, make sure the version number was bumped.
 
-To check that data files are usable:
+*Before* copying the data files, run the following:
 
-* [`missing_file_list`](@ref) makes sure that all files are present. This is run *after* copying new data files.
-* [`file_name_differences`](@ref) creates a list with files that are present in new data compared with existing data.
+```julia
+ds = make_data_settings(:default);
+# Create a list with files that are present in new data compared with existing data.
+file_name_differences(ds);
+compare_dirs(ds);
+```
+
+* [`file_name_differences`](@ref) 
 * [`compare_dirs`](@ref) checks that all delimited files in two directories have matching headers.
+
+*After* copying the data files, run the following:
+
+* [`missing_file_list`](@ref) makes sure that all files are present. 
 
 
 ```@docs

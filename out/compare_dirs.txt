@@ -1,0 +1,194 @@
+Col header mismatch
+    Old: Any["p1", 2018]
+    New: Any["p1", 1742]
+  in SelfReport/dat_files/Counts/Financing/inv_cdf_netprice_N.dat
+Col header mismatch
+    Old: Any["p1", 1455]
+    New: Any["p1", 1506]
+  in SelfReport/dat_files/Counts/Financing/inv_cdf_par_trans_N.dat
+Not found: /Users/lutz/Dropbox/Dropout Policies/Data/empiricaltargets/Updated Types/NLSY 97 moments by AFQT/SelfReport/dat_files/Counts/Financing/par_trans_y5_q_afqt_N.dat
+Col header mismatch
+    Old: Any["quality1", "local_county_2"]
+    New: Any["quality1", "local1"]
+  in SelfReport/dat_files/Counts/Fresh_Char/frac_loc_100_q_N.dat
+Col header mismatch
+    Old: Any["quality1", "local_county_2"]
+    New: Any["quality1", "local1"]
+  in SelfReport/dat_files/Counts/Fresh_Char/frac_loc_50_q_N.dat
+Not found: /Users/lutz/Dropbox/Dropout Policies/Data/empiricaltargets/Updated Types/NLSY 97 moments by AFQT/SelfReport/dat_files/Counts/HS_Char/afqt_pctile_q_N.dat
+Col header mismatch
+    Old: Any["year", "qual1", "qual2", "qual3", "qual4", "dropout", "grad"]
+    New: Any["year", "qual1", "qual2", "qual3", "qual4", "dropout", "grad", "", "", "", ""]
+  in SelfReport/dat_files/Counts/Progress/q_dist_by_yr_N.dat
+Col header mismatch
+    Old: Any["p1", 0]
+    New: Any["p1", -27030.99]
+  in SelfReport/dat_files/Means/Financing/inv_cdf_netprice.dat
+Not found: /Users/lutz/Dropbox/Dropout Policies/Data/empiricaltargets/Updated Types/NLSY 97 moments by AFQT/SelfReport/dat_files/Means/Financing/par_trans_y5_q_afqt.dat
+Col header mismatch
+    Old: Any["quality1", "local_county_2"]
+    New: Any["quality1", "local1"]
+  in SelfReport/dat_files/Means/Fresh_Char/frac_loc_100_q.dat
+Col header mismatch
+    Old: Any["quality1", "local_county_2"]
+    New: Any["quality1", "local1"]
+  in SelfReport/dat_files/Means/Fresh_Char/frac_loc_50_q.dat
+Col header mismatch
+    Old: Any["year", "qual1", "qual2", "qual3", "qual4", "dropout", "grad"]
+    New: Any["year", "qual1", "qual2", "qual3", "qual4", "dropout", "grad", "", "", "", ""]
+  in SelfReport/dat_files/Means/Progress/q_dist_by_yr.dat
+Col header mismatch
+    Old: Any["stat", "afqt2", "afqt3", "afqt4", "last_type3", "last_type4", "cons"]
+    New: Any["stat", "afqt2", "afqt3", "afqt4", "last_type2", "last_type3", "last_type4", "cons"]
+  in SelfReport/dat_files/Regressions/loginc_st2_2--dif.dat
+Col header mismatch
+    Old: Any["stat", "afqt2", "afqt3", "afqt4", "last_type3", "last_type4", "cons"]
+    New: Any["stat", "afqt2", "afqt3", "afqt4", "last_type2", "last_type3", "last_type4", "cons"]
+  in SelfReport/dat_files/Regressions/loginc_st2_2--same.dat
+Col header mismatch
+    Old: Any["stat", "afqt2", "afqt3", "afqt4", "last_type3", "last_type4", "inc_quartile2", "inc_quartile3", "inc_quartile4", "cons"]
+    New: Any["stat", "afqt2", "afqt3", "afqt4", "last_type2", "last_type3", "last_type4", "inc_quartile2", "inc_quartile3", "inc_quartile4", "cons"]
+  in SelfReport/dat_files/Regressions/loginc_st2_2_inc--dif.dat
+Col header mismatch
+    Old: Any["stat", "afqt2", "afqt3", "afqt4", "last_type3", "last_type4", "inc_quartile2", "inc_quartile3", "inc_quartile4", "cons"]
+    New: Any["stat", "afqt2", "afqt3", "afqt4", "last_type2", "last_type3", "last_type4", "inc_quartile2", "inc_quartile3", "inc_quartile4", "cons"]
+  in SelfReport/dat_files/Regressions/loginc_st2_2_inc--same.dat
+Col header mismatch
+    Old: Any["stat", "afqt2", "afqt3", "afqt4", "school2", "school3", "cons"]
+    New: Any["stat", "afqt2", "afqt3", "afqt4", "school2", "school3", "school4", "cons"]
+  in SelfReport/dat_files/Regressions/loginc_st2_3--dif.dat
+Col header mismatch
+    Old: Any["stat", "afqt2", "afqt3", "afqt4", "school2", "school3", "cons"]
+    New: Any["stat", "afqt2", "afqt3", "afqt4", "school2", "school3", "school4", "cons"]
+  in SelfReport/dat_files/Regressions/loginc_st2_3--same.dat
+Col header mismatch
+    Old: Any["stat", "afqt2", "afqt3", "afqt4", "school2", "school3", "inc_quartile2", "inc_quartile3", "inc_quartile4", "cons"]
+    New: Any["stat", "afqt2", "afqt3", "afqt4", "school2", "school3", "school4", "inc_quartile2", "inc_quartile3", "inc_quartile4", "cons"]
+  in SelfReport/dat_files/Regressions/loginc_st2_3_inc--dif.dat
+Col header mismatch
+    Old: Any["stat", "afqt2", "afqt3", "afqt4", "school2", "school3", "inc_quartile2", "inc_quartile3", "inc_quartile4", "cons"]
+    New: Any["stat", "afqt2", "afqt3", "afqt4", "school2", "school3", "school4", "inc_quartile2", "inc_quartile3", "inc_quartile4", "cons"]
+  in SelfReport/dat_files/Regressions/loginc_st2_3_inc--same.dat
+Not found: /Users/lutz/Dropbox/Dropout Policies/Data/empiricaltargets/Updated Types/NLSY 97 moments by AFQT/SelfReport/dat_files/StandardDeviations/Financing/par_trans_y5_q_afqt_SD.dat
+Not found: /Users/lutz/Dropbox/Dropout Policies/Data/empiricaltargets/Updated Types/NLSY 97 moments by AFQT/SelfReport/dat_files/StandardDeviations/Fresh_Char/frac_loc_100_q_SD.dat
+Not found: /Users/lutz/Dropbox/Dropout Policies/Data/empiricaltargets/Updated Types/NLSY 97 moments by AFQT/SelfReport/dat_files/StandardDeviations/Fresh_Char/frac_loc_50_q_SD.dat
+Not found: /Users/lutz/Dropbox/Dropout Policies/Data/empiricaltargets/Updated Types/NLSY 97 moments by AFQT/SelfReport/dat_files/StandardDeviations/Fresh_Char/frac_loc_q_SD.dat
+Col header mismatch
+    Old: Any["quality1", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality1", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/Counts/Financing/cumloans_y1_q_afqt_N.dat
+Col header mismatch
+    Old: Any["quality2", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality2", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/Counts/Financing/cumloans_y2_q_afqt_N.dat
+Col header mismatch
+    Old: Any["quality3", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality3", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/Counts/Financing/cumloans_y3_q_afqt_N.dat
+Col header mismatch
+    Old: Any["quality4", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality4", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/Counts/Financing/cumloans_y4_q_afqt_N.dat
+Col header mismatch
+    Old: Any["quality5", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality5", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/Counts/Financing/cumloans_y5_q_afqt_N.dat
+Col header mismatch
+    Old: Any["quality6", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality6", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/Counts/Financing/cumloans_y6_q_afqt_N.dat
+Col header mismatch
+    Old: Any["p1", 1200]
+    New: Any["p1", 1024]
+  in Transcripts/dat_files/Counts/Financing/inv_cdf_netprice_N.dat
+Col header mismatch
+    Old: Any["p1", 874]
+    New: Any["p1", 957]
+  in Transcripts/dat_files/Counts/Financing/inv_cdf_par_trans_N.dat
+Col header mismatch
+    Old: Any["quality1", "local_county_2"]
+    New: Any["quality1", "local1"]
+  in Transcripts/dat_files/Counts/Fresh_Char/frac_loc_100_q_N.dat
+Col header mismatch
+    Old: Any["quality1", "local_county_2"]
+    New: Any["quality1", "local1"]
+  in Transcripts/dat_files/Counts/Fresh_Char/frac_loc_50_q_N.dat
+Col header mismatch
+    Old: Any["year", "qual1", "qual2", "qual3", "qual4", "dropout", "grad"]
+    New: Any["year", "qual1", "qual2", "qual3", "qual4", "dropout", "grad", "", "", "", ""]
+  in Transcripts/dat_files/Counts/Progress/q_dist_by_y_N.dat
+Col header mismatch
+    Old: Any["quality_tminus1", "transfer_1to2", "transfer_1to3", "transfer_1to4", "transfer_1toALL"]
+    New: Any["transfer_i", "transfer_j1", "transfer_j2", "transfer_j3", "transfer_j4", "transfer_jALL"]
+  in Transcripts/dat_files/Counts/Progress/transfer_lostcreds_N.dat
+Col header mismatch
+    Old: Any["quality1", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality1", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/Means/Financing/cumloans_y1_q_afqt.dat
+Col header mismatch
+    Old: Any["quality2", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality2", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/Means/Financing/cumloans_y2_q_afqt.dat
+Col header mismatch
+    Old: Any["quality3", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality3", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/Means/Financing/cumloans_y3_q_afqt.dat
+Col header mismatch
+    Old: Any["quality4", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality4", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/Means/Financing/cumloans_y4_q_afqt.dat
+Col header mismatch
+    Old: Any["quality5", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality5", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/Means/Financing/cumloans_y5_q_afqt.dat
+Col header mismatch
+    Old: Any["quality6", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality6", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/Means/Financing/cumloans_y6_q_afqt.dat
+Col header mismatch
+    Old: Any["p1", 0]
+    New: Any["p1", -24866.4]
+  in Transcripts/dat_files/Means/Financing/inv_cdf_netprice.dat
+Col header mismatch
+    Old: Any["quality1", "local_county_2"]
+    New: Any["quality1", "local1"]
+  in Transcripts/dat_files/Means/Fresh_Char/frac_loc_100_q.dat
+Col header mismatch
+    Old: Any["quality1", "local_county_2"]
+    New: Any["quality1", "local1"]
+  in Transcripts/dat_files/Means/Fresh_Char/frac_loc_50_q.dat
+Col header mismatch
+    Old: Any["year", "qual1", "qual2", "qual3", "qual4", "dropout", "grad"]
+    New: Any["year", "qual1", "qual2", "qual3", "qual4", "dropout", "grad", "", "", "", ""]
+  in Transcripts/dat_files/Means/Progress/q_dist_by_y.dat
+Col header mismatch
+    Old: Any["quality_tminus1", "transfer_1to2", "transfer_1to3", "transfer_1to4", "transfer_1toALL"]
+    New: Any["transfer_i", "transfer_j1", "transfer_j2", "transfer_j3", "transfer_j4", "transfer_jALL"]
+  in Transcripts/dat_files/Means/Progress/transfer_lostcreds.dat
+Col header mismatch
+    Old: Any["quality1", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality1", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/StandardDeviations/Financing/cumloans_y1_q_afqt_SD.dat
+Col header mismatch
+    Old: Any["quality2", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality2", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/StandardDeviations/Financing/cumloans_y2_q_afqt_SD.dat
+Col header mismatch
+    Old: Any["quality3", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality3", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/StandardDeviations/Financing/cumloans_y3_q_afqt_SD.dat
+Col header mismatch
+    Old: Any["quality4", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality4", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/StandardDeviations/Financing/cumloans_y4_q_afqt_SD.dat
+Col header mismatch
+    Old: Any["quality5", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality5", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/StandardDeviations/Financing/cumloans_y5_q_afqt_SD.dat
+Col header mismatch
+    Old: Any["quality6", "inc_quartile1", "inc_quartile2", "inc_quartile3", "inc_quartile4", "inc_quartileALL"]
+    New: Any["quality6", "afqt_quartile1", "afqt_quartile2", "afqt_quartile3", "afqt_quartile4", "afqt_quartileALL"]
+  in Transcripts/dat_files/StandardDeviations/Financing/cumloans_y6_q_afqt_SD.dat
+Not found: /Users/lutz/Dropbox/Dropout Policies/Data/empiricaltargets/Updated Types/NLSY 97 moments by AFQT/Transcripts/dat_files/StandardDeviations/Fresh_Char/frac_loc_100_q_SD.dat
+Not found: /Users/lutz/Dropbox/Dropout Policies/Data/empiricaltargets/Updated Types/NLSY 97 moments by AFQT/Transcripts/dat_files/StandardDeviations/Fresh_Char/frac_loc_50_q_SD.dat
+Not found: /Users/lutz/Dropbox/Dropout Policies/Data/empiricaltargets/Updated Types/NLSY 97 moments by AFQT/Transcripts/dat_files/StandardDeviations/Fresh_Char/frac_loc_q_SD.dat

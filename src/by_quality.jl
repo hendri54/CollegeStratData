@@ -155,7 +155,8 @@ function frac_local_by_quality(ds :: DataSettings)
     m = read_vector_by_x(data_file(rawFileFct(:mean)));
     cnts = read_vector_by_x(data_file(rawFileFct(:count)));
     cnts = round.(Int, cnts);
-    ses = read_vector_by_x(data_file(rawFileFct(:std)));
+    ses = ses_from_choice_probs(m, cnts);
+    # ses = read_vector_by_x(data_file(rawFileFct(:std)));
 
     @assert isa(m, Vector{Double})
 	@argcheck size(m) == (n_colleges(ds), )
