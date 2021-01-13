@@ -110,6 +110,16 @@ function make_target_test(dsName)
 		@test size(courses_otM, 1) == 2
 		@test all(6.0 .< courses_otM[1,:] .< 10.0)
 		@test all(9.0 .< courses_otM[2,:] .< 14.0)
+
+		# Cumulative loans by year; percentile
+		t = 2;
+		cumLoans = csd.cum_loans_year(ds, t; percentile = 90);
+		@test 10_000.0 < cumLoans < 12_000.0
+		cumLoansV = csd.cum_loans_year(ds; percentile = 90);
+		@test cumLoansV[t] == cumLoans
+
+		cumLoans = csd.cum_loans_year(ds, t);
+		@test 3_000.0 < cumLoans < 5_000.0
 	end
 end
 

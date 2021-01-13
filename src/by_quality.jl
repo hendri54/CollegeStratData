@@ -173,14 +173,24 @@ end
 ## --------------  By quality / year
 # Multiple raw data files
 
+# No std errors
+cum_loans90_qual_year(ds :: DataSettings) = 
+    cum_loans_qual_year(ds; percentile = 90);
+
 # Cumulative loans by [quality, year]
-function cum_loans_qual_year(ds :: DataSettings)
+# No std errors for percentiles
+function cum_loans_qual_year(ds :: DataSettings; percentile = nothing)
     T = ds.Tmax;
     outM = zeros(n_colleges(ds), T);
     sesM = zeros(n_colleges(ds), T);
     cntM = zeros(Int, n_colleges(ds), T);
     for t = 1 : T
-        outM[:, t], sesM[:,t], cntM[:,t] = cum_loans_qual(ds, t);
+        if isnothing(percentile)
+            outM[:, t], sesM[:,t], cntM[:,t] = 
+                cum_loans_qual(ds, t);
+        else
+            outM[:, t] = cum_loans_qual_percentile(ds, t, percentile);
+        end
     end
 
     # Ignore 2 year colleges after year 2 while there is no switching
@@ -189,12 +199,22 @@ function cum_loans_qual_year(ds :: DataSettings)
     return outM, sesM, cntM
 end
 
-# The same for one year
+# The same for one year. Means only.
 function cum_loans_qual(ds :: DataSettings,  t :: Integer)
     load_fct = 
-        mt -> read_row_totals(raw_cum_loans_qual_year(ds, t; momentType = mt));
+        mt -> read_row_totals(raw_cum_loans_qual_year(ds, t; 
+            momentType = mt));
     m, ses, cnts = mean_from_xy(load_fct);
     return m, ses, cnts
+end
+
+# The same for percentiles. No std errors.
+function cum_loans_qual_percentile(ds :: DataSettings, t :: Integer, 
+    percentile :: Integer)
+
+    outM = read_row_totals(raw_cum_loans_qual_year(ds, t; 
+        momentType = :mean, percentile = percentile));
+    return outM
 end
 
 

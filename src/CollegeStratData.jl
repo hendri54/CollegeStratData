@@ -41,7 +41,8 @@ include("regression_files.jl");
 
 # Individual data moments
 include("scalar_moments.jl")
-include("worker_moments.jl")
+include("worker_moments.jl");
+include("by_year.jl");
 include("by_gpa.jl")
 include("by_gpa_yp.jl")
 include("by_gpa_yp_qual.jl")
@@ -69,6 +70,8 @@ moment_map() = Dict([
     :coursesTried_otM => courses_tried_grad_year,
     :coursesTried_qtM => courses_tried_qual_year,
     :cumLoans_qtM => cum_loans_qual_year,
+    :cumLoans90_qtM => cum_loans90_qual_year,
+    :cumLoans90_tV => cum_loans90_year,
     :fracEnroll_qV => frac_enroll_by_qual,
     :fracEnrollUncond_qV => frac_enroll_uncond_by_qual,
     :fracEnter_gV => frac_enter_by_gpa,
@@ -117,6 +120,9 @@ For regression moments, this returns a `RegressionTable`. For other moments, it 
 """
 function load_moment(ds :: DataSettings, mName :: Symbol)
     mm = moment_map();
+    if !haskey(mm, mName)
+        error("Moment $mName does not exist");
+    end
     return mm[mName](ds)
 end
 

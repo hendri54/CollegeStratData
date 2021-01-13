@@ -85,6 +85,7 @@ compare_dirs(ds);
 *After* copying the data files, run the following:
 
 * [`missing_file_list`](@ref) makes sure that all files are present. 
+* `zsh delete_unused_data_files.sh` in `DataCollegeStrat`
 
 
 ```@docs

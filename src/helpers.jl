@@ -57,39 +57,6 @@ function mean_from_xy(load_fct)
     return m, ses, cnts
 end
 
-# function mean_from_col_total(ds :: DataSettings, target :: Symbol)
-#     m = read_col_totals(raw_file_path(ds, target));
-#     cnts = read_col_totals(raw_file_path(ds, target; momentType = :count));
-#     stdV = read_col_totals(raw_file_path(ds, target; momentType = :std));
-#     ses = stdV ./ (max.(cnts, 1.0) .^ 0.5);
-#     cnts = round.(Int, cnts);
-#     return m, ses, cnts
-# end
-
-# This version takes as input a function that generates a raw file path
-# This is useful when the load function takes additional args, such as dates.
-# function mean_from_row_total(load_fct)
-#     m = read_row_totals(load_fct(:mean));
-#     cnts = read_row_totals(load_fct(:count));
-#     stdV = read_row_totals(load_fct(:std));
-#     @assert size(m) == size(cnts) == size(stdV)
-#     ses = stdV ./ (max.(cnts, 1.0) .^ 0.5);
-#     cnts = round.(Int, cnts);
-#     return m, ses, cnts
-# end
-
-# function mean_from_row_total(ds :: DataSettings, target :: Symbol)
-#     m = read_row_totals(raw_file_path(ds, target));
-#     cnts = read_row_totals(raw_file_path(ds, target; momentType = :count));
-#     stdV = read_row_totals(raw_file_path(ds, target; momentType = :std));
-#     ses = stdV ./ (max.(cnts, 1.0) .^ 0.5);
-#     cnts = round.(Int, cnts);
-#     return m, ses, cnts
-# end
-
-
-## -------------  Regressions
-
 
 ## ------------  Other
 

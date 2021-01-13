@@ -78,7 +78,13 @@ Read a file by [x, y]. Return the x totals.
 read_row_totals(fPath :: AbstractString) = row_totals(read_by_xy(fPath));
 read_row_totals(rf :: RawDataFile) = read_row_totals(data_file(rf));
 
+"""
+	$(SIGNATURES)
 
+Read a file by [x, y]. Return the grand total cell (bottom right).
+"""
+read_total(fPath :: AbstractString) = total(read_by_xy(fPath));
+read_total(rf :: RawDataFile) = read_total(data_file(rf));
 
 
 # ------------

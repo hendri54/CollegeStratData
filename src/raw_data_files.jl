@@ -43,10 +43,15 @@ raw_credits_taken_qual_gpa(ds :: DataSettings, year :: Integer;
     RawDataFile(:transcript, :progress, momentType, 
         file_name(ds, "creds_att_y$year", [:qual, :afqt]), ds);
 
-raw_cum_loans_qual_year(ds :: DataSettings, year :: Integer; 
-    momentType :: Symbol = :mean) = 
-    RawDataFile(:transcript, :finance, momentType, 
-        file_name(ds, "cumloans_y$year", [:qual, :afqt]), ds);
+# Can load for selected percentiles giving `percentile` input (e.g. 90)
+function raw_cum_loans_qual_year(
+    ds :: DataSettings, year :: Integer; 
+    momentType :: Symbol = :mean, percentile = nothing
+    )
+    fn = file_name(ds, "cumloans_y$year", [:qual, :afqt]; 
+        percentile = percentile);
+    return RawDataFile(:transcript, :finance, momentType, fn, ds);
+end
 
 # Conditional on entry, fraction of students in each [quality, gpa] cell
 raw_mass_entry_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) =

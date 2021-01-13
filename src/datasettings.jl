@@ -158,10 +158,27 @@ function file_suffix(ds :: DataSettings, suffixV :: AbstractVector{Symbol})
 	return *([file_suffix(ds, suffixV[j])  for j = 1 : length(suffixV)]...)
 end
 
-function file_name(ds :: DataSettings, baseName :: String, 
-	suffix, fExt :: String = ".dat")
 
-	return baseName * file_suffix(ds, suffix) * fExt;
+"""
+	$(SIGNATURES)
+
+Construct file name with suffix
+
+# Example: 
+```julia
+file_name(ds, "cumLoans", (:qual, :year), ".dat"; percentile = 90)
+```
+"""
+function file_name(ds :: DataSettings, baseName :: String, 
+	suffix, fExt :: String = ".dat";
+	percentile = nothing)
+
+	fn = baseName * file_suffix(ds, suffix);
+	if !isnothing(percentile)
+		fn = fn * "_$(percentile)PI";
+	end
+	fn = fn * fExt;
+	return fn
 end
 
 ## --------------  Individual settings
