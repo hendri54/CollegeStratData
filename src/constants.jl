@@ -1,5 +1,7 @@
 # Constants hard wired everywhere
 
+const pkgDir = normpath(@__DIR__, "..");
+const dataDir = joinpath(pkgDir, "data");
 
 ## -------------  Data types
 
@@ -40,8 +42,8 @@ const dbgLow = true
 const dbgMedium = true
 const dbgHigh = true
 
-# Required Julia version (as a version string)
-const minVersion = "1.4"
+# # Required Julia version (as a version string)
+# const minVersion = "1.4"
 
 
 

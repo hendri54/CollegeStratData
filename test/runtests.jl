@@ -8,7 +8,8 @@ using Test
     include("helper_test.jl")
     include("data_files_test.jl")
     include("dataframe_xy_test.jl")
-    include("load_data_test.jl")
+    include("load_data_test.jl");
+    include("worker_moments_test.jl");
 end
 
 # -----------

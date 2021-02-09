@@ -110,4 +110,15 @@ get_intercept
 get_regr_coef
 ```
 
+
+## Constructing experience profiles
+
+`exper_profile` constructs the experience profiles for all school groups. Efficiency is normalized to 1 for workers with no experience.
+
+From NLSY, we have experience profiles as dummies up to about 12 years of experience. These are read with `read_exper_coefficients`. 
+
+From Rupert and Zanella, we have PSID experience profiles for the 1942-46 birth cohort (wages and hours worked).
+
+We combine the two profiles by appending the Rupert and Zanella profile for smoothed wages * hours worked to the end of the NLSY profile. We scale the Rupert and Zanella profiles to match those estimated from the NLSY in the last available year.
+
 ------------------

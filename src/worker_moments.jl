@@ -21,8 +21,9 @@ function exper_profile(ds :: DataSettings, s :: Symbol; T :: Integer = 60)
     for j = 1 : length(bExpV)
         outV[1 : expMax] .+= bExpV[j] .* (xV .^ j) ./ (10.0 ^ (j-1));
     end
+    splice_rupert_zanella!(outV, expMax, s);
     # Assumed constant after `expMax` years of experience
-    outV[(expMax + 1) : end] .= outV[expMax];
+    # outV[(expMax + 1) : end] .= outV[expMax];
 
     @assert outV[1] == 0.0
     @assert maximum(outV) < 1.2
@@ -67,6 +68,78 @@ function exper_raw_file(ds :: DataSettings, s :: Symbol)
     return rf
 end
 
+
+# Rupert / Zanella profiles for the 1942-46 cohorts
+# College grads and others.
+# Splice into an existing log efficiency profile to match the level at `maxExper`.
+# For ages past 66: assume constant.
+function splice_rupert_zanella!(logEffV, maxExper :: Integer, s)
+    T = length(logEffV);
+    ageWorkStart = work_start_age(s);
+    age1 = ageWorkStart + maxExper - 1;
+    age2 = min(66, age1 + T - maxExper);
+    rzLogEffV = read_rupert_zanella(age1, age2, s);
+    rzIdxV = (maxExper - 1) .+ (1 : length(rzLogEffV));
+    logEffV[rzIdxV] .= rzLogEffV .- rzLogEffV[1] .+ logEffV[maxExper];
+    # Deal with ages that extend past the RZ profiles
+    if rzIdxV[end] < T
+        logEffV[rzIdxV[end] : T] .= logEffV[rzIdxV[end]];
+    end
+    return logEffV
+end
+
+# Work start ages for converting RZ profiles by age into experience profiles.
+# The same work start age for all non college grads because both estimations assume that all workers in that group have the same profile.
+function work_start_age(s :: Symbol) 
+    if s == :HSG
+        workStartAge = 20;
+    elseif (s == :SC)  ||  (s == :CD)
+        workStartAge = 20;
+    elseif s == :CG
+        workStartAge = 23;
+    else
+        error("Invalid $s");
+    end
+    return workStartAge
+end
+
+# Read Rupert/Zanella LOG efficiency by age
+# Normalized to 1 for age 23.
+function read_rupert_zanella(age1, age2, s)
+    fPath = rupert_zanella_path(s);
+    m, hdr = readdlm(fPath; comments = true, comment_char = '#', header = true);
+    @assert (m isa Matrix{Float64})  "m is a $(typeof(m))";
+    ageV = m[:,1];
+    effV = m[:,2];
+    interpolate_zeros!(effV);
+    @assert age1 >= ageV[1]
+    @assert (age2 <= ageV[end])  "Age2 too high: $age2 > $(ageV[end])"
+    idx1 = findfirst(ageV .== age1);
+    idx2 = findfirst(ageV .== age2);
+    logEffV = log.(effV[idx1 : idx2]);
+    @assert !any(isinf.(logEffV));
+    return logEffV
+end
+
+function rupert_zanella_path(s)
+    if s == :CG
+        suffix = "college";
+    else
+        suffix = "no_college";
+    end
+    fPath = joinpath(dataDir, "rupert_zanella_" * suffix * ".txt");
+    return fPath
+end
+
+function interpolate_zeros!(v :: Vector{Double})
+    n = length(v);
+    for j = 2 : (n-1)
+        if v[j] == 0.0
+            @assert v[j+1] != 0.0;
+            v[j] = 0.5 * (v[j-1] + v[j+1]);
+        end
+    end
+end
 
 
 ## -------------  Intercepts
