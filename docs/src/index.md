@@ -58,9 +58,9 @@ When the data files are updated: Simply copy the directory for a given set of mo
 
 The new data versions will be used only when `DataCollegeStrat` is `update`d in `CollegeStratData`. It is therefore easy to roll back to previous data versions (which correspond to package versions).
 
-It is a good idea to first `dev DataCollegeStrat` and make sure all tests pass. Then commit the new data and update the version number.
+It is a good idea to first `dev ../DataCollegeStrat` and make sure all tests pass. Then commit the new data and update the version number.
 
-Sometimes `DataCollegeStrat` gets stuck at an old version when `CollegeStratData` is updated in `CollegeStrat` (why?). The try the following:
+Sometimes `DataCollegeStrat` gets stuck at an old version when `CollegeStratData` is updated in `CollegeStrat` (why?) (check with `] st -m`). Then try the following:
 
 ```julia
 add DataCollegeStrat
@@ -76,17 +76,23 @@ Afterwards, make sure the version number was bumped.
 ds = make_data_settings(:default);
 # Create a list with files that are present in new data compared with existing data.
 file_name_differences(ds);
+# Checks that all delimited files in two directories have matching headers
 compare_dirs(ds);
 ```
 
-* [`file_name_differences`](@ref) 
-* [`compare_dirs`](@ref) checks that all delimited files in two directories have matching headers.
-
 *After* copying the data files, run the following:
 
-* [`missing_file_list`](@ref) makes sure that all files are present. 
-* `zsh delete_unused_data_files.sh` in `DataCollegeStrat`
+```julia
+# makes sure that all files are present. 
+missing_file_list(ds);
+```
 
+And in the shell, in `DataCollegeStrat`: 
+
+```
+# Delete unused data files
+zsh delete_unused_data_files.sh 
+```
 
 ```@docs
 RawDataFile

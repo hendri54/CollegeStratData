@@ -184,7 +184,7 @@ end
 ## --------------  Individual settings
 
 # List of data settings names. Useful for testing.
-data_settings_list() = [:default, :uneven, :twoProfiles];
+data_settings_list() = [:default];		# , :uneven, :twoProfiles];
 
 
 """
@@ -208,6 +208,7 @@ function make_data_settings(dsName :: Symbol; baseDir :: String = "")
 	if dsName ∈ (:default, :test)
 		subDir = "Updated Types";
 	elseif dsName ∈ (:uneven, :twoProfiles)
+		error("No longer updated: $dsName")
 		subDir = "Uneven Types";
 	else
 		error("Invalid name: $dsName")

@@ -20,7 +20,7 @@ end
 function frac_qual_by_gpa(ds :: DataSettings)
     dataV = read_matrix_by_xy(raw_entry_qual_gpa(ds));
     @assert check_float_array(dataV, 0.001, 1.0);
-    @check sum(dataV) ≈ 1.0
+    @assert isapprox(sum(dataV), 1.0, atol = 1e-6);
 
     # Make conditional on entry (columns sum to 1)
     dataV = dataV ./ sum(dataV, dims = 1);

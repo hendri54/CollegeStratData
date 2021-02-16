@@ -208,7 +208,7 @@ function wage_regr_grads(ds :: DataSettings)
     @assert validate_wage_regr_grads(ds, rt)  """
         Invalid wage regression for graduates.
         $ds
-        $data_file(rf)
+        $(data_file(rf))
     """
     return rt
 end
@@ -223,7 +223,9 @@ function validate_wage_regr_grads(ds :: DataSettings, rt :: RegressionTable)
     # Check that last lastColl is the default category
     if has_regressor(rt, regressor_name(:lastColl, 2))  ||
         !has_regressor(rt, regressor_name(:lastColl, n_colleges(ds)))
-        @warn "Wrong default category"
+        @warn """Wrong default category in wage regression:
+            $rt
+            """
         isValid = false;
     end
     return isValid

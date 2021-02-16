@@ -20,7 +20,7 @@ wage_regressions_two() =
 # Suffix for a regression file, such as "_inc--same"
 # "_inc" determines whether parental income is a regressor.
 # "_same" or "_dif" refers to same or different experience profile by schooling.
-# "_OLD" means that the default category for graduates is q2
+# "_OLD" means that the default category for graduates is q2 (no longer +++++)
 function regr_file_suffix(wr :: WageRegressions)
     if use_parental_dummies(wr)
         incSuffix = "_inc";
@@ -36,7 +36,7 @@ function regr_file_suffix(wr :: WageRegressions)
         error("Invalid $wr");
     end
 
-    return incSuffix * groupSuffix * "_OLD"
+    return incSuffix * groupSuffix  # +++++ * "_OLD"
 end
 
 
