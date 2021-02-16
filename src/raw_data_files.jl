@@ -15,6 +15,12 @@ raw_entry_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) =
     RawDataFile(:transcript, :freshmen, momentType, 
         file_name(ds, "jointdist", [:qual, :afqt]), ds);
 
+# By year
+raw_frac_drop_qual_gpa(ds :: DataSettings, year :: Integer; 
+    momentType :: Symbol = :mean) =
+    RawDataFile(:transcript, :progress, momentType, 
+        file_name(ds, "drop_rate_y$year", [:qual, :afqt]), ds);
+
 raw_grad_rate_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) = 
     RawDataFile(:transcript, :progress, momentType, 
         file_name(ds, "grad_rate", [:quality, :afqt]), ds);
@@ -156,6 +162,7 @@ end
 
 # Map moment names into functions that make raw file paths
 raw_file_map() = Dict([
+    :fracDrop_qtM => raw_frac_drop_qual_gpa,
     :fracEnroll_qV => raw_entry_qual_parental,
     :fracEnter_gV => raw_entry_gpa_parental,
     :fracEnter_pV => raw_entry_gpa_parental,

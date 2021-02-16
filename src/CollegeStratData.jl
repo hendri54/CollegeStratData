@@ -73,6 +73,7 @@ moment_map() = Dict([
     :cumLoans90_qtM => cum_loans90_qual_year,
     :cumLoans90_tV => cum_loans90_year,
     :fracDrop4y_tV => frac_drop_4y_by_year,
+    :fracDrop_qtM => frac_drop_qual_year,
     :fracEnroll_qV => frac_enroll_by_qual,
     :fracEnrollUncond_qV => frac_enroll_uncond_by_qual,
     :fracEnter_gV => frac_enter_by_gpa,

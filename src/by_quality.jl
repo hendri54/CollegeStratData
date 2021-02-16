@@ -218,6 +218,38 @@ function cum_loans_qual_percentile(ds :: DataSettings, t :: Integer,
 end
 
 
+## ----------  Dropout rates
+
+# Fraction of initial entrants dropping out at end of each year.
+# Standard errors are questionable. The `N`s are given as the total number of students in each college in year 1. 
+function frac_drop_qual_year(ds :: DataSettings)
+    target = :fracDrop_qtM;
+
+    T = ds.Tmax;
+    outM = zeros(n_colleges(ds), T);
+    sesM = zeros(n_colleges(ds), T);
+    cntsM = zeros(Int, n_colleges(ds), T);
+    for t = 1 : T
+        outM[:, t], sesM[:,t], cntsM[:,t] = frac_drop_qual(ds, t);
+    end
+
+    # Ignore 2 year colleges after year 2 while there is no switching
+    outM[two_year_colleges(ds), 3 : end] .= 0.0;
+    cntsM[two_year_colleges(ds), 3 : end] .= 0.0;
+    return outM, sesM, cntsM
+end
+
+
+function frac_drop_qual(ds :: DataSettings, t :: Integer)
+    load_fct = 
+        mt -> read_row_totals(raw_frac_drop_qual_gpa(ds, t; momentType = mt));
+    m, ses, cnts = choice_prob_from_xy(load_fct);
+    @assert check_float_array(m, 0.0, 1.0)
+    @assert length(m) == n_colleges(ds)
+    return m, ses, cnts
+end
+
+
 # Courses attempted by quality, one year
 # function dm_courses_tried_qual_year()
 #     return DataMoment(:coursesTried_qtM, 
@@ -227,20 +259,9 @@ end
 # end
 
 
-function courses_tried_qual(ds :: DataSettings, t :: Integer)
-    load_fct = 
-        mt -> read_row_totals(raw_credits_taken_qual_gpa(ds, t; momentType = mt));
-    m, ses, cnts = mean_from_xy(load_fct);
-    @assert check_float_array(m, 1.0, 50.0)
-    @assert length(m) == n_colleges(ds)
-    m = credits_to_courses(ds, m);
-    ses = credits_to_courses(ds, ses);
-    return m, ses, cnts
-end
-
-
-# Courses attempted by quality / year
+## -----------  Courses attempted by quality / year
 # Sets two year colleges to 0 after year 2
+
 function courses_tried_qual_year(ds :: DataSettings)
     target = :coursesTried_qtM;
 
@@ -256,6 +277,18 @@ function courses_tried_qual_year(ds :: DataSettings)
     outM[two_year_colleges(ds), 3 : end] .= 0.0;
     cntsM[two_year_colleges(ds), 3 : end] .= 0.0;
     return outM, sesM, cntsM
+end
+
+
+function courses_tried_qual(ds :: DataSettings, t :: Integer)
+    load_fct = 
+        mt -> read_row_totals(raw_credits_taken_qual_gpa(ds, t; momentType = mt));
+    m, ses, cnts = mean_from_xy(load_fct);
+    @assert check_float_array(m, 1.0, 50.0)
+    @assert length(m) == n_colleges(ds)
+    m = credits_to_courses(ds, m);
+    ses = credits_to_courses(ds, ses);
+    return m, ses, cnts
 end
 
 
