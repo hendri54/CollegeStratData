@@ -162,7 +162,7 @@ end
 
 # Map moment names into functions that make raw file paths
 raw_file_map() = Dict([
-    :fracDrop_qtM => raw_frac_drop_qual_gpa,
+    # :fracDrop_qtM => raw_frac_drop_qual_gpa,
     :fracEnroll_qV => raw_entry_qual_parental,
     :fracEnter_gV => raw_entry_gpa_parental,
     :fracEnter_pV => raw_entry_gpa_parental,
