@@ -103,4 +103,34 @@ function work_hours_by_gpa(ds :: DataSettings)
     return m, ses, cnts
 end
 
+
+## ----------  Dropout rates by GPA / year
+
+# Fraction of initial entrants dropping out at end of each year.
+# Standard errors are questionable. The `N`s are given as the total number of students in each college in year 1. 
+# Dropout rates for 2y starters only sum to about 0.9. But 1/3 occur after year 2.
+function frac_drop_gpa_year(ds :: DataSettings)
+    target = :fracDrop_gtM;
+
+    T = ds.Tmax;
+    outM = zeros(n_colleges(ds), T);
+    sesM = zeros(n_colleges(ds), T);
+    cntsM = zeros(Int, n_gpa(ds), T);
+    for t = 1 : T
+        outM[:, t], sesM[:,t], cntsM[:,t] = frac_drop_gpa(ds, t);
+    end
+    return outM, sesM, cntsM
+end
+
+
+function frac_drop_gpa(ds :: DataSettings, t :: Integer)
+    load_fct = 
+        mt -> read_col_totals(raw_frac_drop_qual_gpa(ds, t; momentType = mt));
+    m, ses, cnts = choice_prob_from_xy(load_fct);
+    @assert check_float_array(m, 0.0, 1.0)
+    @assert length(m) == n_gpa(ds)
+    return m, ses, cnts
+end
+
+
 # ------------------

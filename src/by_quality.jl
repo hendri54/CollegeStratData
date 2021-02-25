@@ -222,6 +222,7 @@ end
 
 # Fraction of initial entrants dropping out at end of each year.
 # Standard errors are questionable. The `N`s are given as the total number of students in each college in year 1. 
+# Dropout rates for 2y starters only sum to about 0.9. But 1/3 occur after year 2.
 function frac_drop_qual_year(ds :: DataSettings)
     target = :fracDrop_qtM;
 
@@ -234,8 +235,8 @@ function frac_drop_qual_year(ds :: DataSettings)
     end
 
     # Ignore 2 year colleges after year 2 while there is no switching
-    outM[two_year_colleges(ds), 3 : end] .= 0.0;
-    cntsM[two_year_colleges(ds), 3 : end] .= 0.0;
+    # outM[two_year_colleges(ds), 3 : end] .= 0.0;
+    # cntsM[two_year_colleges(ds), 3 : end] .= 0.0;
     return outM, sesM, cntsM
 end
 
