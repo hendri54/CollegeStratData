@@ -110,7 +110,7 @@ end
 # Standard errors are questionable. The `N`s are given as the total number of students in each college in year 1. 
 # Dropout rates for 2y starters only sum to about 0.9. But 1/3 occur after year 2.
 function frac_drop_gpa_year(ds :: DataSettings)
-    target = :fracDrop_gtM;
+    # target = :fracDrop_gtM;
 
     T = ds.Tmax;
     outM = zeros(n_colleges(ds), T);
@@ -124,6 +124,7 @@ end
 
 
 function frac_drop_gpa(ds :: DataSettings, t :: Integer)
+    # Data files contains dropout rates by AFQT as col totals.
     load_fct = 
         mt -> read_col_totals(raw_frac_drop_qual_gpa(ds, t; momentType = mt));
     m, ses, cnts = choice_prob_from_xy(load_fct);

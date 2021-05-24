@@ -2,7 +2,8 @@ name(ds :: DataSettings) = ds.name;
 # Returns the object defining school groups
 school_groups(ds :: DataSettings) = ds.sGroups;
 # Returns the defined school groups as symbols
-s_groups(ds :: DataSettings) = s_groups(school_groups(ds));
+CollegeStratBase.ed_symbols(ds :: DataSettings) = 
+	CollegeStratBase.ed_symbols(school_groups(ds));
 wage_regr_settings(ds :: DataSettings) = ds.wageRegressions;
 use_parental_dummies(ds :: DataSettings) = use_parental_dummies(ds.wageRegressions);
 
@@ -11,7 +12,8 @@ $(SIGNATURES)
 
 Number of school groups (e.g. HSG, SC, CG). For wage regressions.
 """
-n_school(ds :: DataSettings) = n_school(school_groups(ds));
+CollegeStratBase.n_school(ds :: DataSettings) = 
+	CollegeStratBase.n_school(school_groups(ds));
 
 """
 	$(SIGNATURES)
@@ -234,7 +236,7 @@ function validate_ds(ds :: DataSettings)
 	isValid = true;
 	wr = wage_regr_settings(ds);
 	sg = school_groups(ds);
-	if !isequal(s_groups(wr), s_groups(sg))
+	if !isequal(ed_symbols(wr), ed_symbols(sg))
 		@warn """
 			School groups and wage regression settings do not match
 			$sg

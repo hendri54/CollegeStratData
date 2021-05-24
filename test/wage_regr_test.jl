@@ -1,4 +1,4 @@
-using CollegeStratData, Test
+using CollegeStratBase, CollegeStratData, Test
 
 csd = CollegeStratData;
 
@@ -15,8 +15,8 @@ function wage_regr_test(wr :: csd.WageRegressions)
     @testset "Wage regressions" begin
         @test csd.max_exper(wr) > 10
         @test 2 ≤ csd.max_exper_exponent(wr) ≤ 4
-        @test length(csd.s_groups(wr)) == csd.n_school(wr)
-        @test isa(csd.s_groups(wr), Vector{Symbol})
+        @test length(ed_symbols(wr)) == n_school(wr)
+        @test isa(ed_symbols(wr), Vector{Symbol})
 	end
 end
 

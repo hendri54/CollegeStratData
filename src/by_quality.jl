@@ -224,9 +224,11 @@ end
 # Standard errors are questionable. The `N`s are given as the total number of students in each college in year 1. 
 # Dropout rates for 2y starters only sum to about 0.9. But 1/3 occur after year 2.
 function frac_drop_qual_year(ds :: DataSettings)
-    target = :fracDrop_qtM;
+    # target = :fracDrop_qtM;
 
-    T = ds.Tmax;
+    # Only first 3 years. Once people graduate, we don't have enough info.
+    T = 3;
+    # T = ds.Tmax;
     outM = zeros(n_colleges(ds), T);
     sesM = zeros(n_colleges(ds), T);
     cntsM = zeros(Int, n_colleges(ds), T);
@@ -242,12 +244,28 @@ end
 
 
 function frac_drop_qual(ds :: DataSettings, t :: Integer)
-    load_fct = 
-        mt -> read_row_totals(raw_frac_drop_qual_gpa(ds, t; momentType = mt));
-    m, ses, cnts = choice_prob_from_xy(load_fct);
-    @assert check_float_array(m, 0.0, 1.0)
-    @assert length(m) == n_colleges(ds)
-    return m, ses, cnts
+    nc = n_colleges(ds);
+    # Rows are years, cols are colleges + dropouts + grads
+    m, _, cnts = load_moment(ds, :statusByYear);
+    @assert size(m, 2) == (nc + 2)  "Invalid size: $(size(m))"
+
+    massEnter_qV = m[1, 1:nc];    
+    # Assumes all who leave drop out.
+    massDrop_qV = m[t, 1:nc] .- m[t+1, 1:nc];
+    @assert all(massDrop_qV .>= 0.0)
+    fracDrop_qV = massDrop_qV ./ massEnter_qV;
+
+    # Standard errors are computed using counts for date `t`
+    # This is approximate, but best that we can do.
+    cnts_qV = cnts[t, 1 : nc];
+    ses_qV = ses_from_choice_probs(fracDrop_qV, cnts_qV);
+
+    # load_fct = 
+    #     mt -> read_row_totals(raw_frac_drop_qual_gpa(ds, t; momentType = mt));
+    # m, ses, cnts = choice_prob_from_xy(load_fct);
+    @assert check_float_array(fracDrop_qV, 0.0, 1.0)
+    @assert length(fracDrop_qV) == n_colleges(ds)
+    return fracDrop_qV, ses_qV, cnts_qV
 end
 
 

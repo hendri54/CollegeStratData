@@ -4,8 +4,8 @@ max_exper(wr :: WageRegressions) = wr.maxExper
 exper_groups(wr :: WageRegressions) = wr.experGroupV;
 max_exper_exponent(wr :: WageRegressions) = wr.maxExperExponent;
 # School groups that are recognized
-s_groups(wr :: WageRegressions) = vcat(exper_groups(wr)...);
-n_school(wr :: WageRegressions) = length(s_groups(wr));
+CollegeStratBase.ed_symbols(wr :: WageRegressions) = vcat(exper_groups(wr)...);
+CollegeStratBase.n_school(wr :: WageRegressions) = length(ed_symbols(wr));
 use_parental_dummies(wr :: WageRegressions) = wr.useParentalDummies;
 
 default_wage_regressions() = 
@@ -13,7 +13,7 @@ default_wage_regressions() =
 
 # Two school groups
 wage_regressions_two() = 
-    WageRegressions(experGroupV = [[:HSG, :CD], [:CG]], 
+    WageRegressions(experGroupV = [[:HSG, :SC], [:CG]], 
         maxExperExponent = 4);
 
 
@@ -30,7 +30,7 @@ function regr_file_suffix(wr :: WageRegressions)
 
     if length(exper_groups(wr)) == 1
         groupSuffix = "--same";
-    elseif exper_groups(wr) == [[:HSG, :CD], [:CG]]
+    elseif exper_groups(wr) == [[:HSG, :SC], [:CG]]
         groupSuffix = "--dif";
     else
         error("Invalid $wr");

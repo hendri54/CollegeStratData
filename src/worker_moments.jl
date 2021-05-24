@@ -51,8 +51,8 @@ function exper_raw_file(ds :: DataSettings, s :: Symbol)
     wr = wage_regr_settings(ds);
     if length(exper_groups(wr)) == 1
         suffix = "_all--same";
-    elseif exper_groups(wr) == [[:HSG, :CD], [:CG]]
-        if s ∈ (:HSG, :CD, :SC)
+    elseif exper_groups(wr) == [[:HSG, :SC], [:CG]]
+        if s ∈ (:HSG, :SC, :SC)
             suffix = "_noncol--dif";
         elseif s == :CG
             suffix = "_colgrad--dif";
@@ -93,7 +93,7 @@ end
 function work_start_age(s :: Symbol) 
     if s == :HSG
         workStartAge = 20;
-    elseif (s == :SC)  ||  (s == :CD)
+    elseif (s == :SC)  ||  (s == :SC)
         workStartAge = 20;
     elseif s == :CG
         workStartAge = 23;

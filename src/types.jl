@@ -1,14 +1,14 @@
 ## ------------  Types
 
-"""
-	$(SIGNATURES)
+# """
+# 	$(SIGNATURES)
 
-School groups in the data.
-"""
-abstract type AbstractSchoolGroups end
+# School groups in the data.
+# """
+# abstract type AbstractSchoolGroups end
 
-# HSG, CD, CG
-struct SchoolGroups3 <: AbstractSchoolGroups end
+# # HSG, CD, CG
+# struct SchoolGroups3 <: AbstractSchoolGroups end
 
 
 """
@@ -25,7 +25,7 @@ Base.@kwdef mutable struct WageRegressions
 	# Max experience in the data
 	maxExper :: UInt8 = 12
 	# School groups in each experience profile
-	experGroupV :: Vector{Vector{Symbol}} = [[:HSG, :CD, :CG]]
+	experGroupV :: Vector{Vector{Symbol}} = [[:HSG, :SC, :CG]]
 	# Highest exponenent in experience profile
 	maxExperExponent :: UInt8 = 2
 	useParentalDummies :: Bool = true
@@ -46,7 +46,7 @@ Base.@kwdef mutable struct DataSettings
 	# Uses afqt or gpa
 	afqtGpa :: String = "afqt"
 	# School groups
-	sGroups :: AbstractSchoolGroups = SchoolGroups3()
+	sGroups :: AbstractSchoolGroups = Schooling3{SchoolInt}()
 	# Wage regression settings
 	wageRegressions :: WageRegressions = default_wage_regressions()
 	"Number of colleges (qualities)"
