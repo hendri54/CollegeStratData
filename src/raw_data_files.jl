@@ -25,6 +25,14 @@ raw_grad_rate_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) =
     RawDataFile(:transcript, :progress, momentType, 
         file_name(ds, "grad_rate", [:quality, :afqt]), ds);
 
+raw_study_time_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) = 
+    RawDataFile(:selfReport, :progress, momentType, 
+        file_name(ds, "studytime", [:quality, :afqt]), ds);
+
+raw_class_time_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) = 
+    RawDataFile(:selfReport, :progress, momentType, 
+       file_name(ds, "classtime", [:quality, :afqt]), ds);
+    
 # Transcript time to drop contains a 0 in one cell
 raw_time_to_drop_qual_gpa(ds :: DataSettings; momentType :: Symbol = :mean) = 
     RawDataFile(:transcript, :progress, momentType, 
