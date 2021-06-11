@@ -5,7 +5,7 @@ row_indices(d :: DataFrameX) = 1 : (length(d) - 1);
 # This is where the actual data are expected
 col_index(d :: DataFrameX) = 2;
 data_vector(d :: DataFrameX) = 
-    convert(Vector{Double}, d.df[row_indices(d), col_index(d)]);
+    Vector{Double}(d.df[row_indices(d), col_index(d)]);
 
 
 ## -------------  Read delimited file

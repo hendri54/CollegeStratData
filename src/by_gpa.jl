@@ -54,9 +54,7 @@ end
 function time_to_drop_by_gpa(ds :: DataSettings)
     load_fct = 
         mt -> read_col_totals(raw_time_to_drop_qual_gpa(ds; momentType = mt));
-    m, ses, cnts = mean_from_xy(load_fct);
-    # m, ses, cnts = mean_from_col_total(ds, :timeToDrop_gV);
-    # m = read_col_totals(raw_file_path(ds, :timeToDrop_gV));
+    m, ses, cnts = load_mean_ses_counts(load_fct);
     @assert all(m .> 1.5)  &&  all(m .< 4.0)
     @assert length(m) == n_gpa(ds)
     @assert all(cnts .> 100)
@@ -72,7 +70,7 @@ Mean time to graduation by GPA.
 function time_to_grad_by_gpa(ds :: DataSettings)
     load_fct = 
         mt -> read_col_totals(raw_time_to_grad_qual_gpa(ds; momentType = mt));
-    m, ses, cnts = mean_from_xy(load_fct);
+    m, ses, cnts = load_mean_ses_counts(load_fct);
     # m, ses, cnts = mean_from_col_total(ds, :timeToGrad_gV);
     # m = read_col_totals(raw_file_path(ds, :timeToGrad_gV));
     @assert all(m .> 3.0)  &&  all(m .< 7.0)

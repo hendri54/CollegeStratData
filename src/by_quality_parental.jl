@@ -57,7 +57,7 @@ function time_to_grad_qual_parental(ds :: DataSettings)
     load_fct = 
         mt -> read_matrix_by_xy(raw_file_path(ds, :timeToGrad_qpM; momentType = mt));
     # dataM = read_matrix_by_xy(raw_file_path(ds, :timeToGrad_qpM));
-    m, ses, cnts = mean_from_xy(load_fct);
+    m, ses, cnts = load_mean_ses_counts(load_fct);
     @assert check_float_array(m, 3.0, 7.0);
     @assert size(m) == (n_colleges(ds), n_parental(ds))
     # zero out 2 year colleges

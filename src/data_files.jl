@@ -36,7 +36,7 @@ OUT
 function read_regression_file(fPath :: String)
     @assert isfile(fPath)  "File not found: $fPath"
     csvFile = CSV.File(fPath, header = true,  delim = '\t', comment = commentStr);
-	df = (csvFile |> DataFrame!);
+	df = (csvFile |> DataFrame);
 
 	cStat = 1;
 	iCoeff = 1;
@@ -133,7 +133,7 @@ end
 function read_delim_file_to_df(fPath :: String)
 	@assert isfile(fPath)  "File not found: $fPath"
 	csvFile = CSV.File(fPath, header = true,  delim = '\t', comment = commentStr);
-	df = (csvFile |> DataFrame!);
+	df = (csvFile |> DataFrame);
 	return df
 end
 
@@ -167,7 +167,7 @@ Extract "All" row as vector from a DataFrame.
 function all_row_to_vector(df :: DataFrame, colV)
 	allRow = select_all_row(df);
 	df2 = df[allRow, colV];
-	m = convert(Vector{Double},  df2);
+	m = Vector{Double}(df2);
 	return m
 end
 

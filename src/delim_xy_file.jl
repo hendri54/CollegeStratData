@@ -11,12 +11,12 @@ col_indices(d :: DataFrameXY) = 2 : (size(d,2) - 1);
 col_headers(d :: DataFrameXY) = propertynames(d.df)[col_indices(d)];
 row_headers(d :: DataFrameXY) = d.df[row_indices(d), 1];
 data_matrix(d :: DataFrameXY) = 
-    convert(Matrix{Double}, d.df[row_indices(d), col_indices(d)]);
+    Matrix{Double}(d.df[row_indices(d), col_indices(d)]);
 
 total(d :: DataFrameXY) = d.df[end, end];
 
 # Column totals = last row of DataFrame
-col_totals(d :: DataFrameXY) = convert(Vector{Double}, d.df[end, col_indices(d)]);
+col_totals(d :: DataFrameXY) = Vector{Double}(d.df[end, col_indices(d)]);
 # Row totals = last column of DataFrame
 row_totals(d :: DataFrameXY) = d.df[row_indices(d), end];
 

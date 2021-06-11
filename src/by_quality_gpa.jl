@@ -5,12 +5,7 @@
 function time_to_drop_qual_gpa(ds :: DataSettings)
     load_fct = 
         mt -> read_matrix_by_xy(raw_time_to_drop_qual_gpa(ds; momentType = mt));
-    m, ses, cnts = mean_from_xy(load_fct);
-
-    # m = read_matrix_by_xy(raw_file_path(ds, :timeToDrop_qgM));
-    # cntM = read_matrix_by_xy(count_file(ds, :timeToDrop_qgM));
-    # Interpolate a missing entry
-    # (m[4,1] == 0.0)  &&  (m[4,1] = m[3,1]);
+    m, ses, cnts = load_mean_ses_counts(load_fct);
     @assert all(m .< 6.0)  &&  all(m .>= 0.0)
     return m, ses, cnts
 end

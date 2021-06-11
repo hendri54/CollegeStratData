@@ -20,7 +20,7 @@ function courses_tried_grad(ds :: DataSettings,  t :: Integer)
     load_fct = 
         mt -> read_col_totals(raw_credits_taken_qual_grad_year(ds, t; 
             momentType = mt));
-    m, ses, cnts = mean_from_xy(load_fct);
+    m, ses, cnts = load_mean_ses_counts(load_fct);
     m = credits_to_courses(ds, m);
     ses = credits_to_courses(ds, ses);
 

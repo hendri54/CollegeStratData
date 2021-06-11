@@ -6,7 +6,7 @@ function read_scalar_moments(ds :: DataSettings)
     fPath = joinpath(data_dir(ds), "scalar_moments.csv");
     csvFile = CSV.File(fPath, header = [:name, :value],  
         delim = ',', comment = commentStr);
-    return csvFile |> DataFrame!
+    return csvFile |> DataFrame
 end
 
 

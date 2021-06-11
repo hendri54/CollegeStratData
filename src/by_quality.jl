@@ -27,7 +27,7 @@ end
 function college_tuition(ds :: DataSettings)
     load_fct =  mt -> read_row_totals(
         raw_net_price_qual_gpa(ds, ds.tuitionYear; momentType = mt));
-    tuitionV, ses, cnts = mean_from_xy(load_fct);
+    tuitionV, ses, cnts = load_mean_ses_counts(load_fct);
     # rf = raw_net_price_qual_gpa(ds, ds.tuitionYear);
     # tuitionV = read_row_totals(data_file(rf));
     @assert all(tuitionV .> 400.0)  &&  all(tuitionV .< 20000.0)
@@ -40,7 +40,7 @@ end
 function work_hours_by_qual(ds :: DataSettings)
     load_fct = 
         mt -> read_row_totals(raw_work_hours_qual_parental(ds; momentType = mt));
-    m, ses, cnts = mean_from_xy(load_fct);
+    m, ses, cnts = load_mean_ses_counts(load_fct);
     # m, ses, cnts = mean_from_row_total(ds, :workTime_qV);
     # rf = raw_work_hours_qual_gpa(ds, ds.workTimeYear);
     # m = read_row_totals(data_file(rf));
@@ -72,7 +72,7 @@ end
 function time_to_drop_by_quality(ds :: DataSettings)
     load_fct = 
         mt -> read_row_totals(raw_time_to_drop_qual_gpa(ds; momentType = mt));
-    m, ses, cnts = mean_from_xy(load_fct);
+    m, ses, cnts = load_mean_ses_counts(load_fct);
     # m, ses, cnts = mean_from_row_total(ds, :timeToDrop_qV);
     # rf = raw_time_to_drop_qual_gpa(ds);
     # m = read_row_totals(data_file(rf));
@@ -86,7 +86,7 @@ end
 function time_to_grad_by_quality(ds :: DataSettings)
     load_fct = 
         mt -> read_row_totals(raw_time_to_grad_qual_gpa(ds; momentType = mt));
-    m, ses, cnts = mean_from_xy(load_fct);
+    m, ses, cnts = load_mean_ses_counts(load_fct);
     # m, ses, cnts = mean_from_row_total(ds, :timeToGrad_qV);
     # m = read_row_totals(raw_file_path(ds, :timeToGrad_qV));
     @assert all(m .> 3.0)  &&  all(m .< 7.0)
@@ -204,7 +204,7 @@ function cum_loans_qual(ds :: DataSettings,  t :: Integer)
     load_fct = 
         mt -> read_row_totals(raw_cum_loans_qual_year(ds, t; 
             momentType = mt));
-    m, ses, cnts = mean_from_xy(load_fct);
+    m, ses, cnts = load_mean_ses_counts(load_fct);
     return m, ses, cnts
 end
 
@@ -224,8 +224,6 @@ end
 # Standard errors are questionable. The `N`s are given as the total number of students in each college in year 1. 
 # Dropout rates for 2y starters only sum to about 0.9. But 1/3 occur after year 2.
 function frac_drop_qual_year(ds :: DataSettings)
-    # target = :fracDrop_qtM;
-
     # Only first 3 years. Once people graduate, we don't have enough info.
     T = 3;
     # T = ds.Tmax;
@@ -260,9 +258,6 @@ function frac_drop_qual(ds :: DataSettings, t :: Integer)
     cnts_qV = cnts[t, 1 : nc];
     ses_qV = ses_from_choice_probs(fracDrop_qV, cnts_qV);
 
-    # load_fct = 
-    #     mt -> read_row_totals(raw_frac_drop_qual_gpa(ds, t; momentType = mt));
-    # m, ses, cnts = choice_prob_from_xy(load_fct);
     @assert check_float_array(fracDrop_qV, 0.0, 1.0)
     @assert length(fracDrop_qV) == n_colleges(ds)
     return fracDrop_qV, ses_qV, cnts_qV
@@ -302,7 +297,7 @@ end
 function courses_tried_qual(ds :: DataSettings, t :: Integer)
     load_fct = 
         mt -> read_row_totals(raw_credits_taken_qual_gpa(ds, t; momentType = mt));
-    m, ses, cnts = mean_from_xy(load_fct);
+    m, ses, cnts = load_mean_ses_counts(load_fct);
     @assert check_float_array(m, 1.0, 50.0)
     @assert length(m) == n_colleges(ds)
     m = credits_to_courses(ds, m);

@@ -45,17 +45,31 @@ end
 # 	@assert all(m .< 1.0)  &&  all(m .> 0.0)
 # end
 
-# Compute cell mean and its std error, given a function that loads data by (x,y).
-# Or by x as a vector.
-# test this +++++
-function mean_from_xy(load_fct)
+
+"""
+	$(SIGNATURES)
+
+Given a function that loads a moment (could be a matrix or vector) (load_fct):
+
+* load mean, std devs, counts
+* make sure counts are Int
+* compute SES as std deviation of means
+
+test this +++++
+"""
+function load_mean_ses_counts(load_fct)
     m = load_fct(:mean);
     cnts = load_fct(:count);
     stdV = load_fct(:std);
-    ses = stdV ./ (max.(cnts, 1.0) .^ 0.5);
+    ses = std_dev_of_means(stdV, cnts);
     cnts = round.(Int, cnts);
     return m, ses, cnts
 end
+
+
+# Computes std error from std deviations and counts
+# As std error of mean: std dev / sqrt(n)
+std_dev_of_means(stdV, cnts) = stdV ./ (max.(cnts, 1) .^ 0.5);
 
 
 ## ------------  Other
@@ -66,7 +80,7 @@ end
 Convert a `csv` file to a matrix.
 """
 function csv_to_matrix(csvFile)
-    return convert(Matrix{Float64}, csvFile |> DataFrame!)
+    return Matrix{Float64}(csvFile |> DataFrame)
 end
 
 

@@ -12,7 +12,7 @@ function status_by_year(ds :: DataSettings)
         d = read_by_xy(raw_status_year(ds; momentType = mt));
         nr, nc = size(d.df);
         # Drop header column. Keep the rest.
-        convert(Matrix{Double}, d.df[1:nr, 2:nc]);
+        Matrix{Double}(d.df[1:nr, 2:nc]);
     end
     m, ses, cnts = choice_prob_from_xy(load_fct);
     @assert check_float_array(m, 0.0, 1.0);
