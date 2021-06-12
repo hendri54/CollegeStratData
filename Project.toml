@@ -17,6 +17,7 @@ FilesLH = "69233b93-b644-4f5d-9b2e-8880c8b19068"
 Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"
 
 [compat]
+ArgCheck = "2"
 CSV = "^0.8"
 DataCollegeStrat = "1.1"
 DataFrames = "^1"
