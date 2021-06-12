@@ -20,6 +20,7 @@ Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"
 CSV = "^0.8"
 DataCollegeStrat = "1.1"
 DataFrames = "^1"
+Parameters = "0.12"
 DocStringExtensions = "0.8"
 julia = "^1.5"
 
