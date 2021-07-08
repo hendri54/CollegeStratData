@@ -30,7 +30,7 @@ end
 ## Graduation rates (conditional on entry) by (quality, parental)
 function frac_grad_qual_parental(ds :: DataSettings)
     load_fct = 
-        mt -> read_matrix_by_xy(raw_frac_grad_qual_parental(ds; momentType = mt));
+        mt -> read_matrix_by_xy(ds, :fracGrad_gpM, mt);
     m, ses, cnts = choice_prob_from_xy(load_fct);
     # rf = raw_frac_grad_qual_parental(ds);
     # dataM = read_matrix_by_xy(data_file(rf));
@@ -53,16 +53,16 @@ end
 # end
 
 
-function time_to_grad_qual_parental(ds :: DataSettings)
+# 4y colleges only
+function time_to_grad_4y_qual_parental(ds :: DataSettings)
     load_fct = 
-        mt -> read_matrix_by_xy(raw_file_path(ds, :timeToGrad_qpM; momentType = mt));
-    # dataM = read_matrix_by_xy(raw_file_path(ds, :timeToGrad_qpM));
+        mt -> read_matrix_by_xy(ds, :timeToGrad4y_qpM, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);
     @assert check_float_array(m, 3.0, 7.0);
-    @assert size(m) == (n_colleges(ds), n_parental(ds))
+    @assert size(m) == (n_4year(ds), n_parental(ds))
     # zero out 2 year colleges
-    m[two_year_colleges(ds), :] .= 0.0;
-    cnts[two_year_colleges(ds), :] .= 0;
+    # m[two_year_colleges(ds), :] .= 0.0;
+    # cnts[two_year_colleges(ds), :] .= 0;
     return m, ses, cnts
 end
 

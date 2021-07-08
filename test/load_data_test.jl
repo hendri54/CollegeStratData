@@ -65,10 +65,10 @@ function make_target_test(dsName)
 		@test isapprox(d3[2], 0.58, atol = 0.02)
 		
 		# By qual/gpa
-		d4, ses, cnts = load_moment(ds, :timeToDrop_qgM);
+		d4, ses, cnts = load_moment(ds, :timeToDrop4y_qgM);
 		@test all((d4 .>= 1.0)  .|  (cnts .== 0))  &&  all(d4 .< 6.0)
 		# Two values, depending on whether we use transcripts or self reports
-        @test isapprox(d4[1,2], 2.0, atol = 0.2)
+        @test isapprox(d4[1,2], 2.0, atol = 0.5)
 
 		d5, _ = load_moment(ds, :workTime_pV);
 		@test all(d5 .> 600.0)  &&  all(d5 .< 1200.0)

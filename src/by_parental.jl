@@ -14,12 +14,20 @@ end
 ## Hours worked, year 1
 function work_hours_by_parental(ds :: DataSettings)
     load_fct = 
-        mt -> read_col_totals(raw_work_hours_qual_parental(ds; momentType = mt));
+        mt -> read_col_totals(ds, :workTime_qpM, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);
-    # m, ses, cnts = mean_from_col_total(ds, :workTime_pV);
-    # read_col_totals(raw_file_path(ds, :workTime_pV));
     @assert all(m .> 300.0)  &&  all(m .< 2200.0)
     @assert all(cnts .> 100)
+    return m, ses, cnts
+end
+
+# 4y colleges only
+function time_to_grad_4y_by_parental(ds :: DataSettings)
+    load_fct = 
+        mt -> read_col_totals(ds, :timeToGrad4y_pV, mt);
+    m, ses, cnts = load_mean_ses_counts(load_fct);
+    @assert all(m .< 6.0);
+    @assert all(cnts .> 100);
     return m, ses, cnts
 end
 

@@ -29,6 +29,8 @@ Number of two year colleges.
 """
 n_2year(ds :: DataSettings) = ds.n2Year;
 
+n_4year(ds :: DataSettings) = n_colleges(ds) - n_2year(ds);
+
 """
 	$(SIGNATURES)
 

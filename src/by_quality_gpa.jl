@@ -1,11 +1,12 @@
 ## ----------------  Individual moments
 
 ## Mean time to dropout (conditional on dropping out)
-# Some small cells
-function time_to_drop_qual_gpa(ds :: DataSettings)
+# Some small cells. 4Y only.
+function time_to_drop_4y_qual_gpa(ds :: DataSettings)
     load_fct = 
-        mt -> read_matrix_by_xy(raw_time_to_drop_qual_gpa(ds; momentType = mt));
+        mt -> read_matrix_by_xy(ds, :timeToDrop4y_qgM, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);
+    @assert size(m) == (n_4year(ds), n_parental(ds));
     @assert all(m .< 6.0)  &&  all(m .>= 0.0)
     return m, ses, cnts
 end
@@ -36,9 +37,10 @@ end
 
 ## Mass of freshmen by quality / gpa. Sums to 1.
 function mass_entry_qual_gpa(ds :: DataSettings)
-    m = read_matrix_by_xy(raw_file_path(ds, :massEntry_qgM));
+    m = read_matrix_by_xy(ds, :massEntry_qgM, MtMean);
+    @assert size(m) == (n_colleges(ds), n_gpa(ds));
     # SES treats this as a discrete choice problem with total count.
-    cnts = read_matrix_by_xy(raw_file_path(ds, :massEntry_qgM; momentType = :count));
+    cnts = read_matrix_by_xy(ds, :massEntry_qgM, MtCount);
     cnts = fill(sum(cnts), size(cnts));
     @assert all(m .< 1.0)  &&  all(m .> 0.0)
     @assert isapprox(sum(m), 1.0,  atol = 0.0001)
@@ -51,14 +53,14 @@ end
 """
 	$(SIGNATURES)
 
-Graduation rates by [quality, gpa].
+Graduation rates by [quality, gpa]. All colleges.
 """
 function grad_rate_qual_gpa(ds :: DataSettings)
     load_fct = 
-        mt -> read_matrix_by_xy(raw_file_path(ds, :fracGrad_qgM; momentType = mt));
+        mt -> read_matrix_by_xy(ds, :fracGrad_qgM, mt);
     m, ses, cnts = choice_prob_from_xy(load_fct);
-    # m = read_matrix_by_xy(raw_file_path(ds, :fracGrad_qgM));
-    @assert all(m .<= 1.0)  &&  all(m .> 0.0)
+    @assert all(m .<= 1.0)  &&  all(m .> 0.0);
+    @assert size(m) == (n_colleges(ds), n_gpa(ds));
 
     # Set to 0 for colleges that do not produce graduates
     m[no_grad_idx(ds), :] .= 0.0;
@@ -216,5 +218,22 @@ end
 #     st = mean_by_qual(st_qV, ds);
 #     return st, 1.0, 100
 # end
+
+
+# This is not a useful target. High quality / low AFQT cells are almost empty.
+# Instead, use marginals (by quality, AFQT) computed for 4y colleges only.
+function time_to_grad_4y_qual_gpa(ds :: DataSettings)
+    load_fct = 
+        mt -> read_matrix_by_xy(ds, :timeToGrad4y_qgM, mt);
+    m, ses, cnts = load_mean_ses_counts(load_fct);
+    @assert check_float_array(m, 3.0, 7.0);
+    # 4y only
+    @assert size(m) == (n_4year(ds), n_gpa(ds))
+    # # zero out 2 year colleges
+    # m[two_year_colleges(ds), :] .= 0.0;
+    # cnts[two_year_colleges(ds), :] .= 0;
+    return m, ses, cnts
+end
+
 
 # -----------------

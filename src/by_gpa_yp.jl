@@ -37,7 +37,7 @@ end
 # end
 
 function mass_by_gpa_yp(ds :: DataSettings)
-	m = read_by_gpa_yp(ds, :mass_gpM);
+	m = read_by_gpa_yp(ds, :mass_gpM; momentType = MtMean);
 	cnts = read_by_gpa_yp(ds, :mass_gpM; momentType = :count);
 	ses = ses_from_choice_probs(m, cnts);
 	cnts = round.(Int, cnts);

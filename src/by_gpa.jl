@@ -50,14 +50,14 @@ end
 
 
 # Mean time to drop by quality / gpa
-# Contains one 0 cell that needs to be interpolated.
-function time_to_drop_by_gpa(ds :: DataSettings)
+# Contains one 0 cell that needs to be interpolated. 4Y only.
+function time_to_drop_4y_by_gpa(ds :: DataSettings)
     load_fct = 
-        mt -> read_col_totals(raw_time_to_drop_qual_gpa(ds; momentType = mt));
+        mt -> read_col_totals(ds, :timeToDrop4y_qgM, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);
     @assert all(m .> 1.5)  &&  all(m .< 4.0)
     @assert length(m) == n_gpa(ds)
-    @assert all(cnts .> 100)
+    @assert all(cnts .> 30)  "Low counts: $cnts";
     return m, ses, cnts
 end
 
@@ -65,17 +65,15 @@ end
 """
 	$(SIGNATURES)
 
-Mean time to graduation by GPA.
+Mean time to graduation by GPA. 4Y colleges only.
 """
-function time_to_grad_by_gpa(ds :: DataSettings)
+function time_to_grad_4y_by_gpa(ds :: DataSettings)
     load_fct = 
-        mt -> read_col_totals(raw_time_to_grad_qual_gpa(ds; momentType = mt));
+        mt -> read_col_totals(ds, :timeToGrad4y_qgM, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);
-    # m, ses, cnts = mean_from_col_total(ds, :timeToGrad_gV);
-    # m = read_col_totals(raw_file_path(ds, :timeToGrad_gV));
     @assert all(m .> 3.0)  &&  all(m .< 7.0)
     @assert length(m) == n_gpa(ds)
-    @assert all(cnts .> 30)
+    @assert all(cnts .>= 30)  "Low counts: $cnts";
     return m, ses, cnts
 end
 
@@ -86,8 +84,6 @@ end
 Work hours, year 1, by GPA.
 """
 function work_hours_by_gpa(ds :: DataSettings)
-    # m, ses, cnts = mean_from_col_total(ds, :workTime_gV);
-    # target = :workTime_gV;
     m = read_col_totals(raw_work_hours_qual_gpa(ds, ds.workTimeYear));
     stdV = read_col_totals(
         raw_work_hours_qual_gpa(ds, ds.workTimeYear; momentType = :std));

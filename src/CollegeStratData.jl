@@ -32,7 +32,8 @@ include("wage_regressions.jl")
 include("datasettings.jl")
 
 # Data handling routines. Must come first.
-include("raw_data_files.jl")
+include("raw_data_files.jl");
+include("each_raw_file.jl");
 include("data_files.jl")
 include("delim_xy_file.jl")
 include("delim_single_col.jl");
@@ -97,12 +98,13 @@ moment_map() = Dict([
     :studyTime => study_time,
     :studyTime_qV => study_time_qual,
     :studyTime_qgM => study_time_qual_gpa,
-    :timeToDrop_gV => time_to_drop_by_gpa,
-    :timeToDrop_qV => time_to_drop_by_quality,
-    :timeToDrop_qgM => time_to_drop_qual_gpa,
-    :timeToGrad_gV => time_to_grad_by_gpa,
-    :timeToGrad_qV => time_to_grad_by_quality,
-    :timeToGrad_qpM => time_to_grad_qual_parental,
+    :timeToDrop4y_gV => time_to_drop_4y_by_gpa,
+    :timeToDrop4y_qV => time_to_drop_4y_by_quality,
+    :timeToDrop4y_qgM => time_to_drop_4y_qual_gpa,
+    :timeToGrad4y_gV => time_to_grad_4y_by_gpa,
+    :timeToGrad4y_qV => time_to_grad_4y_by_quality,
+    :timeToGrad4y_qpM => time_to_grad_4y_qual_parental,
+    :timeToGrad4y_qgM => time_to_grad_4y_qual_gpa,
     :tuition_qV => college_tuition,
     :workTime_gV => work_hours_by_gpa,
     :workTime_qV => work_hours_by_qual,

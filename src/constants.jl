@@ -21,7 +21,9 @@ const dataDir = joinpath(pkgDir, "data");
 # const CaseNameType = Union{Symbol, Vector{Symbol}}
 
 
-
+const MtMean = :mean;
+const MtStd = :std;
+const MtCount = :count;
 
 ## -------------  Normalizations and Bounds
 

@@ -68,32 +68,28 @@ function grad_rate_by_quality(ds :: DataSettings)
 end
 
 
-## Mean time to drop out by quality
-function time_to_drop_by_quality(ds :: DataSettings)
+## Mean time to drop out by quality. 4y only
+function time_to_drop_4y_by_quality(ds :: DataSettings)
     load_fct = 
-        mt -> read_row_totals(raw_time_to_drop_qual_gpa(ds; momentType = mt));
+        mt -> read_row_totals(ds, :timeToDrop4y_qgM, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);
-    # m, ses, cnts = mean_from_row_total(ds, :timeToDrop_qV);
-    # rf = raw_time_to_drop_qual_gpa(ds);
-    # m = read_row_totals(data_file(rf));
     @assert all(m .> 1.4)  &&  all(m .< 4.0)
-    @assert length(m) == n_colleges(ds)
+    @assert length(m) == (n_colleges(ds) - n_2year(ds))
     return m, ses, cnts
 end
 
 
 ## Mean time to graduate by quality (conditional on graduation)
-function time_to_grad_by_quality(ds :: DataSettings)
+# Only 4y colleges
+function time_to_grad_4y_by_quality(ds :: DataSettings)
     load_fct = 
-        mt -> read_row_totals(raw_time_to_grad_qual_gpa(ds; momentType = mt));
+        mt -> read_row_totals(ds, :timeToGrad4y_qV, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);
-    # m, ses, cnts = mean_from_row_total(ds, :timeToGrad_qV);
-    # m = read_row_totals(raw_file_path(ds, :timeToGrad_qV));
     @assert all(m .> 3.0)  &&  all(m .< 7.0)
-    @assert length(m) == n_colleges(ds)
+    @assert length(m) == n_4year(ds);
     # Set to 0 for 2 year colleges
-    m[no_grad_idx(ds)] .= 0.0;
-    cnts[no_grad_idx(ds)] .= 0;
+    # m[no_grad_idx(ds)] .= 0.0;
+    # cnts[no_grad_idx(ds)] .= 0;
     return m, ses, cnts
 end
 

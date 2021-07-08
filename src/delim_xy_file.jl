@@ -59,8 +59,11 @@ function read_by_xy(fPath :: AbstractString)
 end
 
 read_by_xy(rf :: RawDataFile) = read_by_xy(data_file(rf));
+
 read_matrix_by_xy(fPath :: AbstractString) = data_matrix(read_by_xy(fPath));
 read_matrix_by_xy(rf :: RawDataFile) = read_matrix_by_xy(data_file(rf));
+read_matrix_by_xy(ds :: DataSettings, tg :: Symbol, momentType) = 
+    read_matrix_by_xy(raw_file(ds, tg; momentType));
 
 """
 	$(SIGNATURES)
@@ -69,6 +72,9 @@ Read a file by [x, y]. Return the y totals.
 """
 read_col_totals(fPath :: AbstractString) = col_totals(read_by_xy(fPath));
 read_col_totals(rf :: RawDataFile) = read_col_totals(data_file(rf));
+read_col_totals(ds :: DataSettings, tg :: Symbol, momentType) = 
+    read_col_totals(raw_file(ds, tg; momentType));
+
 
 """
 	$(SIGNATURES)
@@ -77,6 +83,8 @@ Read a file by [x, y]. Return the x totals.
 """
 read_row_totals(fPath :: AbstractString) = row_totals(read_by_xy(fPath));
 read_row_totals(rf :: RawDataFile) = read_row_totals(data_file(rf));
+read_row_totals(ds :: DataSettings, tg :: Symbol, momentType) = 
+    read_row_totals(raw_file(ds, tg; momentType));
 
 """
 	$(SIGNATURES)
