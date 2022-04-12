@@ -334,7 +334,9 @@ function cdf_gpa_by_qual(ds :: DataSettings,
         dataV = df[!, Symbol("quality$(qualityV[iq])")];
         for ip = 1 : np
             rIdx = findfirst(x -> x == "p$(percentileV[ip])", pctColV);
-            @assert rIdx > 0
+            @assert (!isnothing(rIdx)  && (rIdx > 0))  """
+                $(percentileV[ip]) not found in $pctColV
+                """;
             outM[ip, iq] = dataV[rIdx];
         end
     end

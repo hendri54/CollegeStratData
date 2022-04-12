@@ -20,7 +20,7 @@ CollegeStratBase.n_school(ds :: DataSettings) =
 
 Number of college quality groups.
 """
-n_colleges(ds :: DataSettings) = ds.nColleges;
+CollegeStratBase.n_colleges(ds :: DataSettings) = ds.nColleges;
 
 """
 	$(SIGNATURES)
