@@ -8,17 +8,21 @@ CollegeStratBase.ed_symbols(wr :: WageRegressions) = vcat(exper_groups(wr)...);
 CollegeStratBase.n_school(wr :: WageRegressions) = length(ed_symbols(wr));
 use_parental_dummies(wr :: WageRegressions) = wr.useParentalDummies;
 
-default_wage_regressions() = 
-    WageRegressions(maxExperExponent = 4, maxExper = 14);
+default_wage_regressions(; useParentalDummies = true, 
+        useAfqtQualityInteractions :: Bool = false) = 
+    WageRegressions(; maxExperExponent = 4, maxExper = 14, 
+        useParentalDummies, useAfqtQualityInteractions);
 
 # Two school groups
-wage_regressions_two() = 
-    WageRegressions(experGroupV = [[:HSG, :SC], [:CG]], 
-        maxExperExponent = 4);
+wage_regressions_two(; useParentalDummies = true, 
+        useAfqtQualityInteractions :: Bool = false) = 
+    WageRegressions(; experGroupV = [[:HSG, :SC], [:CG]], 
+        maxExperExponent = 4, useParentalDummies, useAfqtQualityInteractions);
 
 
 # Suffix for a regression file, such as "_inc--same"
 # "_inc" determines whether parental income is a regressor.
+# "_interactions" determines whether AFQT / quality interactions are there.
 # "_same" or "_dif" refers to same or different experience profile by schooling.
 # "_OLD" means that the default category for graduates is q2 (no longer +++++)
 function regr_file_suffix(wr :: WageRegressions)
@@ -36,7 +40,13 @@ function regr_file_suffix(wr :: WageRegressions)
         error("Invalid $wr");
     end
 
-    return incSuffix * groupSuffix  # +++++ * "_OLD"
+    if wr.useAfqtQualityInteractions
+        interSuffix = "_interaction";
+    else
+        interSuffix = "";
+    end
+
+    return incSuffix * interSuffix * groupSuffix  # +++++ * "_OLD"
 end
 
 

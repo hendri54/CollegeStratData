@@ -4,7 +4,19 @@ school_groups(ds :: DataSettings) = ds.sGroups;
 # Returns the defined school groups as symbols
 CollegeStratBase.ed_symbols(ds :: DataSettings) = 
 	CollegeStratBase.ed_symbols(school_groups(ds));
-wage_regr_settings(ds :: DataSettings) = ds.wageRegressions;
+
+function wage_regr_settings(ds :: DataSettings, univ :: Symbol)
+	if univ != :CG
+		# To avoid mutating the original object
+		rs = deepcopy(ds.wageRegressions);
+		# Interactions only used for CG
+		rs.useAfqtQualityInteractions = false;
+	else
+		rs = ds.wageRegressions;
+	end
+	return rs
+end
+
 use_parental_dummies(ds :: DataSettings) = use_parental_dummies(ds.wageRegressions);
 
 """
@@ -201,7 +213,8 @@ Make named data settings. Each defines at least:
 The optional argument `baseDir` points to the directory where the data files live. This defaults to `DataCollegeStrat.data_dir()` so that the data travel with the main repo.
 Other than this setting, the code is location independent.
 """
-function make_data_settings(dsName :: Symbol; baseDir :: String = "")
+function make_data_settings(dsName :: Symbol; baseDir :: String = "",
+		useAfqtQualityInteractions = false, useParentalDummies = true)
 	if isempty(baseDir)
 		baseDir = DataCollegeStrat.data_dir();
 		# baseDir = joinpath(homedir(), "Documents", "projects", "p2019", 
@@ -219,14 +232,14 @@ function make_data_settings(dsName :: Symbol; baseDir :: String = "")
 	end
 	
 	if dsName == :twoProfiles
-		wageRegr = wage_regressions_two();
+		wageRegr = wage_regressions_two(; useParentalDummies, useAfqtQualityInteractions);
 	else
-		wageRegr = default_wage_regressions();
+		wageRegr = default_wage_regressions(; useParentalDummies, 
+			useAfqtQualityInteractions);
 	end
-	
+
 	ds = DataSettings(name = dsName, dataSubDir = joinpath(subDir, srcDir),
-		baseDir = baseDir,
-		wageRegressions = wageRegr)
+		baseDir = baseDir, wageRegressions = wageRegr);
 	@assert validate_ds(ds);
 	return ds
 end
@@ -236,7 +249,7 @@ test_data_settings() = make_data_settings(:test);
 
 function validate_ds(ds :: DataSettings) 
 	isValid = true;
-	wr = wage_regr_settings(ds);
+	wr = wage_regr_settings(ds, :All);
 	sg = school_groups(ds);
 	if !isequal(ed_symbols(wr), ed_symbols(sg))
 		@warn """

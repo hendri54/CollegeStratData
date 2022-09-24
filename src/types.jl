@@ -14,12 +14,13 @@
 """
 	$(SIGNATURES)
 
-Settings for experience profiles.
+Settings for wage regressions and experience profiles.
 
 Wage regressions for intercepts regress log fixed effect on:
 - schooling dummies
 - gpa dummies
 - parental dummies 
+- interactions AFQT / quality (not all present) (CG only)
 """
 Base.@kwdef mutable struct WageRegressions 
 	# Max experience in the data
@@ -29,6 +30,7 @@ Base.@kwdef mutable struct WageRegressions
 	# Highest exponenent in experience profile
 	maxExperExponent :: UInt8 = 2
 	useParentalDummies :: Bool = true
+	useAfqtQualityInteractions :: Bool = false
 end
 
 

@@ -5,7 +5,6 @@ csd = CollegeStratData;
 function worker_moments_test(dsName)
 	@testset "Worker moments" begin
 		ds = make_data_settings(dsName);
-		println(ds);
 		yV = exper_profile(ds, :HSG, T = 30);
 		yV = exper_profile(ds, :CG, T = 30);
 		@test length(yV) == 30

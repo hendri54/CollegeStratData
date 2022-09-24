@@ -8,8 +8,7 @@ Most robust to simply store the profile (0 intercept) as a vector
 by schooling.
 """
 function exper_profile(ds :: DataSettings, s :: Symbol; T :: Integer = 60)
-    wr = wage_regr_settings(ds);
-    # @assert 1 ≤ s ≤ n_school(ds);
+    wr = wage_regr_settings(ds, s);
     @assert n_school(wr) == n_school(ds)
 
     bExpV = read_exper_coefficients(ds, s);
@@ -37,7 +36,7 @@ function read_exper_coefficients(ds :: DataSettings, s :: Symbol)
     rf = exper_raw_file(ds, s);
     rt = read_regression_file(rf);
 
-    wr = wage_regr_settings(ds);
+    wr = wage_regr_settings(ds, s);
     nx = max_exper_exponent(wr);
     rNameV = regr_col_headers(:exper, nx);
     bExpV = [get_coefficient(rt, rNameV[j])  for j = 1 : nx];
@@ -48,7 +47,7 @@ end
 
 # File name with experience coefficients
 function exper_raw_file(ds :: DataSettings, s :: Symbol)
-    wr = wage_regr_settings(ds);
+    wr = wage_regr_settings(ds, s);
     if length(exper_groups(wr)) == 1
         suffix = "_all--same";
     elseif exper_groups(wr) == [[:HSG, :SC], [:CG]]
@@ -147,7 +146,7 @@ end
 """
     $(SIGNATURES)
 
-Intercepts of log wage regressions
+Intercepts of log wage regressions for all.
 In data units.
 Regression contains intercept, school dummies (HSG = default), HS GPA dummies (1 = default), experience (dropped here).
 RegressionDeviation contains `:cons` as intercept and school dummies.
@@ -157,7 +156,7 @@ It is legitimate to match these intercepts to model wages of workers with experi
 Substantive test is plotting the implied wage profiles.
 """
 function wage_regr_intercepts(ds :: DataSettings)
-    wr = wage_regr_settings(ds);
+    wr = wage_regr_settings(ds, :All);
     @assert n_school(wr) == n_school(ds)
 
     fn = "loginc_st2_3" * regr_file_suffix(wr) * ".dat";
@@ -187,8 +186,10 @@ function workstart_earnings(rt :: RegressionTable, afqtGroup :: Integer,
         get_regr_coef(rt, :afqt, afqtGroup) +
         get_regr_coef(rt, :school, iSchool) +
         get_regr_coef(rt, :parental, parental; errorIfMissing = false) +
-        get_regr_coef(rt, :lastColl, quality; errorIfMissing = false);
-    # end
+        get_regr_coef(rt, :lastColl, quality; errorIfMissing = false) +
+        get_interaction_coef(rt, :afqt, afqtGroup, :lastColl, quality; 
+            errorIfMissing = false);
+    
     earn = exp(logEarn);
     return earn
 end
@@ -197,7 +198,7 @@ end
 ## ------------  Wage regressions; grads; with quality dummies
 # Omitted category is the first quality from which one can graduate.
 function wage_regr_grads(ds :: DataSettings)
-    wr = wage_regr_settings(ds);
+    wr = wage_regr_settings(ds, :CG);
     @assert n_school(wr) == n_school(ds)
 
     fn = "loginc_st2_2" * regr_file_suffix(wr) * ".dat";

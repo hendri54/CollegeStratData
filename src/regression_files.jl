@@ -33,6 +33,34 @@ function get_regr_coef(rt :: RegressionTable, colCat :: Symbol, j :: Integer;
     return rCoef
 end
 
+
+function get_interaction_coef(rt :: RegressionTable, cat1 :: Symbol, j1 :: Integer, 
+        cat2 :: Symbol, j2 :: Integer; errorIfMissing :: Bool = true)
+
+    if (j1 < 2)  ||  (j2 < 2)
+        rCoef = 0.0;
+    else
+        rName = interaction_name(cat1, j1, cat2, j2);
+        if has_regressor(rt, rName)
+            rCoef = get_coefficient(rt, rName);
+        elseif errorIfMissing
+            error("Cannot retrieve $rName from $rt");
+        else
+            rCoef = 0.0;
+        end
+    end
+    return rCoef;
+end
+
+function interaction_name(cat1, j1, cat2, j2)
+    @check (j1 > 1)  &&  (j2 > 1);
+    rName1 = regressor_string(cat1, j1; interaction = true);
+    rName2 = regressor_string(cat2, j2; interaction = true);
+    rName = Symbol(rName1 * "_" * rName2);
+    return rName
+end
+
+
 function get_intercept(rt :: RegressionTable)
     return get_coefficient(rt, :cons)
 end
@@ -71,19 +99,24 @@ regressor_names(varName :: Symbol, jV :: AbstractVector) =
 	$(SIGNATURES)
 
 Make name of a dummy regressor, such as `:school2`.
+Interaction terms use different abbreviations for quality.
 
 ## Example
 ```
     regressor_string(:gpa, 2) == "afqt2"
 ```
 """
-function regressor_string(varName :: Symbol, idx :: Integer)
+function regressor_string(varName :: Symbol, idx :: Integer; interaction = false)
     if varName ∈ (:gpa, :afqt)
         regName = "afqt$idx";
     elseif varName == :parental
         regName = "parental$idx"
     elseif varName ∈ (:quality, :school)
-        regName = "$varName$idx";
+        if interaction
+            regName = "q$idx";
+        else
+            regName = "$varName$idx";
+        end
     elseif varName == :lastColl
         regName = "last_type$idx";
     elseif varName == :const
