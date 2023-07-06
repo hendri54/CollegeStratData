@@ -1,12 +1,34 @@
 ## ----------------  Individual moments
 
+## Transfers
+function transfers_xy(ds :: DataSettings, xyGroups; yr = 1)
+    load_fct = 
+        mt -> read_matrix_by_xy(raw_transfers_xy(ds, xyGroups, yr; momentType = mt));
+    m, ses, cnts = load_mean_ses_counts(load_fct);
+    @assert size(m) == (n_colleges(ds), n_gpa(ds));
+    @assert all(m[1,:] .< 5_000.0); # 2y colleges
+    @assert all(m .< 18_000.0)  &&  all(m .> 0.0);
+    return m, ses, cnts
+end
+
+function net_price_xy(ds :: DataSettings, xyGroups; yr = 1)
+    load_fct = 
+        mt -> read_matrix_by_xy(raw_net_price_xy(ds, xyGroups, yr; momentType = mt));
+    m, ses, cnts = load_mean_ses_counts(load_fct);
+    @assert size(m) == (n_colleges(ds), n_gpa(ds));
+    @assert all(m[1,:] .< 2_000.0); # 2y colleges
+    @assert all(m .< 12_000.0)  &&  all(m .> -5000.0);
+    return m, ses, cnts
+end
+
+
 ## Mean time to dropout (conditional on dropping out)
 # Some small cells. 4Y only.
 function time_to_drop_4y_qual_gpa(ds :: DataSettings)
     load_fct = 
         mt -> read_matrix_by_xy(ds, :timeToDrop4y_qgM, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);
-    @assert size(m) == (n_4year(ds), n_parental(ds));
+    @assert size(m) == (n_4year(ds), n_gpa(ds));
     @assert all(m .< 6.0)  &&  all(m .>= 0.0)
     return m, ses, cnts
 end
@@ -24,7 +46,7 @@ function frac_qual_by_gpa(ds :: DataSettings)
     nc = size(dataV, 1);
 
     # Counts by GPA
-    cntV = read_row_totals(raw_entry_qual_gpa(ds; momentType = :count));
+    cntV = read_row_totals(raw_entry_qual_gpa(ds; momentType = MtCount()));
     @assert length(cntV) == size(dataV, 2)
     cnts = repeat(cntV', outer = (nc, 1));
     @assert size(cnts) == size(dataV)
@@ -37,16 +59,26 @@ end
 
 ## Mass of freshmen by quality / gpa. Sums to 1.
 function mass_entry_qual_gpa(ds :: DataSettings)
-    m = read_matrix_by_xy(ds, :massEntry_qgM, MtMean);
+    m = read_matrix_by_xy(ds, :massEntry_qgM, MtMean());
     @assert size(m) == (n_colleges(ds), n_gpa(ds));
     # SES treats this as a discrete choice problem with total count.
-    cnts = read_matrix_by_xy(ds, :massEntry_qgM, MtCount);
+    cnts = read_matrix_by_xy(ds, :massEntry_qgM, MtCount());
     cnts = fill(sum(cnts), size(cnts));
     @assert all(m .< 1.0)  &&  all(m .> 0.0)
     @assert isapprox(sum(m), 1.0,  atol = 0.0001)
     ses = ses_from_choice_probs(m, cnts);
     cnts = round.(Int, cnts);
     return m, ses, cnts
+end
+
+# ses not correct +++++
+function frac_gpa_by_qual(ds :: DataSettings)
+    mass_qgM, ses_qgM, cnts_qgM = mass_entry_qual_gpa(ds);
+    frac_gqM = mass_qgM' ./ sum(mass_qgM'; dims = 1);
+    @check all(isapprox.(sum(frac_gqM; dims = 1), 1.0));
+    ses_gqM = ses_qgM';
+    cnts_gqM = cnts_qgM';
+    return frac_gqM, ses_gqM, cnts_gqM
 end
 
 
@@ -70,6 +102,44 @@ function grad_rate_qual_gpa(ds :: DataSettings)
 end
 
 
+"""
+Cumulative fraction dropping out at end of year 2.
+Std errors questionable.
+"""
+function cum_frac_drop_yr2_qual_gpa(ds :: DataSettings)
+    tMax = 2;
+    m = zeros(n_colleges(ds), n_gpa(ds));
+    ses = similar(m);
+    cnts = similar(m);
+    for t = 1 : tMax
+        mt, sest, cntst = frac_drop_qual_gpa(ds, t);
+        m .+= mt;
+        ses .+= sest;
+        cnts .+= cntst;
+    end
+    ses ./= tMax;
+    cnts ./= tMax;
+    cnts = round.(Int, cnts);
+    return m, ses, cnts
+end
+
+
+"""
+Fraction of initial entrants dropping out at end of each year.
+Standard errors are questionable. The `N`s are given as the total number of students in each college in year 1. 
+Dropout rates for 2y starters only sum to about 0.9. But 1/3 occur after year 2.
+"""
+function frac_drop_qual_gpa(ds :: DataSettings, t :: Integer)
+    load_fct = 
+        mt -> read_matrix_by_xy(raw_frac_drop_qual_gpa(ds, t; momentType = mt));
+    m, ses, cnts = choice_prob_from_xy(load_fct);
+    @assert check_float_array(m, 0.0, 1.0)
+    @assert size(m) == (n_colleges(ds), n_gpa(ds));
+    return m, ses, cnts
+end
+
+
+
 ## --------------  Study time
 
 """
@@ -81,27 +151,33 @@ But need to adjust b/c grand mean should be lower for NLSY97.
 """
 function study_time_qual(ds :: DataSettings)
     studyV = [read_row_totals(study_time79_path(ds; momentType = mt)) 
-        for mt in (:mean, :std, :count)];
+        for mt in (MtMean(), MtStd(), MtCount())];
     classV = [read_row_totals(class_time79_path(ds; momentType = mt)) 
-        for mt in (:mean, :std, :count)];
+        for mt in (MtMean(), MtStd(), MtCount())];
 
     m, ses, cnts = total_study_time(studyV, classV);
     return m, ses, cnts
 end
 
-function study_time79_path(ds; momentType = :mean)
-    fPath = data_file(raw_study_time_qual_gpa(ds; momentType = momentType));
+function study_time79_path(ds; momentType = MtMean())
+    fPath = data_file(raw_study_time_qual_gpa(ds; momentType));
     fPath = nlsy79_path(fPath);
     return fPath
 end
 
-function class_time79_path(ds; momentType = :mean)
-    fPath = data_file(raw_class_time_qual_gpa(ds; momentType = momentType));
+function class_time79_path(ds; momentType = MtMean())
+    fPath = data_file(raw_class_time_qual_gpa(ds; momentType));
     fPath = nlsy79_path(fPath);
     return fPath
 end
 
-nlsy79_path(fPath) = replace(fPath, "97" => "79");
+"""
+Make the NLSY79 equivalent path for an NLSY97 moment.
+79 data no longer have `SelfReport` or `Transcript` sub-directories.
+"""
+function nlsy79_path(fPath) 
+    replace(fPath, "97" => "79", "/SelfReport" => "", "/Transcripts" => "");
+end
 
 function total_study_time(studyV, classV)
     @assert size(studyV) == size(classV) == (3, );
@@ -126,13 +202,13 @@ end
 
 function study_time_qual_gpa(ds :: DataSettings)
     studyV = [read_matrix_by_xy(study_time79_path(ds; momentType = mt)) 
-        for mt in (:mean, :std, :count)];
+        for mt in (MtMean(), MtStd(), MtCount())];
     classV = [read_matrix_by_xy(class_time79_path(ds; momentType = mt)) 
-        for mt in (:mean, :std, :count)];
+        for mt in (MtMean(), MtStd(), MtCount())];
 
     dataM, ses, cnts = total_study_time(studyV, classV);
 
-    # fPath = data_file(raw_study_time_qual_gpa(ds; momentType = :mean));
+    # fPath = data_file(raw_study_time_qual_gpa(ds; momentType = MtMean()));
     # fPath = replace(fPath, "97" => "79");
     # m = read_row_totals(fPath);
 
@@ -172,9 +248,9 @@ end
 
 function study_time(ds :: DataSettings)
     studyV = [read_total(study_time79_path(ds; momentType = mt)) 
-        for mt in (:mean, :std, :count)];
+        for mt in (MtMean(), MtStd(), MtCount())];
     classV = [read_total(class_time79_path(ds; momentType = mt)) 
-        for mt in (:mean, :std, :count)];
+        for mt in (MtMean(), MtStd(), MtCount())];
 
     m, ses, cnts = total_study_time(studyV, classV);
     return m, ses, cnts

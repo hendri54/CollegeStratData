@@ -20,10 +20,36 @@ const dataDir = joinpath(pkgDir, "data");
 # const GridInt = UInt16
 # const CaseNameType = Union{Symbol, Vector{Symbol}}
 
+abstract type AbstractMoment end;
+struct MtMean <: AbstractMoment end;
+sub_dir(::MtMean) = "Means";
+struct MtStd <: AbstractMoment end;
+sub_dir(::MtStd) = "StandardDeviations";
+struct MtCount <: AbstractMoment end;
+sub_dir(::MtCount) = "Counts";
+struct MtRegression <: AbstractMoment end;
+sub_dir(::MtRegression) = "Regressions";
 
-const MtMean = :mean;
-const MtStd = :std;
-const MtCount = :count;
+abstract type AbstractSelfOrTranscript end;
+struct Transcript <: AbstractSelfOrTranscript end;
+sub_dir(::Transcript) = "Transcripts";
+struct SelfReport <: AbstractSelfOrTranscript end;
+sub_dir(::SelfReport) = "SelfReport";
+
+# # Sub-dirs for data files
+# dMomentType = Dict([
+#     MtMean() => "Means",  
+#     MtCount() => "Counts", 
+#     MtStd() => "StandardDeviations", 
+# 	MtRegression() => "Regressions"]);
+
+
+# const MtMean = :mean;
+# const MtStd = :std;
+# const MtCount = :count;
+
+# Name of intercept regressor in raw data files.
+const RegrInter = :cons;
 
 ## -------------  Normalizations and Bounds
 
@@ -36,7 +62,10 @@ const MtCount = :count;
 # Comment string in CSV files
 const commentStr = "#"
     
-
+# School levels, used in files and file names.
+const SchoolHSG = :HSG;
+const SchoolSC = :SC;
+const SchoolCG = :CG;
 
 ## --------------  Debugging
 

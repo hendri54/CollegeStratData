@@ -86,9 +86,9 @@ Work hours, year 1, by GPA.
 function work_hours_by_gpa(ds :: DataSettings)
     m = read_col_totals(raw_work_hours_qual_gpa(ds, ds.workTimeYear));
     stdV = read_col_totals(
-        raw_work_hours_qual_gpa(ds, ds.workTimeYear; momentType = :std));
+        raw_work_hours_qual_gpa(ds, ds.workTimeYear; momentType = MtStd()));
     cnts = read_col_totals(
-        raw_work_hours_qual_gpa(ds, ds.workTimeYear; momentType = :count));
+        raw_work_hours_qual_gpa(ds, ds.workTimeYear; momentType = MtCount()));
     ses = stdV ./ (max.(cnts, 1.0) .^ 0.5);
     cnts = round.(Int, cnts);
     @assert all(m .> 400.0)  &&  all(m .< 1800.0)
@@ -125,6 +125,44 @@ function frac_drop_gpa(ds :: DataSettings, t :: Integer)
     @assert check_float_array(m, 0.0, 1.0)
     @assert length(m) == n_gpa(ds)
     return m, ses, cnts
+end
+
+
+# ------------ Fixed effects (wages)
+
+"""
+Wage fixed effects by AFQT / quality. For one education level.
+Non-standard file name location.
+"""
+function wage_fixed_effects_fn(ds, edLevel; momentType = MtMean())
+    fn = "mean_$(edLevel)_fe_same.dat";
+    fDir = joinpath(data_dir(ds), data_sub_dir(SelfReport(), MtMean(), :none), "Reg");
+    return joinpath(fDir, fn)
+end
+
+function wage_fe_prefix(momentType)
+    if momentType == MtMean()
+        return "mean"
+    elseif momentType == MtStd()
+        return "SD"
+    elseif momentType == MtCount()
+        return "N"
+    else
+        error("Invalid $momentType");
+    end
+end
+
+
+function wage_fixed_effects_gpa(ds :: DataSettings, edLevel)
+    fPath = wage_fixed_effects_fn(ds, edLevel);
+    load_fct = 
+        mt -> read_col_totals(fPath);
+    m, ses, cnts = load_mean_ses_counts(load_fct);
+    @assert all(m .> 1.5)  &&  all(m .< 4.0)
+    @assert length(m) == n_gpa(ds)
+    @assert all(cnts .> 30)  "Low counts: $cnts";
+    return m, ses, cnts
+
 end
 
 

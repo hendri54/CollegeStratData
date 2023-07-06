@@ -61,8 +61,15 @@ function interaction_name(cat1, j1, cat2, j2)
 end
 
 
-function get_intercept(rt :: RegressionTable)
-    return get_coefficient(rt, :cons)
+has_intercept(rt :: RegressionTable) = 
+    has_regressor(rt, RegrInter);
+
+function get_intercept(rt :: RegressionTable; defaultValue = missing)
+    if has_intercept(rt)
+        return get_coefficient(rt, RegrInter);
+    else
+        return defaultValue;
+    end
 end
 
 
@@ -117,8 +124,10 @@ function regressor_string(varName :: Symbol, idx :: Integer; interaction = false
         else
             regName = "$varName$idx";
         end
-    elseif varName == :lastColl
+    elseif varName ∈ (:lastColl, :last_type)
         regName = "last_type$idx";
+    elseif varName == :interaction
+        regName = "interaction$idx";
     elseif varName == :const
         @assert idx <= 0  "Constant does not have index"
         regName = "cons"
@@ -139,17 +148,17 @@ Name of intercept regressor in raw data files.
 intercept_name() = :cons;
 
 # All regressors for given fields. As returned to the outside, not as loaded from disk.
-group_regressors(ds :: DataSettings, group :: Symbol) =
-    regressor_names(group,  1 : n_groups(ds, group));
+group_regressors(ds :: DataSettings, group :: Symbol; startIdx = 1) =
+    regressor_names(group,  startIdx : n_groups(ds, group));
 
-gpa_regressors(ds :: DataSettings) = 
-    group_regressors(ds, :gpa);
-parental_regressors(ds :: DataSettings) = 
-    group_regressors(ds, :parental);
-quality_regressors(ds :: DataSettings) = 
-    group_regressors(ds, :quality);
-school_regressors(ds :: DataSettings) = 
-    group_regressors(ds, :school);
+gpa_regressors(ds :: DataSettings; startIdx = 1) = 
+    group_regressors(ds, :gpa; startIdx);
+parental_regressors(ds :: DataSettings; startIdx = 1) = 
+    group_regressors(ds, :parental; startIdx);
+quality_regressors(ds :: DataSettings; startIdx = 1) = 
+    group_regressors(ds, :quality; startIdx);
+school_regressors(ds :: DataSettings; startIdx = 1) = 
+    group_regressors(ds, :school; startIdx);
 
 
 ## ----------  Names in original files
@@ -189,7 +198,8 @@ regr_col_headers(colCat :: Symbol, jMax :: Integer) =
 # Valid column headers (without indices) in original files.
 # Some files have :afqt; others have :quartile.
 valid_col_headers() = 
-    [:afqt, :quartile, :inc_quartile, :quality, :school, :last_type, :exp, :cons];
+    [:afqt, :quartile, :inc_quartile, :inc_pctile, :quality, :school, 
+        :last_type, :interaction, :exp, :cons];
 
 # Check that regressor names in a loaded file are valid.
 # Before renaming.

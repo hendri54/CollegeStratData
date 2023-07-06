@@ -2,8 +2,8 @@
 
 ## ----------- Status by year (in college quality X; drop; grad)
 
-raw_status_year(ds :: DataSettings; momentType :: Symbol = :mean) = 
-    RawDataFile(:transcript, :progress, momentType, 
+raw_status_year(ds :: DataSettings; momentType = MtMean()) = 
+    RawDataFile(Transcript(), :progress, momentType, 
         "q_dist_by_y.dat", ds);
 
 function status_by_year(ds :: DataSettings)
@@ -86,7 +86,7 @@ end
 Read cumulative loans for one year. Optionally a percentile. Otherwise the mean.
 """
 function cum_loans_year(ds :: DataSettings, t :: Integer; percentile = nothing)
-    rf = raw_cum_loans_qual_year(ds, t; momentType = :mean, percentile = percentile);
+    rf = raw_cum_loans_qual_year(ds, t; momentType = MtMean(), percentile = percentile);
     return Double(read_total(rf));
 end
 

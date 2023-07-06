@@ -7,7 +7,7 @@ function read_by_gpa_yp(ds :: DataSettings, fPath :: AbstractString)
 end
 
 read_by_gpa_yp(ds :: DataSettings, mName :: Symbol; momentType = nothing) =
-	read_by_gpa_yp(ds, raw_file_path(ds, mName; momentType = momentType));
+	read_by_gpa_yp(ds, raw_file_path(ds, mName; momentType));
 
 
 ## -------------  Individual moments
@@ -17,7 +17,7 @@ function load_entry_gpa_yp(ds :: DataSettings)
 	load_fct = mt -> read_by_gpa_yp(ds, :fracEnter_gpM; momentType = mt);
 	m, ses, cnts = choice_prob_from_xy(load_fct);
 	# m = read_by_gpa_yp(ds, :fracEnter_gpM);
-	# cnts = read_by_gpa_yp(ds, :fracEnter_gpM; momentType = :count);
+	# cnts = read_by_gpa_yp(ds, :fracEnter_gpM; momentType = MtCount());
 	# ses = ses_from_choice_probs(m, cnts);
 	# cnts = round.(Int, cnts);
 	@assert all(m .< 1.0)  &&  all(m .> 0.0)
@@ -37,8 +37,8 @@ end
 # end
 
 function mass_by_gpa_yp(ds :: DataSettings)
-	m = read_by_gpa_yp(ds, :mass_gpM; momentType = MtMean);
-	cnts = read_by_gpa_yp(ds, :mass_gpM; momentType = :count);
+	m = read_by_gpa_yp(ds, :mass_gpM; momentType = MtMean());
+	cnts = read_by_gpa_yp(ds, :mass_gpM; momentType = MtCount());
 	ses = ses_from_choice_probs(m, cnts);
 	cnts = round.(Int, cnts);
     @assert all(m .< 0.5)  &&  all(m .> 0.0)

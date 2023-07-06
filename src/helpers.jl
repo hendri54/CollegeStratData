@@ -12,8 +12,8 @@ end
 # Given a function that loads moments by (x,y), compute cell mean, its std error, and cell counts. Each cell contains the fraction that chooses "yes".
 # test this +++++
 function choice_prob_from_xy(load_fct)
-	m = load_fct(:mean);
-	cnts = load_fct(:count);
+	m = load_fct(MtMean());
+	cnts = load_fct(MtCount());
 	ses = ses_from_choice_probs(m, cnts);
 	cnts = round.(Int, cnts);
 	@assert all(m .<= 1.0)  &&  all(m .>= 0.0)
@@ -25,7 +25,7 @@ end
 #     m = read_col_totals(raw_file_path(ds, target));
 #     @assert all(m .>= 0.0)  &&  all(m .<= 1.0)
 
-#     cnts = read_col_totals(raw_file_path(ds, target; momentType = :count));
+#     cnts = read_col_totals(raw_file_path(ds, target; momentType = MtCount()));
 #     ses = ses_from_choice_probs(m, cnts);
 #     cnts = round.(Int, cnts);
 #     return m, ses, cnts
@@ -35,7 +35,7 @@ end
 #     m = read_row_totals(raw_file_path(ds, target));
 #     @assert all(m .>= 0.0)  &&  all(m .<= 1.0)
 
-#     cnts = read_row_totals(raw_file_path(ds, target; momentType = :count));
+#     cnts = read_row_totals(raw_file_path(ds, target; momentType = MtCount()));
 #     ses = ses_from_choice_probs(m, cnts);
 #     cnts = round.(Int, cnts);
 #     return m, ses, cnts
@@ -58,9 +58,9 @@ Given a function that loads a moment (could be a matrix or vector) (load_fct):
 test this +++++
 """
 function load_mean_ses_counts(load_fct)
-    m = load_fct(:mean);
-    cnts = load_fct(:count);
-    stdV = load_fct(:std);
+    m = load_fct(MtMean());
+    cnts = load_fct(MtCount());
+    stdV = load_fct(MtStd());
     ses = std_dev_of_means(stdV, cnts);
     cnts = round.(Int, cnts);
     return m, ses, cnts

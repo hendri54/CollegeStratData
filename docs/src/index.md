@@ -54,7 +54,7 @@ A mapping from data moments to raw data files is constructed in `raw_file_map`. 
 
 ## Updating data files
 
-When the data files are updated: Simply copy the directory for a given set of moments, such as "uneven types", from `Dropbox` into the package directory. Bump the package version. Register. Upload to github.
+When the data files are updated: Simply copy the directory for a given set of moments, such as "uneven types", from `Dropbox` into the `DataCollegeStrat` package directory. Bump the package version. Register. Upload to github.
 
 The new data versions will be used only when `DataCollegeStrat` is `update`d in `CollegeStratData`. It is therefore easy to roll back to previous data versions (which correspond to package versions).
 

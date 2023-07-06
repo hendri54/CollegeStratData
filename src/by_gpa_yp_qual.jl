@@ -50,45 +50,48 @@
 # end
 
 
-# Load fraction by quality | [gpa, yp]
-# Not conditional on entry. As a matrix by [gpa, yp, quality] that matches
-# `StatsByXYQ.fracEnter_xyqM`
-# probably best to call those directly from CollegeStrat?
-# check std errors ++++++
-function load_qual_entry_gpa_yp_all(ds :: DataSettings;
+"""
+$(SIGNATURES)
+
+Load fraction by quality | [gpa, yp]
+As a matrix by [quality, gpa, yp].
+
+check std errors, not only b/c they depend on conditionalOnEntry ++++++
+"""
+function load_qual_entry_gpa_yp(ds :: DataSettings;
 	conditionalOnEntry :: Bool = false)
 
 	# Counts should depend on conditionalOnEntry +++
 	_, _, cnt_xyM = load_entry_gpa_yp(ds);
 
 	nc = n_colleges(ds);
-	fracEnter_xyqM = zeros(Double, n_gpa(ds), n_parental(ds), nc);
-	cnt_xyqM = zeros(Int, n_gpa(ds), n_parental(ds), nc);
+	fracEnter_qgpM = zeros(Double, n_gpa(ds), n_parental(ds), nc);
+	cnt_qgpM = zeros(Int, nc, n_gpa(ds), n_parental(ds));
 
 	for ic = 1 : nc
-		fracEnter_xyqM[:,:,ic] = load_qual_entry_gpa_yp(ds, ic; 
-			conditionalOnEntry = conditionalOnEntry, momentType = :mean);
-		cnt_xyqM[:,:,ic] = cnt_xyM;
+		fracEnter_qgpM[ic,:,:] = load_qual_entry_gpa_yp(ds, ic; 
+			conditionalOnEntry, momentType = MtMean());
+		cnt_qgpM[ic,:,:] = cnt_xyM;
 	end
 	if conditionalOnEntry
 		# Should sum to 1 across qualities
-		qSumM = sum(fracEnter_xyqM, dims = 3);
+		qSumM = sum(fracEnter_qgpM, dims = 1);
 		@assert check_float_array(qSumM, 0.998, 1.002)
 	end
 
-	ses_xyqM = ses_from_choice_probs(fracEnter_xyqM, cnt_xyqM);
+	ses_qgpM = ses_from_choice_probs(fracEnter_qgpM, cnt_qgpM);
 
-	return fracEnter_xyqM, ses_xyqM, cnt_xyqM
+	return fracEnter_qgpM, ses_qgpM, cnt_qgpM
 end
 
 
 # Load fraction by quality | [gpa, yp]. Conditional on entry or not.
 function load_qual_entry_gpa_yp(ds :: DataSettings, iCollege;
-	conditionalOnEntry :: Bool = false, momentType :: Symbol = :mean)
+	conditionalOnEntry :: Bool = false, momentType = MtMean())
 	fPath = data_file(
-		raw_qual_entry_gpa_parental(ds, iCollege; momentType = momentType));
+		raw_qual_entry_gpa_parental(ds, iCollege; momentType));
 	m = read_by_gpa_yp(ds, fPath);
-	if momentType == :mean
+	if momentType == MtMean()
 		@assert all(m .< 1.0)  &&  all(m .>= 0.0)
 	end
 	@assert size(m) == (n_gpa(ds), n_parental(ds))

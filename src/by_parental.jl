@@ -11,6 +11,18 @@ function frac_enter_by_parental(ds :: DataSettings)
 end
 
 
+## College earnings, year 1
+function coll_earn_by_parental(ds :: DataSettings; year = 1)
+    @assert (year == 1)  "Implement other years";
+    load_fct = 
+        mt -> read_col_totals(ds, :collEarn_qpM, mt);
+    m, ses, cnts = load_mean_ses_counts(load_fct);
+    @assert all(m .> 2_000.0)  &&  all(m .< 10_000.0);
+    @assert all(cnts .> 100);
+    return m, ses, cnts
+end
+
+
 ## Hours worked, year 1
 function work_hours_by_parental(ds :: DataSettings)
     load_fct = 

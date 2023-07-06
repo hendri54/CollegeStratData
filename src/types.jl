@@ -84,12 +84,12 @@ Raw data files sit in a nested directory structure, such as
 The object contains info for constructing the path.
 """
 mutable struct RawDataFile
-	# :self or :transcript
-	selfOrTranscript  ::  Symbol
+	# :self or Transcript()
+	selfOrTranscript  ::  AbstractSelfOrTranscript
 	# E.g. :finance
 	group  ::  Symbol
-	# E.g. :mean or :regression; :std for std deviations
-	momentType :: Symbol
+	# E.g. MtMean() or MtRegression(); MtStd() for std deviations
+	momentType :: AbstractMoment
 	# E.g. "regression.dat"
 	rawFile  ::  String
 	ds :: DataSettings

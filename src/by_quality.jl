@@ -5,12 +5,12 @@
 # Read a percentile vector (values between 0 and 100).
 # Std deviations are constructed from counts.
 function read_pct_by_quality(ds :: DataSettings, rawFileFct)
-    m = read_vector_by_x(data_file(rawFileFct(:mean))) ./ 100.0;
+    m = read_vector_by_x(data_file(rawFileFct(MtMean()))) ./ 100.0;
     @assert isa(m, Vector{Double})
 	@argcheck size(m) == (n_colleges(ds), )
 	@assert all(m .> 0.0)  &&  all(m .< 1.0)
 
-    cnts = read_vector_by_x(data_file(rawFileFct(:count)));
+    cnts = read_vector_by_x(data_file(rawFileFct(MtCount())));
     @assert all(cnts .> 100)
     @assert size(m) == size(cnts)
 
@@ -26,10 +26,8 @@ end
 ## Tuition (out of pocket). Average by college type
 function college_tuition(ds :: DataSettings)
     load_fct =  mt -> read_row_totals(
-        raw_net_price_qual_gpa(ds, ds.tuitionYear; momentType = mt));
+        raw_net_price_xy(ds, [:qual, :gpa], ds.tuitionYear; momentType = mt));
     tuitionV, ses, cnts = load_mean_ses_counts(load_fct);
-    # rf = raw_net_price_qual_gpa(ds, ds.tuitionYear);
-    # tuitionV = read_row_totals(data_file(rf));
     @assert all(tuitionV .> 400.0)  &&  all(tuitionV .< 20000.0)
     @assert length(tuitionV) == n_colleges(ds)
     return tuitionV, ses, cnts
@@ -80,16 +78,13 @@ end
 
 
 ## Mean time to graduate by quality (conditional on graduation)
-# Only 4y colleges
+# Only 4y colleges (output length = no of 4y colleges).
 function time_to_grad_4y_by_quality(ds :: DataSettings)
     load_fct = 
         mt -> read_row_totals(ds, :timeToGrad4y_qV, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);
     @assert all(m .> 3.0)  &&  all(m .< 7.0)
     @assert length(m) == n_4year(ds);
-    # Set to 0 for 2 year colleges
-    # m[no_grad_idx(ds)] .= 0.0;
-    # cnts[no_grad_idx(ds)] .= 0;
     return m, ses, cnts
 end
 
@@ -101,13 +96,13 @@ function afqt_mean_by_quality(ds :: DataSettings)
     m, ses, cnts = read_pct_by_quality(ds :: DataSettings, rawFileFct);
 
     # rf = raw_afqt_pct_qual(ds);
-    # m = read_vector_by_x(data_file(rawFileFct(:mean))) ./ 100.0;
+    # m = read_vector_by_x(data_file(rawFileFct(MtMean()))) ./ 100.0;
     # @assert isa(m, Vector{Double})
 	@argcheck size(m) == (n_colleges(ds), )
 	@assert all(m .> 0.0)  &&  all(m .< 1.0)
 
-    # rfCnts = raw_afqt_pct_qual(ds; momentType = :count);
-    # cnts = read_vector_by_x(data_file(rawFileFct(:count)));
+    # rfCnts = raw_afqt_pct_qual(ds; momentType = MtCount());
+    # cnts = read_vector_by_x(data_file(rawFileFct(MtCount())));
     # @assert all(cnts .> 100)
 
     # ses = m ./ (cnts .^ 0.5);
@@ -148,11 +143,11 @@ function frac_local_by_quality(ds :: DataSettings)
     # Cannot use this b/c std errors are constructed differently
     # m, ses, cnts = read_pct_by_quality(ds :: DataSettings, rawFileFct);
 
-    m = read_vector_by_x(data_file(rawFileFct(:mean)));
-    cnts = read_vector_by_x(data_file(rawFileFct(:count)));
+    m = read_vector_by_x(data_file(rawFileFct(MtMean())));
+    cnts = read_vector_by_x(data_file(rawFileFct(MtCount())));
     cnts = round.(Int, cnts);
     ses = ses_from_choice_probs(m, cnts);
-    # ses = read_vector_by_x(data_file(rawFileFct(:std)));
+    # ses = read_vector_by_x(data_file(rawFileFct(MtStd())));
 
     @assert isa(m, Vector{Double})
 	@argcheck size(m) == (n_colleges(ds), )
@@ -209,7 +204,7 @@ function cum_loans_qual_percentile(ds :: DataSettings, t :: Integer,
     percentile :: Integer)
 
     outM = read_row_totals(raw_cum_loans_qual_year(ds, t; 
-        momentType = :mean, percentile = percentile));
+        momentType = MtMean(), percentile = percentile));
     return outM
 end
 
@@ -306,12 +301,12 @@ end
 # Each row is a percentile (e.g. p10 is the 10th percentile of GPA in each college).
 # Each entry means: The p10-th percentile in this college is the X-th percentile in the population.
 # Numbers are between 0 and 100
-function read_cdf_gpa_by_qual(ds :: DataSettings; momentType :: Symbol = :mean)
-    rawFn = RawDataFile(:transcript, :freshmen, momentType, 
+function read_cdf_gpa_by_qual(ds :: DataSettings; momentType = MtMean())
+    rawFn = RawDataFile(Transcript(), :freshmen, momentType, 
         file_name(ds, "inv_cdf", [:afqt, :qual]), ds);
     fPath = data_file(rawFn);
     df = read_delim_file_to_df(fPath);
-    if momentType == :mean
+    if momentType == MtMean()
         @check all_greater(df.quality2, 1)
         @check all_at_most(df.quality4, 100)
     end
@@ -325,15 +320,16 @@ end
 function cdf_gpa_by_qual(ds :: DataSettings, 
     percentileV :: AbstractVector, qualityV :: AbstractVector)
 
-    df = read_cdf_gpa_by_qual(ds; momentType = :mean);
-    pctColV = df[!, :pctile];
+    df = read_cdf_gpa_by_qual(ds; momentType = MtMean());
+    pctColV = parse_pct_column(df[!, :pctile]);
     np = length(percentileV);
     nq = length(qualityV);
     outM = zeros(np, nq);
     for iq = 1 : nq
         dataV = df[!, Symbol("quality$(qualityV[iq])")];
         for ip = 1 : np
-            rIdx = findfirst(x -> x == "p$(percentileV[ip])", pctColV);
+            # rIdx = findfirst(x -> x == "p$(percentileV[ip])", pctColV);
+            rIdx = findfirst(x -> x == percentileV[ip], pctColV);
             @assert (!isnothing(rIdx)  && (rIdx > 0))  """
                 $(percentileV[ip]) not found in $pctColV
                 """;
@@ -343,6 +339,16 @@ function cdf_gpa_by_qual(ds :: DataSettings,
     @assert all_greater(outM, 1.0);
     @assert all_at_most(outM, 100.0)
     return outM
+end
+
+# Parse "p05" to integer 5 etc.
+function parse_pct_column(pctStrV)
+    pctV = zeros(Int, size(pctStrV));
+    for (j, pctStr) in enumerate(pctStrV)
+        pctV[j] = parse(Int, pctStr[2 : end]);
+    end
+    @assert all(0 .<= pctV .<= 100);
+    return pctV
 end
 
 

@@ -27,7 +27,7 @@ end
 ## Fraction entering college
 function frac_enter(ds :: DataSettings)
     fracEnter = read_all_from_delim_file(raw_entry_gpa_parental(ds));
-    cnt = read_all_from_delim_file(raw_entry_gpa_parental(ds; momentType = :count));
+    cnt = read_all_from_delim_file(raw_entry_gpa_parental(ds; momentType = MtCount()));
     @assert check_float(fracEnter, lb = 0.45, ub = 0.65);
     ses = (fracEnter * (1.0 - fracEnter) / cnt) ^ 0.5;
     return fracEnter, ses, cnt
@@ -37,7 +37,7 @@ end
 ## Graduation rate (conditional on entry)
 function grad_rate(ds :: DataSettings)
     gradRate = read_all_from_delim_file(raw_grad_rate_qual_gpa(ds));
-    cnt = read_all_from_delim_file(raw_grad_rate_qual_gpa(ds; momentType = :count));
+    cnt = read_all_from_delim_file(raw_grad_rate_qual_gpa(ds; momentType = MtCount()));
     @assert check_float(gradRate, lb = 0.3, ub = 0.7);
     ses = (gradRate * (1.0 - gradRate) / cnt) ^ 0.5;
     return gradRate, ses, cnt

@@ -19,7 +19,7 @@ export file_name_differences, compare_dirs
 # Moments
 export load_moment, n_entrants
 export exper_profile, wage_regr_intercepts, workstart_earnings, wage_regr_grads
-export get_regr_coef, get_intercept
+export get_regr_coef, get_intercept, has_intercept;
 
 export cdf_gpa_by_qual
 
@@ -30,6 +30,7 @@ include("constants.jl")
 include("types.jl")
 include("wage_regressions.jl")
 include("datasettings.jl")
+include("excel_files.jl");
 
 # Data handling routines. Must come first.
 include("raw_data_files.jl");
@@ -67,11 +68,15 @@ The user can then simply call `load_moment` to load any moment.
 """
 moment_map() = Dict([
     # :corrGpaYp => corr_gpa_yp,
+    :collEarn_qpM => coll_earn_qual_parental,
+    :collEarn_qV => coll_earn_by_qual,
+    :collEarn_pV => coll_earn_by_parental,
     :coursesTried_otM => courses_tried_grad_year,
     :coursesTried_qtM => courses_tried_qual_year,
     :cumLoans_qtM => cum_loans_qual_year,
     :cumLoans90_qtM => cum_loans90_qual_year,
     :cumLoans90_tV => cum_loans90_year,
+    :cumFracDropYr2_qgM => cum_frac_drop_yr2_qual_gpa,
     :fracDrop4y_tV => frac_drop_4y_by_year,
     :fracDrop_qtM => frac_drop_qual_year,
     :fracDrop_gtM => frac_drop_gpa_year,
@@ -80,8 +85,6 @@ moment_map() = Dict([
     :fracEnter_gV => frac_enter_by_gpa,
     :fracEnter_pV => frac_enter_by_parental,
     :fracEnter_gpM => load_entry_gpa_yp,
-    # Fraction in each quality among [gpa, yp] entrants
-    :fracEnter_gpqM => load_qual_entry_gpa_yp_all,
     :fracEnter => frac_enter,
     :fracGrad => grad_rate,
     :fracGrad_gV => grad_rate_by_gpa,
@@ -89,8 +92,11 @@ moment_map() = Dict([
     :fracGrad_qpM => frac_grad_qual_parental,
     :fracGrad_qgM => grad_rate_qual_gpa,
     :fracLocal_qV => frac_local_by_quality,
+    # Fraction in each quality among [gpa, yp] HS grads (conditional on entry)
+    :fracQual_qgpM => (ds -> load_qual_entry_gpa_yp(ds; conditionalOnEntry = true)),
     :fracQual_qpM => frac_qual_by_parental,
     :fracQual_qgM => frac_qual_by_gpa,
+    :fracGpa_gqM => frac_gpa_by_qual,
     :gpaMean_qV => afqt_mean_by_quality,
     :mass_gpM => mass_by_gpa_yp,
     :massEntry_qgM => mass_entry_qual_gpa,
@@ -105,16 +111,22 @@ moment_map() = Dict([
     :timeToGrad4y_qV => time_to_grad_4y_by_quality,
     :timeToGrad4y_qpM => time_to_grad_4y_qual_parental,
     :timeToGrad4y_qgM => time_to_grad_4y_qual_gpa,
+    :transfers_qgM => (ds -> transfers_xy(ds, [:qual, :gpa])),
+    :transfers_qpM => (ds -> transfers_xy(ds, [:qual, :parental])),
+    :tuition_qgM => (ds -> net_price_xy(ds, [:qual, :gpa])),
+    :tuition_qpM => (ds -> net_price_xy(ds, [:qual, :parental])),
     :tuition_qV => college_tuition,
     :workTime_gV => work_hours_by_gpa,
     :workTime_qV => work_hours_by_qual,
     :workTime_pV => work_hours_by_parental,
     # Regressions
     :transferRegr => transfer_regr,
+    :transferRegrQpInteractions => transfer_regr_w_qp_interactions,
     :tuitionRegr => tuition_regr,
+    :tuitionRegrQpInteractions => tuition_regr_w_qp_interactions,
     :wageRegrIntercepts => wage_regr_intercepts,
     :wageRegrGrads => wage_regr_grads
-]);
+    ]);
 
 """
 	$(SIGNATURES)

@@ -1,6 +1,7 @@
 # Map moment names into functions that make raw file paths
 raw_file_map() = Dict([
     # :fracDrop_qtM => raw_frac_drop_qual_gpa,
+    :collEarn_qpM => raw_college_earnings_qual_parental,
     :fracEnroll_qV => raw_entry_qual_parental,
     :fracEnter_gV => raw_entry_gpa_parental,
     :fracEnter_pV => raw_entry_gpa_parental,
@@ -20,6 +21,7 @@ raw_file_map() = Dict([
     :timeToGrad4y_pV => raw_time_to_grad_4y_qual_parental,
     :timeToGrad4y_qgM => raw_time_to_grad_4y_qual_gpa,
     :timeToGrad4y_qpM => raw_time_to_grad_4y_qual_parental,
+    # :transfer_qgM => raw_transfers_qual_gpa,
     :workTime_pV => raw_work_hours_qual_parental,
     :workTime_qV => raw_work_hours_qual_parental,
     :workTime_qpM => raw_work_hours_qual_parental
@@ -31,17 +33,14 @@ raw_file_map() = Dict([
 ## ---------  Methods
 
 # Mapping from characteristics to directory names
-dSelfTranscript = Dict([:selfReport => "SelfReport",  :transcript => "Transcripts"]);
+# dSelfTranscript = Dict([SelfReport() => "SelfReport",  Transcript() => "Transcripts"]);
 
-dMomentType = Dict([:mean => "Means",  :count => "Counts", 
-    :std => "StandardDeviations", 
-	:regression => "Regressions"]);
 
 dGroup = Dict([:finance => "Financing",  :freshmen => "Fresh_Char",
 	:hsGrads => "HS_Char",  :progress => "Progress",  :none => ""]);
 
 data_settings(rf :: RawDataFile) = rf.ds;
-set_moment_type(rf :: RawDataFile, momentType :: Symbol) = 
+set_moment_type(rf :: RawDataFile, momentType) = 
     rf.momentType = momentType;
 
 
@@ -69,13 +68,13 @@ end
 # File with counts for a given data moment
 function count_file(ds :: DataSettings, mName :: Symbol)
     rf = raw_file(ds, mName);
-    set_moment_type(rf, MtCount);
+    set_moment_type(rf, MtCount());
     return rf
 end
 
 function std_file(ds :: DataSettings, mName :: Symbol)
     rf = raw_file(ds, mName);
-    set_moment_type(rf, MtStd);
+    set_moment_type(rf, MtStd());
     return rf
 end
     
@@ -92,9 +91,9 @@ function missing_file_list(ds)
     # Mapping of moments to files
     rawMap = raw_file_map();
     for mName in keys(rawMap)
-        rf = raw_file(ds, mName; momentType = MtMean);
+        rf = raw_file(ds, mName; momentType = MtMean());
         @assert isa(rf, CollegeStratData.RawDataFile)
-        fPath = raw_file_path(ds, mName; momentType = MtMean);
+        fPath = raw_file_path(ds, mName; momentType = MtMean());
         if !isfile(fPath)
             push!(missList, fPath);
         end
@@ -237,7 +236,7 @@ end
 # 	raw_data_dir(rf.selfOrTranscript, rf.momentType, rf.group);
 
 # function raw_data_dir(ds :: DataSettings, selfReportOrTranscript :: Symbol,  
-#     momentType :: Symbol, 	momentGroup :: Symbol)
+#     momentType, 	momentGroup :: Symbol)
 	
 # 	rawPath = joinpath(raw_data_base_dir(ds),  
 # 		data_sub_dir(selfReportOrTranscript, momentType, momentGroup));
@@ -257,18 +256,18 @@ data_file(rf :: RawDataFile) =
 data_sub_dir(rf :: RawDataFile) =
 	data_sub_dir(rf.selfOrTranscript, rf.momentType, rf.group);
 
-data_sub_dir(selfReportOrTranscript :: Symbol,  momentType :: Symbol, 
+data_sub_dir(selfReportOrTranscript :: AbstractSelfOrTranscript,  momentType, 
 	momentGroup :: Symbol) =
-    joinpath(dSelfTranscript[selfReportOrTranscript],  "dat_files", 
-		dMomentType[momentType],  dGroup[momentGroup])
+    joinpath(sub_dir(selfReportOrTranscript),  "dat_files", 
+		sub_dir(momentType),  dGroup[momentGroup])
 
 function file_name(rf :: RawDataFile)
     fn = rf.rawFile;
-    if rf.momentType == :count
+    if rf.momentType == MtCount()
         # `_N` appended to name (why??)
         fn2, fExt = splitext(fn);
         fn = fn2 * "_N" * fExt;
-    elseif rf.momentType == :std
+    elseif rf.momentType == MtStd()
         # `_SD` appended to name (why??)
         fn2, fExt = splitext(fn);
         fn = fn2 * "_SD" * fExt;

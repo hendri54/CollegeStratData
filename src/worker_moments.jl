@@ -62,7 +62,7 @@ function exper_raw_file(ds :: DataSettings, s :: Symbol)
         error("Invalid $wr");
     end
     
-    rf = RawDataFile(:selfReport, :none, :regression, 
+    rf = RawDataFile(SelfReport(), :none, MtRegression(), 
         "loginc_st1" * suffix * ".dat", ds);
     return rf
 end
@@ -160,7 +160,7 @@ function wage_regr_intercepts(ds :: DataSettings)
     @assert n_school(wr) == n_school(ds)
 
     fn = "loginc_st2_3" * regr_file_suffix(wr) * ".dat";
-    rf = RawDataFile(:selfReport, :none, :regression, fn, ds);
+    rf = RawDataFile(SelfReport(), :none, MtRegression(), fn, ds);
     rt = read_regression_file(rf);
     rename_regressors(rt);
     return rt
@@ -202,7 +202,7 @@ function wage_regr_grads(ds :: DataSettings)
     @assert n_school(wr) == n_school(ds)
 
     fn = "loginc_st2_2" * regr_file_suffix(wr) * ".dat";
-    rf = RawDataFile(:selfReport, :none, :regression, fn, ds);
+    rf = RawDataFile(SelfReport(), :none, MtRegression(), fn, ds);
     rt = read_regression_file(rf);
     rename_regressors(rt);
 
