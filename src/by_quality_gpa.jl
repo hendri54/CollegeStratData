@@ -116,6 +116,7 @@ function cum_frac_drop_yr2_qual_gpa(ds :: DataSettings)
         m .+= mt;
         ses .+= sest;
         cnts .+= cntst;
+        @assert all(0 .<= cnts .< 1e5);
     end
     ses ./= tMax;
     cnts ./= tMax;

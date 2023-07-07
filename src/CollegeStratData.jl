@@ -117,6 +117,7 @@ moment_map() = Dict([
     :tuition_qgM => (ds -> net_price_xy(ds, [:qual, :gpa])),
     :tuition_qpM => (ds -> net_price_xy(ds, [:qual, :parental])),
     :tuition_qV => college_tuition,
+    :wageFe_sgM => (ds -> wage_fixed_effects(ds, ClassHsGpa())),
     :wageFe_sqM => (ds -> wage_fixed_effects(ds, ClassQuality())),
     :wageFe_sV => (ds -> wage_fixed_effects(ds, ClassAll())),
     :workTime_gV => work_hours_by_gpa,
