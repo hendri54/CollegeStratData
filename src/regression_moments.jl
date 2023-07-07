@@ -10,7 +10,7 @@ end
 
 # Transfer regressions with AFQT, parental, quality dummies.
 raw_transfer_regr(ds :: DataSettings; momentType = nothing) = 
-    RawDataFile(Transcript(), :none, MtRegression(), "parental_transfers1_reg1.dat", ds);
+    RawDataFile(Transcript(), GrpNone(), MtRegression(), "parental_transfers1_reg1.dat", ds);
 
 # Transfer regression with quality dummies and quality / income percentile interactions
 # (called interaction2 etc)
@@ -28,7 +28,7 @@ function transfer_regr_w_qp_interactions(ds :: DataSettings)
 end
 
 raw_transfer_regr_w_qp_interactions(ds :: DataSettings; momentType = nothing) = 
-    RawDataFile(Transcript(), :none, MtRegression(), "parental_transfers1_reg_inc.dat", ds);
+    RawDataFile(Transcript(), GrpNone(), MtRegression(), "parental_transfers1_reg_inc.dat", ds);
 
 
 ## -----------  Tuition regression (net price)
@@ -46,7 +46,7 @@ end
 
 # Tuition regression with AFQT, parental, quality dummies.
 raw_tuition_regr(ds :: DataSettings; momentType = nothing) = 
-    RawDataFile(Transcript(), :none, MtRegression(), "net_price1_reg1.dat", ds);
+    RawDataFile(Transcript(), GrpNone(), MtRegression(), "net_price1_reg1.dat", ds);
 
 
 # Tuition regression with quality dummies and quality / income percentile interactions
@@ -65,7 +65,7 @@ function tuition_regr_w_qp_interactions(ds :: DataSettings)
 end
 
 raw_tuition_regr_w_qp_interactions(ds :: DataSettings; momentType = nothing) = 
-    RawDataFile(Transcript(), :none, MtRegression(), "net_price1_reg_inc.dat", ds);
+    RawDataFile(Transcript(), GrpNone(), MtRegression(), "net_price1_reg_inc.dat", ds);
 
 # Scale from percentile in [0, 100] to percentile in [0, 1].
 # Just multiplies regressor and se by 100.

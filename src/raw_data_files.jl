@@ -36,8 +36,6 @@ raw_file_map() = Dict([
 # dSelfTranscript = Dict([SelfReport() => "SelfReport",  Transcript() => "Transcripts"]);
 
 
-dGroup = Dict([:finance => "Financing",  :freshmen => "Fresh_Char",
-	:hsGrads => "HS_Char",  :progress => "Progress",  :none => ""]);
 
 data_settings(rf :: RawDataFile) = rf.ds;
 set_moment_type(rf :: RawDataFile, momentType) = 
@@ -256,10 +254,11 @@ data_file(rf :: RawDataFile) =
 data_sub_dir(rf :: RawDataFile) =
 	data_sub_dir(rf.selfOrTranscript, rf.momentType, rf.group);
 
-data_sub_dir(selfReportOrTranscript :: AbstractSelfOrTranscript,  momentType, 
-	momentGroup :: Symbol) =
-    joinpath(sub_dir(selfReportOrTranscript),  "dat_files", 
-		sub_dir(momentType),  dGroup[momentGroup])
+function data_sub_dir(selfReportOrTranscript :: AbstractSelfOrTranscript,  
+        momentType, momentGroup :: AbstractGroup)
+    return joinpath(sub_dir(selfReportOrTranscript),  "dat_files", 
+		sub_dir(momentType),  sub_dir(momentGroup))
+end
 
 function file_name(rf :: RawDataFile)
     fn = rf.rawFile;

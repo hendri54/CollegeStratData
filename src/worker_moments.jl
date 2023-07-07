@@ -50,10 +50,10 @@ function exper_raw_file(ds :: DataSettings, s :: Symbol)
     wr = wage_regr_settings(ds, s);
     if length(exper_groups(wr)) == 1
         suffix = "_all--same";
-    elseif exper_groups(wr) == [[:HSG, :SC], [:CG]]
-        if s ∈ (:HSG, :SC, :SC)
+    elseif exper_groups(wr) == [[SchoolHSG, SchoolSC], [SchoolCG]]
+        if s ∈ (SchoolHSG, SchoolSC, SchoolSC)
             suffix = "_noncol--dif";
-        elseif s == :CG
+        elseif s == SchoolCG
             suffix = "_colgrad--dif";
         else
             error("Invalid $s");
@@ -62,7 +62,7 @@ function exper_raw_file(ds :: DataSettings, s :: Symbol)
         error("Invalid $wr");
     end
     
-    rf = RawDataFile(SelfReport(), :none, MtRegression(), 
+    rf = RawDataFile(SelfReport(), GrpNone(), MtRegression(), 
         "loginc_st1" * suffix * ".dat", ds);
     return rf
 end
@@ -90,11 +90,11 @@ end
 # Work start ages for converting RZ profiles by age into experience profiles.
 # The same work start age for all non college grads because both estimations assume that all workers in that group have the same profile.
 function work_start_age(s :: Symbol) 
-    if s == :HSG
+    if s == SchoolHSG
         workStartAge = 20;
-    elseif (s == :SC)  ||  (s == :SC)
+    elseif (s == SchoolSC)
         workStartAge = 20;
-    elseif s == :CG
+    elseif s == SchoolCG
         workStartAge = 23;
     else
         error("Invalid $s");
@@ -121,7 +121,7 @@ function read_rupert_zanella(age1, age2, s)
 end
 
 function rupert_zanella_path(s)
-    if s == :CG
+    if s == SchoolCG
         suffix = "college";
     else
         suffix = "no_college";
@@ -160,7 +160,7 @@ function wage_regr_intercepts(ds :: DataSettings)
     @assert n_school(wr) == n_school(ds)
 
     fn = "loginc_st2_3" * regr_file_suffix(wr) * ".dat";
-    rf = RawDataFile(SelfReport(), :none, MtRegression(), fn, ds);
+    rf = RawDataFile(SelfReport(), GrpNone(), MtRegression(), fn, ds);
     rt = read_regression_file(rf);
     rename_regressors(rt);
     return rt
@@ -198,11 +198,11 @@ end
 ## ------------  Wage regressions; grads; with quality dummies
 # Omitted category is the first quality from which one can graduate.
 function wage_regr_grads(ds :: DataSettings)
-    wr = wage_regr_settings(ds, :CG);
+    wr = wage_regr_settings(ds, SchoolCG);
     @assert n_school(wr) == n_school(ds)
 
     fn = "loginc_st2_2" * regr_file_suffix(wr) * ".dat";
-    rf = RawDataFile(SelfReport(), :none, MtRegression(), fn, ds);
+    rf = RawDataFile(SelfReport(), GrpNone(), MtRegression(), fn, ds);
     rt = read_regression_file(rf);
     rename_regressors(rt);
 

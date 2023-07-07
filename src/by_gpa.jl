@@ -128,42 +128,6 @@ function frac_drop_gpa(ds :: DataSettings, t :: Integer)
 end
 
 
-# ------------ Fixed effects (wages)
-
-"""
-Wage fixed effects by AFQT / quality. For one education level.
-Non-standard file name location.
-"""
-function wage_fixed_effects_fn(ds, edLevel; momentType = MtMean())
-    fn = "mean_$(edLevel)_fe_same.dat";
-    fDir = joinpath(data_dir(ds), data_sub_dir(SelfReport(), MtMean(), :none), "Reg");
-    return joinpath(fDir, fn)
-end
-
-function wage_fe_prefix(momentType)
-    if momentType == MtMean()
-        return "mean"
-    elseif momentType == MtStd()
-        return "SD"
-    elseif momentType == MtCount()
-        return "N"
-    else
-        error("Invalid $momentType");
-    end
-end
-
-
-function wage_fixed_effects_gpa(ds :: DataSettings, edLevel)
-    fPath = wage_fixed_effects_fn(ds, edLevel);
-    load_fct = 
-        mt -> read_col_totals(fPath);
-    m, ses, cnts = load_mean_ses_counts(load_fct);
-    @assert all(m .> 1.5)  &&  all(m .< 4.0)
-    @assert length(m) == n_gpa(ds)
-    @assert all(cnts .> 30)  "Low counts: $cnts";
-    return m, ses, cnts
-
-end
 
 
 # ------------------

@@ -1,12 +1,12 @@
 using CollegeStratData, Test
 
-csd = CollegeStratData;
+mdl = CollegeStratData;
 
 function worker_moments_test(dsName)
 	@testset "Worker moments" begin
 		ds = make_data_settings(dsName);
-		yV = exper_profile(ds, :HSG, T = 30);
-		yV = exper_profile(ds, :CG, T = 30);
+		yV = exper_profile(ds, mdl.SchoolHSG, T = 30);
+		yV = exper_profile(ds, mdl.SchoolCG, T = 30);
 		@test length(yV) == 30
 		@test all(yV .>= 0.0)
 		@test all(yV .< 1.5)
@@ -36,7 +36,7 @@ function rupert_zanella_test(s)
     @testset "Rupert/Zanella $s" begin
         age1 = 35;
         age2 = 65;
-        logEffV = csd.read_rupert_zanella(age1, age2, s);
+        logEffV = mdl.read_rupert_zanella(age1, age2, s);
         @test logEffV isa Vector{Float64};
         @test all(logEffV .> log(0.5));
         @test length(logEffV) == (age2 - age1 + 1);
@@ -45,7 +45,7 @@ function rupert_zanella_test(s)
         logEffV = collect(LinRange(0.0, 2.3, T));
         logEff2V = copy(logEffV);
         maxExper = 11;
-        csd.splice_rupert_zanella!(logEffV, maxExper, s);
+        mdl.splice_rupert_zanella!(logEffV, maxExper, s);
         @test all(isapprox(logEffV[1 : maxExper], logEff2V[1 : maxExper]));
         @test all(logEffV .>= 0.0)
     end
@@ -56,7 +56,7 @@ end
 	for dsName ∈ CollegeStratData.data_settings_list()
 		worker_moments_test(dsName)
 	end
-    for s ∈ (:HSG, :SC, :CG)
+    for s ∈ (mdl.SchoolHSG, mdl.SchoolSC, mdl.SchoolCG)
         rupert_zanella_test(s);
     end
 end

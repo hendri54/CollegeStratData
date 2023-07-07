@@ -6,7 +6,7 @@ CollegeStratBase.ed_symbols(ds :: DataSettings) =
 	CollegeStratBase.ed_symbols(school_groups(ds));
 
 function wage_regr_settings(ds :: DataSettings, univ :: Symbol)
-	if univ != :CG
+	if univ != SchoolCG
 		# To avoid mutating the original object
 		rs = deepcopy(ds.wageRegressions);
 		# Interactions only used for CG

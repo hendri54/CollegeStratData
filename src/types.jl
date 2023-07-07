@@ -26,7 +26,7 @@ Base.@kwdef mutable struct WageRegressions
 	# Max experience in the data
 	maxExper :: UInt8 = 12
 	# School groups in each experience profile
-	experGroupV :: Vector{Vector{Symbol}} = [[:HSG, :SC, :CG]]
+	experGroupV :: Vector{Vector{Symbol}} = [[SchoolHSG, SchoolSC, SchoolCG]]
 	# Highest exponenent in experience profile
 	maxExperExponent :: UInt8 = 2
 	useParentalDummies :: Bool = true
@@ -86,8 +86,8 @@ The object contains info for constructing the path.
 mutable struct RawDataFile
 	# :self or Transcript()
 	selfOrTranscript  ::  AbstractSelfOrTranscript
-	# E.g. :finance
-	group  ::  Symbol
+	# E.g. GrpFinance
+	group  ::  AbstractGroup
 	# E.g. MtMean() or MtRegression(); MtStd() for std deviations
 	momentType :: AbstractMoment
 	# E.g. "regression.dat"

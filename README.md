@@ -2,8 +2,14 @@
 
 Data routines for CollegeStrat and MismatchMM projects.
 
+Order of categories: school (s), quality (q), gpa (g), parental (p)
+
 ## Change log 2023
 
+July-7 (v2.2)
+- load wage fixed effects
+- Added classifications (e.g. ClassHsGpa)
+- Added groups (e.g. GrpFinance)
 July-6
 - MomentTypes as types rather than symbols
 Jun-26

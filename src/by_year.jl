@@ -3,7 +3,7 @@
 ## ----------- Status by year (in college quality X; drop; grad)
 
 raw_status_year(ds :: DataSettings; momentType = MtMean()) = 
-    RawDataFile(Transcript(), :progress, momentType, 
+    RawDataFile(Transcript(), GrpProgress(), momentType, 
         "q_dist_by_y.dat", ds);
 
 function status_by_year(ds :: DataSettings)

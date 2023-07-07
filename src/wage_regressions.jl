@@ -16,7 +16,7 @@ default_wage_regressions(; useParentalDummies = true,
 # Two school groups
 wage_regressions_two(; useParentalDummies = true, 
         useAfqtQualityInteractions :: Bool = false) = 
-    WageRegressions(; experGroupV = [[:HSG, :SC], [:CG]], 
+    WageRegressions(; experGroupV = [[SchoolHSG, SchoolSC], [SchoolCG]], 
         maxExperExponent = 4, useParentalDummies, useAfqtQualityInteractions);
 
 
@@ -34,7 +34,7 @@ function regr_file_suffix(wr :: WageRegressions)
 
     if length(exper_groups(wr)) == 1
         groupSuffix = "--same";
-    elseif exper_groups(wr) == [[:HSG, :SC], [:CG]]
+    elseif exper_groups(wr) == [[SchoolHSG, SchoolSC], [SchoolCG]]
         groupSuffix = "--dif";
     else
         error("Invalid $wr");

@@ -302,7 +302,7 @@ end
 # Each entry means: The p10-th percentile in this college is the X-th percentile in the population.
 # Numbers are between 0 and 100
 function read_cdf_gpa_by_qual(ds :: DataSettings; momentType = MtMean())
-    rawFn = RawDataFile(Transcript(), :freshmen, momentType, 
+    rawFn = RawDataFile(Transcript(), GrpFreshmen(), momentType, 
         file_name(ds, "inv_cdf", [:afqt, :qual]), ds);
     fPath = data_file(rawFn);
     df = read_delim_file_to_df(fPath);

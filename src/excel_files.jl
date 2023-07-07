@@ -5,7 +5,7 @@ export open_excel_data_file, excel_data_path;
 
 Open Excel data file.
 """  
-function open_excel_data_file(ds :: DataSettings, trOrSelfReport :: Symbol)
+function open_excel_data_file(ds :: DataSettings, trOrSelfReport)
     fPath = excel_data_path(ds, trOrSelfReport);
     @argcheck isfile(fPath)  "Not found: $fPath";
     run(`open $fPath`);

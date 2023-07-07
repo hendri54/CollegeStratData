@@ -52,7 +52,8 @@ include("by_quality_parental.jl")
 include("by_quality_gpa.jl")
 include("by_parental.jl")
 include("by_grad_year.jl");
-include("regression_moments.jl")
+include("regression_moments.jl");
+include("wage_fixed_effects.jl");
 
 # Processing all moments (must come last)
 # include("show_deviations.jl")
@@ -116,6 +117,8 @@ moment_map() = Dict([
     :tuition_qgM => (ds -> net_price_xy(ds, [:qual, :gpa])),
     :tuition_qpM => (ds -> net_price_xy(ds, [:qual, :parental])),
     :tuition_qV => college_tuition,
+    :wageFe_sqM => (ds -> wage_fixed_effects(ds, ClassQuality())),
+    :wageFe_sV => (ds -> wage_fixed_effects(ds, ClassAll())),
     :workTime_gV => work_hours_by_gpa,
     :workTime_qV => work_hours_by_qual,
     :workTime_pV => work_hours_by_parental,
