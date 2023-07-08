@@ -6,6 +6,8 @@ Order of categories: school (s), quality (q), gpa (g), parental (p)
 
 ## Change log 2023
 
+July-8 (v2.4)
+- check counts and convert to Int when loading.
 July-7 (v2.2)
 - load wage fixed effects
 - Added classifications (e.g. ClassHsGpa)

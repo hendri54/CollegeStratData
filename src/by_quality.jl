@@ -11,11 +11,11 @@ function read_pct_by_quality(ds :: DataSettings, rawFileFct)
 	@assert all(m .> 0.0)  &&  all(m .< 1.0)
 
     cnts = read_vector_by_x(data_file(rawFileFct(MtCount())));
-    @assert all(cnts .> 100)
+    cnts = clean_cnts(cnts);
+    @assert all(cnts .> 100);
     @assert size(m) == size(cnts)
 
     ses = m ./ (cnts .^ 0.5);
-    cnts = round.(Int, cnts);
     return m, ses, cnts
 end
 

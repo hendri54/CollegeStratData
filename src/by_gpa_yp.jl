@@ -40,7 +40,7 @@ function mass_by_gpa_yp(ds :: DataSettings)
 	m = read_by_gpa_yp(ds, :mass_gpM; momentType = MtMean());
 	cnts = read_by_gpa_yp(ds, :mass_gpM; momentType = MtCount());
 	ses = ses_from_choice_probs(m, cnts);
-	cnts = round.(Int, cnts);
+	cnts = clean_cnts(cnts);
     @assert all(m .< 0.5)  &&  all(m .> 0.0)
 	@assert size(m) == (n_gpa(ds), n_parental(ds))
 	@check sum(m) ≈ 1.0

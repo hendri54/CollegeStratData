@@ -51,8 +51,8 @@ function frac_qual_by_gpa(ds :: DataSettings)
     cnts = repeat(cntV', outer = (nc, 1));
     @assert size(cnts) == size(dataV)
 
+    cnts = clean_cnts(cnts);
     ses = ses_from_choice_probs(dataV, cnts);
-    cnts = round.(Int, cnts);
     return dataV, ses, cnts
 end
 
@@ -64,10 +64,10 @@ function mass_entry_qual_gpa(ds :: DataSettings)
     # SES treats this as a discrete choice problem with total count.
     cnts = read_matrix_by_xy(ds, :massEntry_qgM, MtCount());
     cnts = fill(sum(cnts), size(cnts));
+    cnts = clean_cnts(cnts);
     @assert all(m .< 1.0)  &&  all(m .> 0.0)
     @assert isapprox(sum(m), 1.0,  atol = 0.0001)
     ses = ses_from_choice_probs(m, cnts);
-    cnts = round.(Int, cnts);
     return m, ses, cnts
 end
 
@@ -116,11 +116,10 @@ function cum_frac_drop_yr2_qual_gpa(ds :: DataSettings)
         m .+= mt;
         ses .+= sest;
         cnts .+= cntst;
-        @assert all(0 .<= cnts .< 1e5);
     end
     ses ./= tMax;
     cnts ./= tMax;
-    cnts = round.(Int, cnts);
+    cnts = clean_cnts(cnts);
     return m, ses, cnts
 end
 
@@ -180,6 +179,9 @@ function nlsy79_path(fPath)
     replace(fPath, "97" => "79", "/SelfReport" => "", "/Transcripts" => "");
 end
 
+"""
+Inputs are Vectors. Each Vector contains [mean, ses, cnts]. Each element can be scalar or array (e.g. mean by quality).
+"""
 function total_study_time(studyV, classV)
     @assert size(studyV) == size(classV) == (3, );
     for j = 1 : 3
@@ -194,9 +196,11 @@ function total_study_time(studyV, classV)
     classFactor = 13.01 / 15.84;
 
     cnts = round.(Int, 0.5 .* (studyV[3] .+ classV[3]));
+    cnts = clean_cnts(cnts);
     m = studyV[1] .* studyFactor .+ classV[1] .* classFactor;
     ses = (studyV[2] .* studyFactor .+ classV[2] .* classFactor) ./ 
         sqrt.(cnts);
+    @check size(m) == size(ses) == size(cnts);
     return m, ses, cnts
 end
 

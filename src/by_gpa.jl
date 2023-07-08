@@ -90,7 +90,7 @@ function work_hours_by_gpa(ds :: DataSettings)
     cnts = read_col_totals(
         raw_work_hours_qual_gpa(ds, ds.workTimeYear; momentType = MtCount()));
     ses = stdV ./ (max.(cnts, 1.0) .^ 0.5);
-    cnts = round.(Int, cnts);
+    cnts = clean_cnts(cnts);
     @assert all(m .> 400.0)  &&  all(m .< 1800.0)
     @assert length(m) == n_gpa(ds)
     @assert all(cnts .> 100)

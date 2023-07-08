@@ -41,9 +41,9 @@ function frac_qual_by_parental(ds :: DataSettings)
     # Count by parental
     cnts = sum(cnts, dims = 1);
     cnts = repeat(cnts, outer = (nr, 1));
+    cnts = clean_cnts(cnts);
 
     ses = ses_from_choice_probs(dataV, cnts);
-    cnts = round.(Int, cnts);
     return dataV, ses, cnts
 end
 
