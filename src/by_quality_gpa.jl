@@ -109,8 +109,8 @@ Std errors questionable.
 function cum_frac_drop_yr2_qual_gpa(ds :: DataSettings)
     tMax = 2;
     m = zeros(n_colleges(ds), n_gpa(ds));
-    ses = similar(m);
-    cnts = similar(m);
+    ses = zeros(size(m));
+    cnts = zeros(Int, size(m));
     for t = 1 : tMax
         mt, sest, cntst = frac_drop_qual_gpa(ds, t);
         m .+= mt;

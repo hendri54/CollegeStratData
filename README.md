@@ -6,6 +6,8 @@ Order of categories: school (s), quality (q), gpa (g), parental (p)
 
 ## Change log 2023
 
+July-18 (v2.5)
+- added DataCollegeStrat v2.3
 July-8 (v2.4)
 - check counts and convert to Int when loading.
 July-7 (v2.2)
