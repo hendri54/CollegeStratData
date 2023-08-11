@@ -6,6 +6,8 @@ Order of categories: school (s), quality (q), gpa (g), parental (p)
 
 ## Change log 2023
 
+Aug-8
+- move to BaseMM
 July-18 (v2.5)
 - added DataCollegeStrat v2.3
 July-8 (v2.4)

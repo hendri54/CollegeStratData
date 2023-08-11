@@ -4,8 +4,8 @@ max_exper(wr :: WageRegressions) = wr.maxExper
 exper_groups(wr :: WageRegressions) = wr.experGroupV;
 max_exper_exponent(wr :: WageRegressions) = wr.maxExperExponent;
 # School groups that are recognized
-CollegeStratBase.ed_symbols(wr :: WageRegressions) = vcat(exper_groups(wr)...);
-CollegeStratBase.n_school(wr :: WageRegressions) = length(ed_symbols(wr));
+BaseMM.ed_symbols(wr :: WageRegressions) = vcat(exper_groups(wr)...);
+BaseMM.n_school(wr :: WageRegressions) = length(ed_symbols(wr));
 use_parental_dummies(wr :: WageRegressions) = wr.useParentalDummies;
 
 default_wage_regressions(; useParentalDummies = true, 

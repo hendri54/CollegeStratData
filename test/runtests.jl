@@ -1,4 +1,4 @@
-using CollegeStratBase, CollegeStratData
+using BaseMM, CollegeStratData
 using Test
 
 @testset "All" begin

@@ -2,8 +2,8 @@ name(ds :: DataSettings) = ds.name;
 # Returns the object defining school groups
 school_groups(ds :: DataSettings) = ds.sGroups;
 # Returns the defined school groups as symbols
-CollegeStratBase.ed_symbols(ds :: DataSettings) = 
-	CollegeStratBase.ed_symbols(school_groups(ds));
+BaseMM.ed_symbols(ds :: DataSettings) = 
+	BaseMM.ed_symbols(school_groups(ds));
 
 function wage_regr_settings(ds :: DataSettings, univ :: Symbol)
 	if univ != SchoolCG
@@ -24,15 +24,15 @@ $(SIGNATURES)
 
 Number of school groups (e.g. HSG, SC, CG). For wage regressions.
 """
-CollegeStratBase.n_school(ds :: DataSettings) = 
-	CollegeStratBase.n_school(school_groups(ds));
+BaseMM.n_school(ds :: DataSettings) = 
+	BaseMM.n_school(school_groups(ds));
 
 """
 	$(SIGNATURES)
 
 Number of college quality groups.
 """
-CollegeStratBase.n_colleges(ds :: DataSettings) = ds.nColleges;
+BaseMM.n_colleges(ds :: DataSettings) = ds.nColleges;
 
 """
 	$(SIGNATURES)
