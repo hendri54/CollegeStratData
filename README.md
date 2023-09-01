@@ -6,6 +6,10 @@ Order of categories: school (s), quality (q), gpa (g), parental (p)
 
 ## Change log 2023
 
+Sep-1
+- now computed from fraction dropping out by [afqt, quality, t] data:
+  - frac drop qual year, `frac_drop_4y_by_year`
+  (because `statusByYear` does not work for my model)
 Aug-8
 - move to BaseMM
 July-18 (v2.5)

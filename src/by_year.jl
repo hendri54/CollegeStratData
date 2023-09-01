@@ -22,42 +22,60 @@ end
 
 
 ## ----------  Fraction dropping out of 4y colleges by year
-# Out of total entrants. First 3 years only.
+# Out of total 4y entrants. First 3 years only.
 
 # Return the fractions; std errors are not exactly right
-function frac_drop_4y_by_year(ds :: DataSettings)
-    # Rows are years, cols are colleges + dropouts + grads
-    m, _, cnts = load_moment(ds, :statusByYear);
-    @assert size(m, 2) == (n_colleges(ds) + 2)  "Invalid size: $(size(m))"
+function frac_drop_4y_by_year(ds :: DataSettings; T = 3)
+    # # Rows are years, cols are colleges + dropouts + grads
+    # m, _, cnts = load_moment(ds, :statusByYear);
+    # @assert size(m, 2) == (n_colleges(ds) + 2)  "Invalid size: $(size(m))"
 
-    # Keep 4y colleges
-    idx4yV = (n_2year(ds) + 1) : n_colleges(ds);
-    mass_tV = sum(m[:, idx4yV]; dims = 2);
-    cnts_tV = sum(cnts[:, idx4yV]; dims = 2);
-    # m = m[:, idx4yV];
-    # cnts = cnts[:, idx4yV];
+    # # Keep 4y colleges
+    # idx4yV = (n_2year(ds) + 1) : n_colleges(ds);
+    # mass_tV = sum(m[:, idx4yV]; dims = 2);
+    # cnts_tV = sum(cnts[:, idx4yV]; dims = 2);
+    # # m = m[:, idx4yV];
+    # # cnts = cnts[:, idx4yV];
 
-    # Only constructed for first 3 years
-    T = 3;
-    massEnter = mass_tV[1];     # sum(m[1, :]);
-    @assert 0.3 < massEnter < 0.7
+    # # Only constructed for first 3 years
+    # # T = 3;
+    # massEnter = mass_tV[1];     # sum(m[1, :]);
+    # @assert 0.3 < massEnter < 0.7
     fracDrop_tV = zeros(T);
-    cnts_tV = cnts_tV[1 : T];
-    # cnts_tV = zeros(Int, T);
+    cnts_tV = zeros(Int, T);
+    # cnts_tV = cnts_tV[1 : T];
+    # # cnts_tV = zeros(Int, T);
+    # for t = 1 : T
+    #     # Number in 4y in t
+    #     # cnts_tV[t] = sum(cnts[t, :]);
+    #     # There are no graduates, so everyone who leaves is a dropout.
+    #     massDrop = mass_tV[t] - mass_tV[t+1];
+    #     # massDrop = sum(m[t, :]) - sum(m[t+1, :]);
+    #     @assert 0.0 < massDrop < 0.3;
+    #     fracDrop_tV[t] = massDrop / massEnter;
+    # end
     for t = 1 : T
-        # Number in 4y in t
-        # cnts_tV[t] = sum(cnts[t, :]);
-        # There are no graduates, so everyone who leaves is a dropout.
-        massDrop = mass_tV[t] - mass_tV[t+1];
-        # massDrop = sum(m[t, :]) - sum(m[t+1, :]);
-        @assert 0.0 < massDrop < 0.3;
-        fracDrop_tV[t] = massDrop / massEnter;
+        fracDrop_tV[t], cnts_tV[t] = frac_drop_4y_one_year(ds, t);
     end
     @assert check_float_array(fracDrop_tV, 0.02, 0.15);
 
     # This is not exactly right, but the best we can do
     ses_tV = fracDrop_tV .* (1.0 .- fracDrop_tV) ./ (cnts_tV[1 : T] .^ 0.5);
     return fracDrop_tV, ses_tV, cnts_tV
+end
+
+"""
+Fraction of initial 4y entrants that drop out at end of t
+No std error.
+"""
+function frac_drop_4y_one_year(ds, t)
+    massEnter_qV, _ = load_moment(ds, :fracEnroll_qV);
+    fracDrop_qV, _, cnts_qV = frac_drop_qual_one_year(ds, t);
+    idx4yV = (n_2year(ds) + 1) : n_colleges(ds);
+    fracDrop = sum(massEnter_qV[idx4yV] .* fracDrop_qV[idx4yV]) ./ sum(massEnter_qV[idx4yV]);
+    @assert 0.0 < fracDrop < 0.5;
+    cnts = sum(cnts_qV);
+    return fracDrop, cnts
 end
 
 

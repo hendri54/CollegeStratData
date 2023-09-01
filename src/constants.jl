@@ -1,19 +1,19 @@
 # Constants hard wired everywhere
-export ClassHsGpa, ClassQuality, ClassAll;
+# export ClassHsGpa, ClassQuality, ClassAll;
 
 const pkgDir = normpath(@__DIR__, "..");
 const dataDir = joinpath(pkgDir, "data");
 
+# use from BaseMM once imported there +++++
+# abstract type AbstractClassification end;
 
-abstract type AbstractClassification end;
+# struct ClassAll <: AbstractClassification end;
+n_groups(ds, ::ClassAll) = 1; 
 
-struct ClassAll <: AbstractClassification end;
-n_groups(ds, ::ClassAll) = 1;
-
-struct ClassHsGpa <: AbstractClassification end;
+# struct ClassHsGpa <: AbstractClassification end;
 n_groups(ds, ::ClassHsGpa) = n_gpa(ds);
 
-struct ClassQuality <: AbstractClassification end;
+# struct ClassQuality <: AbstractClassification end;
 n_groups(ds, :: ClassQuality) = n_colleges(ds);
 
 
@@ -54,32 +54,12 @@ sub_dir(::GrpProgress) = "Progress";
 struct GrpNone <: AbstractGroup end;
 sub_dir(::GrpNone) = "";
 
-# dGroup = Dict([GrpFinance => "Financing",  GrpFreshmen() => "Fresh_Char",
-# 	GrpHsGrads() => "HS_Char",  GrpProgress() => "Progress",  :none => ""]);
-
-
-# # Sub-dirs for data files
-# dMomentType = Dict([
-#     MtMean() => "Means",  
-#     MtCount() => "Counts", 
-#     MtStd() => "StandardDeviations", 
-# 	MtRegression() => "Regressions"]);
-
-
-# const MtMean = :mean;
-# const MtStd = :std;
-# const MtCount = :count;
 
 # Name of intercept regressor in raw data files.
 const RegrInter = :cons;
 
-## -------------  Normalizations and Bounds
 
-# Number of data courses per model course
-# const dataCoursesPerCourse = 1	
-
-
-## ------------  Data
+## ------------  Data labels
 
 # Comment string in CSV files
 const commentStr = "#"
@@ -89,16 +69,6 @@ const SchoolHSG = :HSG;
 const SchoolSC = :SC;
 const SchoolCG = :CG;
 const EdLevels = [SchoolHSG, SchoolSC, SchoolCG];
-
-## --------------  Debugging
-
-# const dbgLow = true
-# const dbgMedium = true
-# const dbgHigh = true
-
-# # Required Julia version (as a version string)
-# const minVersion = "1.4"
-
 
 
 # ----------
