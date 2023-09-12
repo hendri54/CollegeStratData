@@ -17,8 +17,8 @@ raw_transfer_regr(ds :: DataSettings; momentType = nothing) =
 # `inc_pctile` regressor, scaled for percentiles in [0, 1]
 function transfer_regr_w_qp_interactions(ds :: DataSettings)
     fPath = data_file(raw_transfer_regr_w_qp_interactions(ds));
-    rt = read_regression_file(fPath);
-    rename_regressors(rt);
+    rt = read_regression_file(fPath; renameRegr = true, renameInteractions = false);
+    # rename_regressors(rt);
 
     scale_percentile_regressor!(rt, :inc_pctile);
     for ic = 2 : n_colleges(ds)
@@ -37,8 +37,8 @@ raw_transfer_regr_w_qp_interactions(ds :: DataSettings; momentType = nothing) =
 function tuition_regr(ds :: DataSettings)
     # Regression deviations use RegressionTables as inputs
     fPath = data_file(raw_tuition_regr(ds));
-    rt = read_regression_file(fPath);
-    rename_regressors(rt);
+    rt = read_regression_file(fPath; renameRegr = true);
+    # rename_regressors(rt);
     # Adjust all means and std errors to match model units 
     # modelUnits  &&  convert_to_model_dollars!(rt);
     return rt
@@ -54,11 +54,13 @@ raw_tuition_regr(ds :: DataSettings; momentType = nothing) =
 # `inc_pctile` regressor, scaled for percentiles in [0, 1]
 function tuition_regr_w_qp_interactions(ds :: DataSettings)
     fPath = data_file(raw_tuition_regr_w_qp_interactions(ds));
-    rt = read_regression_file(fPath);
-    rename_regressors(rt);
+    rt = read_regression_file(fPath; renameRegr = true, renameInteractions = false);
+    # rename_regressors(rt);
 
     scale_percentile_regressor!(rt, :inc_pctile);
     for ic = 2 : n_colleges(ds)
+        # Note that these regressors have the same name as the afqt/quality interactions
+        # elsewhere, but they mean something different here.
         scale_percentile_regressor!(rt, regressor_name(:interaction, ic));
     end
     return rt

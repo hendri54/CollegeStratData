@@ -55,9 +55,19 @@ struct GrpNone <: AbstractGroup end;
 sub_dir(::GrpNone) = "";
 
 
+## -----------  Raw regression files
+
 # Name of intercept regressor in raw data files.
 const RegrInter = :cons;
+const RegrQualVar = :last_type;
+const RegrGpaVar = :afqt;
+const RegrParentalVar = :inc_quartile;
 
+
+## ------------  Other raw data files
+
+const AllColHeaderGpa = "afqt_quartileALL";
+const AllRowHeader = "All";
 
 ## ------------  Data labels
 

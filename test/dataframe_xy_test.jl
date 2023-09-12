@@ -7,9 +7,9 @@ function dataframe_xy_test()
 		@test size(df) == (5,6)
 
 		colHeaderV = CollegeStratData.col_headers(df);
-		@test colHeaderV[1] == CollegeStratData.col_header(:gpa, 1)
+		@test colHeaderV[1] == CollegeStratData.raw_col_header(:gpa, 1)
 		rowHeaderV = CollegeStratData.row_headers(df);
-		@test rowHeaderV[2] == CollegeStratData.row_header(2)
+		@test rowHeaderV[2] == CollegeStratData.raw_data_row_header(2)
 
 		m = CollegeStratData.data_matrix(df);
 		@test isa(m, Matrix{Float64})

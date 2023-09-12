@@ -30,7 +30,8 @@ end
 """
 For one school level.
 """
-function load_wage_fixed_effects(ds :: DataSettings, edLevel, grpVar)
+function load_wage_fixed_effects(ds :: DataSettings, edLevel, grpVar;
+        minCnts = 30)
     if edLevel == SchoolHSG
         return load_wage_fixed_effects_hsg(ds, grpVar);
     end
@@ -48,12 +49,16 @@ function load_wage_fixed_effects(ds :: DataSettings, edLevel, grpVar)
     elseif grpVar isa ClassAll
         load_fct_all(mt) = read_total(fPath(mt));
         m, ses, cnts = load_mean_ses_counts(load_fct_all);
+    elseif grpVar == [ClassQuality(), ClassHsGpa()]
+        # Note that no of obs is very small for SC and top quality
+        load_fct_2(mt) = Matrix(transpose(read_matrix_by_xy(fPath(mt))));
+        m, ses, cnts = load_mean_ses_counts(load_fct_2);
     else
         error("Invalid $grpVar");
     end
     # There are 0 values for CGs
     @assert (all((m .> 7.0)  .|  (m .== 0.0))  &&  all(m .< 12.0))  "Out of bounds: \n $m";
-    @assert all((cnts .> 30) .| (cnts .== 0))  "Low counts: $cnts";
+    @assert all((cnts .>= minCnts) .| (cnts .== 0))  "Low counts: $cnts";
     return m, ses, cnts
 end
 
@@ -105,6 +110,34 @@ function wage_fixed_effects_fn(ds, edLevel; momentType = MtMean())
     fn = prefix * "_$(edStr)_fe_same.dat";
     fDir = joinpath(data_dir(ds), data_sub_dir(SelfReport(), subDirMt, GrpNone()), "Reg");
     return joinpath(fDir, fn)
+end
+
+
+"""
+Wage fixed effects by [quality, AFQT]. Means only
+
+test this +++++
+"""
+function wage_fixed_effects_qual_gpa(ds)
+    # Sums to 1 for each AFQT group
+    # fracQual_qgM, _ = load_moment(ds, :fracQual_qgM);
+    # @assert all(isapprox.(sum(fracQual_qgM; dims = 1), 1.0))  "Does not sum to 1";
+
+    fracGrad_qgM, _ = load_moment(ds, :fracGrad_qgM);
+    nc = n_colleges(ds);
+    # Temporary fix: replace the `1` entry for AFQT 1 / q 4 +++++
+    if isapprox(fracGrad_qgM[nc, 1], 1.0)
+        fracGrad_qgM[nc, 1] = (fracGrad_qgM[nc, 2] + fracGrad_qgM[nc-1, 1]) / 2;
+    end
+
+    grpVars = [ClassQuality(), ClassHsGpa()];
+    # Keeping small counts is fine. They get low weight in averaging over education.
+    minCnts = 1;
+    feSC_qgM, _ = load_wage_fixed_effects(ds, SchoolSC, grpVars; minCnts);
+    feCG_qgM, _ = load_wage_fixed_effects(ds, SchoolCG, grpVars; minCnts);
+
+    fe_qgM = fracGrad_qgM .* feCG_qgM .+ (1.0 .- fracGrad_qgM) .* feSC_qgM;
+    return fe_qgM
 end
 
 

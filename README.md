@@ -6,6 +6,10 @@ Order of categories: school (s), quality (q), gpa (g), parental (p)
 
 ## Change log 2023
 
+Sep-12
+- updated and clarified renaming of variables from raw data files; especially regressions.
+Sep-5
+- load wage fixed effects by [quality, afqt].
 Sep-1
 - now computed from fraction dropping out by [afqt, quality, t] data:
   - frac drop qual year, `frac_drop_4y_by_year`

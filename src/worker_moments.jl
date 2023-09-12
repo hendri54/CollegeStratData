@@ -34,7 +34,7 @@ end
 function read_exper_coefficients(ds :: DataSettings, s :: Symbol)
     # File name with regression coefficients for this case
     rf = exper_raw_file(ds, s);
-    rt = read_regression_file(rf);
+    rt = read_regression_file(rf; renameRegr = false);
 
     wr = wage_regr_settings(ds, s);
     nx = max_exper_exponent(wr);
@@ -161,8 +161,8 @@ function wage_regr_intercepts(ds :: DataSettings)
 
     fn = "loginc_st2_3" * regr_file_suffix(wr) * ".dat";
     rf = RawDataFile(SelfReport(), GrpNone(), MtRegression(), fn, ds);
-    rt = read_regression_file(rf);
-    rename_regressors(rt);
+    rt = read_regression_file(rf; renameRegr = true);
+    # rename_regressors(rt);
     return rt
 end
 
@@ -183,11 +183,11 @@ function workstart_earnings(rt :: RegressionTable, afqtGroup :: Integer,
     iSchool :: Integer;   quality :: Integer = 0,  parental :: Integer = 0)
 
     logEarn = get_intercept(rt) +
-        get_regr_coef(rt, :afqt, afqtGroup) +
-        get_regr_coef(rt, :school, iSchool) +
-        get_regr_coef(rt, :parental, parental; errorIfMissing = false) +
-        get_regr_coef(rt, :lastColl, quality; errorIfMissing = false) +
-        get_interaction_coef(rt, :afqt, afqtGroup, :lastColl, quality; 
+        get_regr_coef(rt, ClassHsGpa(), afqtGroup) +
+        get_regr_coef(rt, ClassSchooling(), iSchool) +
+        get_regr_coef(rt, ClassParental(), parental; errorIfMissing = false) +
+        get_regr_coef(rt, ClassQuality(), quality; errorIfMissing = false) +
+        get_interaction_coef(rt, ClassHsGpa(), afqtGroup, ClassQuality(), quality; 
             errorIfMissing = false);
     
     earn = exp(logEarn);
@@ -197,19 +197,20 @@ end
 
 ## ------------  Wage regressions; grads; with quality dummies
 # Omitted category is the first quality from which one can graduate.
+# Note: label of afqt/qual interactions varies across files. Some are `interactionJ` ; others are `aftqJ_qK`
 function wage_regr_grads(ds :: DataSettings)
     wr = wage_regr_settings(ds, SchoolCG);
     @assert n_school(wr) == n_school(ds)
 
     fn = "loginc_st2_2" * regr_file_suffix(wr) * ".dat";
-    rf = RawDataFile(SelfReport(), GrpNone(), MtRegression(), fn, ds);
-    rt = read_regression_file(rf);
-    rename_regressors(rt);
+    rawF = RawDataFile(SelfReport(), GrpNone(), MtRegression(), fn, ds);
+    rt = read_regression_file(rawF; renameRegr = true, renameInteractions = true);
+    # rename_regressors(rt);
 
     @assert validate_wage_regr_grads(ds, rt)  """
         Invalid wage regression for graduates.
         $ds
-        $(data_file(rf))
+        $(data_file(rawF))
     """
     return rt
 end
@@ -217,18 +218,18 @@ end
 function validate_wage_regr_grads(ds :: DataSettings, rt :: RegressionTable)
     isValid = true;
     # Cannot grad from q1
-    if has_regressor(rt, regressor_name(:lastColl, 1))
-        @warn "Should not have regressor lastColl1"
+    if has_regressor(rt, regressor_name(ClassQuality(), 1))
+        @warn "Should not have regressor quality 1"
         isValid = false;
     end
-    # Check that last lastColl is the default category
-    if has_regressor(rt, regressor_name(:lastColl, 2))  ||
-        !has_regressor(rt, regressor_name(:lastColl, n_colleges(ds)))
-        @warn """Wrong default category in wage regression:
-            $rt
-            """
-        isValid = false;
-    end
+    # # Check that last lastColl is the default category
+    # if has_regressor(rt, regressor_name(ClassQuality(), 2))  ||
+    #     !has_regressor(rt, regressor_name(ClassQuality(), n_colleges(ds)))
+    #     @warn """Wrong default category in wage regression:
+    #         $rt
+    #         """
+    #     isValid = false;
+    # end
     return isValid
 end
 

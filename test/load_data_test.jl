@@ -128,7 +128,7 @@ function regr_file_test()
 	@testset "Regression files" begin
 		# Read regression file
 		fPath = joinpath(CollegeStratData.test_sub_dir(), "regression_test.dat");
-		rt = CollegeStratData.read_regression_file(fPath);
+		rt = CollegeStratData.read_regression_file(fPath; renameRegr = false);
 		@test get_coefficient(rt, "afqt1") ≈ 1.0  &&  get_coefficient(rt, "afqt3") ≈ 3.0
 		@test get_std_error(rt, "afqt1") ≈ 11.0  &&  get_std_error(rt, "afqt2") ≈ 12.0
 	end
