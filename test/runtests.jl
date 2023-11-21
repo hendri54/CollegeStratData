@@ -9,6 +9,7 @@ using Test
     include("dataframe_xy_test.jl")
     include("load_data_test.jl");
     include("worker_moments_test.jl");
+    include("cross_restrictions_test.jl");
 end
 
 # -----------

@@ -50,9 +50,9 @@ end
 
 
 ## Graduation rate by quality
-function grad_rate_by_quality(ds :: DataSettings)
+function frac_gradc_by_quality(ds :: DataSettings)
     load_fct = 
-        mt -> read_row_totals(raw_grad_rate_qual_gpa(ds; momentType = mt));
+        mt -> read_row_totals(raw_frac_gradc_qual_gpa(ds; momentType = mt));
     m, ses, cnts = choice_prob_from_xy(load_fct);
     # m, ses, cnts = choice_prob_from_row_total(ds, :fracGrad_qV);
     # rf = raw_grad_rate_qual_gpa(ds);

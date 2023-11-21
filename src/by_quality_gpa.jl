@@ -59,15 +59,16 @@ end
 
 ## Mass of freshmen by quality / gpa. Sums to 1.
 function mass_entry_qual_gpa(ds :: DataSettings)
-    m = read_matrix_by_xy(ds, :massEntry_qgM, MtMean());
+    m, ses, cnts = mass_entry_qual_x(ds, :g);
+    # m = read_matrix_by_xy(ds, :massEntry_qgM, MtMean());
     @assert size(m) == (n_colleges(ds), n_gpa(ds));
-    # SES treats this as a discrete choice problem with total count.
-    cnts = read_matrix_by_xy(ds, :massEntry_qgM, MtCount());
-    cnts = fill(sum(cnts), size(cnts));
-    cnts = clean_cnts(cnts);
-    @assert all(m .< 1.0)  &&  all(m .> 0.0)
-    @assert isapprox(sum(m), 1.0,  atol = 0.0001)
-    ses = ses_from_choice_probs(m, cnts);
+    # # SES treats this as a discrete choice problem with total count.
+    # cnts = read_matrix_by_xy(ds, :massEntry_qgM, MtCount());
+    # cnts = fill(sum(cnts), size(cnts));
+    # cnts = clean_cnts(cnts);
+    # @assert all(m .< 1.0)  &&  all(m .> 0.0)
+    # @assert isapprox(sum(m), 1.0,  atol = 0.0001)
+    # ses = ses_from_choice_probs(m, cnts);
     return m, ses, cnts
 end
 
@@ -85,9 +86,10 @@ end
 """
 	$(SIGNATURES)
 
-Graduation rates by [quality, gpa]. All colleges.
+Graduation rates by [quality, gpa]. Conditional on entry. All colleges.
+Sets grad rates for 2y colleges to 0.
 """
-function grad_rate_qual_gpa(ds :: DataSettings)
+function frac_gradc_qual_gpa(ds :: DataSettings)
     load_fct = 
         mt -> read_matrix_by_xy(ds, :fracGrad_qgM, mt);
     m, ses, cnts = choice_prob_from_xy(load_fct);
@@ -99,6 +101,17 @@ function grad_rate_qual_gpa(ds :: DataSettings)
     cnts[no_grad_idx(ds), :] .= 0;
     # wtM = 1.0 ./ max.(0.1, m);
     return m, ses, cnts
+end
+
+
+# No std errors
+# Counts are from frac grad by [q, g]
+function mass_grad_qual_gpa(ds :: DataSettings)
+    massEnter_qgM, _ = mass_entry_qual_gpa(ds);
+    fracGrad_qgM, _, cnts = frac_gradc_qual_gpa(ds);
+    massGrad_qgM = massEnter_qgM .* fracGrad_qgM;
+    ses = zeros(size(massGrad_qgM));
+    return massGrad_qgM, ses, cnts
 end
 
 

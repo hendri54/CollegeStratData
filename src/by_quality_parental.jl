@@ -49,7 +49,7 @@ end
 
 
 ## Graduation rates (conditional on entry) by (quality, parental)
-function frac_grad_qual_parental(ds :: DataSettings)
+function frac_gradc_qual_parental(ds :: DataSettings)
     load_fct = 
         mt -> read_matrix_by_xy(ds, :fracGrad_gpM, mt);
     m, ses, cnts = choice_prob_from_xy(load_fct);
@@ -61,6 +61,63 @@ function frac_grad_qual_parental(ds :: DataSettings)
     # zero out 2 year colleges
     m[two_year_colleges(ds), :] .= 0.0;
     cnts[two_year_colleges(ds), :] .= 0;
+    return m, ses, cnts
+end
+
+
+"""
+Compute from joint distribution of graduates by [q, p]. The marginals are otherwise wrong b/c we set frac grad of 2y colleges to 0.
+"""
+function frac_gradc_by_parental(ds :: DataSettings)
+    massEnter_qpM, _ = load_moment(ds, :massEntry_qpM);
+    massGrad_qpM, _ = load_moment(ds, :massGrad_qpM);
+    massEnter_gV = vec(sum(massEnter_qpM, dims = 1));
+    massGrad_gV = vec(sum(massGrad_qpM, dims = 1));
+    m = massGrad_gV ./ massEnter_gV;
+
+    # This now just for counts and std errors.
+    load_fct = 
+        mt -> read_col_totals(raw_frac_gradc_qual_parental(ds; momentType = mt));
+    _, ses, cnts = choice_prob_from_xy(load_fct);
+    @assert all(m .> 0.0)  &&  all(m .< 1.0)
+    @assert length(m) == n_gpa(ds)
+    @assert all(cnts .> 100)
+    return m, ses, cnts
+end
+
+
+function mass_entry_qual_parental(ds :: DataSettings)
+    m, ses, cnts = mass_entry_qual_x(ds, :p);
+    @assert size(m) == (n_colleges(ds), n_parental(ds));
+    return m, ses, cnts
+end
+
+
+# No std errors
+# Counts are from frac grad by [q, g]
+function mass_grad_qual_parental(ds :: DataSettings)
+    massEnter_qpM, _ = mass_entry_qual_parental(ds);
+    fracGrad_qpM, _, cnts = frac_gradc_qual_parental(ds);
+    massGrad_qpM = massEnter_qpM .* fracGrad_qpM;
+    ses = zeros(size(massGrad_qpM));
+    return massGrad_qpM, ses, cnts
+end
+
+    
+
+## Mass of freshmen by quality / other grouping. Sums to 1.
+function mass_entry_qual_x(ds :: DataSettings, xVar)
+    suffix = "_q$(xVar)M";
+    mName = Symbol("massEntry$suffix");
+    m = read_matrix_by_xy(ds, mName, MtMean());
+    @assert size(m, 1) == n_colleges(ds);
+    # SES treats this as a discrete choice problem with total count.
+    cnts = read_matrix_by_xy(ds, mName, MtCount());
+    cnts = fill(sum(cnts), size(cnts));
+    cnts = clean_cnts(cnts);
+    @assert all(m .< 1.0)  &&  all(m .> 0.0)
+    @assert isapprox(sum(m), 1.0,  atol = 0.0001)
+    ses = ses_from_choice_probs(m, cnts);
     return m, ses, cnts
 end
 

@@ -6,6 +6,12 @@ Order of categories: school (s), quality (q), gpa (g), parental (p)
 
 ## Change log 2023
 
+Nov-21
+- Fixed more inconsistencies in grad rates (same source as Nov 17). Drops overall grad rate 0.44 (from 0.48)
+Nov-17
+- Inconsistency in constructing grad rates by [quality, gpa]. Because 2y starters cannot graduate, the marginals do not match the joint fractions by [q, g]. Now constructing frac grad(g) from massGrad(g) and massEnter(g)
+Oct-2
+- correctly renamed quality regressors (last_type now becomes Qual).
 Sep-12
 - updated and clarified renaming of variables from raw data files; especially regressions.
 Sep-5

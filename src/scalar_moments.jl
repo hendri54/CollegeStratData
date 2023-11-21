@@ -35,9 +35,12 @@ end
 
 
 ## Graduation rate (conditional on entry)
-function grad_rate(ds :: DataSettings)
-    gradRate = read_all_from_delim_file(raw_grad_rate_qual_gpa(ds));
-    cnt = read_all_from_delim_file(raw_grad_rate_qual_gpa(ds; momentType = MtCount()));
+function frac_gradc(ds :: DataSettings)
+    massM, _ = mass_entry_qual_gpa(ds);
+    massGradM, _ = mass_grad_qual_gpa(ds);
+    gradRate = sum(massGradM) / sum(massM);
+    # gradRate = read_all_from_delim_file(raw_frac_gradc_qual_gpa(ds));
+    cnt = read_all_from_delim_file(raw_frac_gradc_qual_gpa(ds; momentType = MtCount()));
     @assert check_float(gradRate, lb = 0.3, ub = 0.7);
     ses = (gradRate * (1.0 - gradRate) / cnt) ^ 0.5;
     return gradRate, ses, cnt

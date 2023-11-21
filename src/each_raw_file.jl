@@ -34,7 +34,7 @@ raw_frac_drop_qual_gpa(ds :: DataSettings, year :: Integer;
     momentType = MtMean()) =
     rf_qg(ds, "drop_rate_y$year", Transcript(), GrpProgress(), momentType);
 
-raw_grad_rate_qual_gpa(ds :: DataSettings; momentType = MtMean()) = 
+raw_frac_gradc_qual_gpa(ds :: DataSettings; momentType = MtMean()) = 
     rf_qg(ds, "grad_rate", Transcript(), GrpProgress(), momentType)
         # file_name(ds, "grad_rate", [:quality, :afqt]), ds);
 
@@ -108,6 +108,10 @@ raw_mass_entry_qual_gpa(ds :: DataSettings; momentType = MtMean()) =
     RawDataFile(Transcript(), GrpFreshmen(), momentType, 
         file_name(ds, "jointdist", [:qual, :afqt]), ds);
 
+raw_mass_entry_qual_parental(ds :: DataSettings; momentType = MtMean()) =
+    RawDataFile(Transcript(), GrpFreshmen(), momentType, 
+        file_name(ds, "jointdist", [:qual, :yp]), ds);
+    
 
 # -------  By quality / grad outcome
 
@@ -134,7 +138,7 @@ raw_work_hours_qual_parental(ds :: DataSettings;
 raw_entry_qual_parental(ds :: DataSettings; momentType = MtMean()) =
     rf_qp(ds, "jointdist", Transcript(), GrpFreshmen(), momentType); 
 
-raw_frac_grad_qual_parental(ds :: DataSettings; 
+raw_frac_gradc_qual_parental(ds :: DataSettings; 
     momentType = MtMean()) =
     rf_qp(ds, "grad_rate", Transcript(), GrpProgress(), momentType);
 

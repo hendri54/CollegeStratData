@@ -32,16 +32,19 @@ end
 
 
 """
-	$(SIGNATURES)
-
-Mean time to graduation by GPA.
+Compute from joint distribution of graduates by [q, g]. The marginals are otherwise wrong b/c we set frac grad of 2y colleges to 0.
 """
-function grad_rate_by_gpa(ds :: DataSettings)
+function frac_gradc_by_gpa(ds :: DataSettings)
+    massEnter_qgM, _ = load_moment(ds, :massEntry_qgM);
+    massGrad_qgM, _ = load_moment(ds, :massGrad_qgM);
+    massEnter_gV = vec(sum(massEnter_qgM, dims = 1));
+    massGrad_gV = vec(sum(massGrad_qgM, dims = 1));
+    m = massGrad_gV ./ massEnter_gV;
+
+    # This now just for counts and std errors.
     load_fct = 
-        mt -> read_col_totals(raw_grad_rate_qual_gpa(ds; momentType = mt));
-    m, ses, cnts = choice_prob_from_xy(load_fct);
-    # m, ses, cnts = choice_prob_from_col_total(ds, :fracGrad_gV);
-    # m = read_col_totals(raw_file_path(ds, :fracGrad_gV));
+        mt -> read_col_totals(raw_frac_gradc_qual_gpa(ds; momentType = mt));
+    _, ses, cnts = choice_prob_from_xy(load_fct);
     @assert all(m .> 0.0)  &&  all(m .< 1.0)
     @assert length(m) == n_gpa(ds)
     @assert all(cnts .> 100)

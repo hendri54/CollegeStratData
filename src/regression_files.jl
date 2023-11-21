@@ -65,7 +65,7 @@ function regr_col_header(colCat, j :: Integer)
     elseif colCat == :school
         hd = regr_col_header(ClassSchooling(), j);
     elseif colCat == :lastColl
-        hd = regr_col_header(ClassQuality(), j);
+        hd = regr_col_header(ClassLastType(), j);
     elseif colCat == :exper
         if j == 1
             hd = "exp";
@@ -80,7 +80,9 @@ end
 
 regr_col_header(::ClassHsGpa, j :: Integer) = Symbol("afqt$j");
 regr_col_header(::ClassParental, j :: Integer) = Symbol("inc_quartile$j");
-regr_col_header(::ClassQuality, j :: Integer) = Symbol("last_type$j");
+# Quality has different names in files!
+regr_col_header(::ClassLastType, j :: Integer) = Symbol("last_type$j");
+regr_col_header(::ClassQuality, j :: Integer) = Symbol("quality$j");
 regr_col_header(::ClassSchooling, j :: Integer) = Symbol("school$j");
 
 regr_col_headers(colCat, jMax :: Integer) = 
@@ -130,7 +132,8 @@ end
 
 # Ensure that all regressors match output regressor names
 function rename_regressors(rt :: RegressionTable; renameInteractions = true)
-    for colCat ∈ (ClassHsGpa(), ClassParental(), ClassSchooling(), ClassQuality())
+    for colCat ∈ (ClassHsGpa(), ClassParental(), ClassSchooling(), ClassQuality(),
+            ClassLastType())
         rename_regressors(rt, colCat);
         renameInteractions && rename_interactions!(rt);
     end
@@ -320,7 +323,9 @@ function regressor_string(varName :: Symbol)
         regName = regressor_string(ClassParental());
     elseif varName == DataSchoolVar
         regName = regressor_string(ClassSchooling());
-    elseif varName ∈ (:quality, :lastColl, DataQualityVar)
+    elseif varName == :quality
+        regName = regressor_string(ClassQuality());
+    elseif varName ∈ (:lastColl, :last_type)
         regName = regressor_string(ClassQuality());
     elseif varName == :interaction
         regName = "interaction";

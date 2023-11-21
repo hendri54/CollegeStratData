@@ -57,7 +57,7 @@ function make_target_test(dsName)
 
 		# Read from file by quality / gpa
 		d2, _ = load_moment(ds, :fracGrad_gV);
-		@test 0.24 < d2[2] < 0.3
+		@test 0.2 < d2[2] < 0.3
 
 		# Read from file by quality only
 		d3, _ = load_moment(ds, :gpaMean_qV);
