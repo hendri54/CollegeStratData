@@ -29,6 +29,31 @@ raw_file_map() = Dict([
 ]);
 
 
+"""
+	$(SIGNATURES)
+
+For selected moments, report the files they are loaded from. Also report whether they are transcript or selfreport files.
+"""
+function raw_file_report(ds :: DataSettings)
+    fileList = raw_file_report_list(ds);
+    tbM = fill(" ", length(fileList), 3);
+    for (ir, rawFile) in enumerate(fileList)
+        tbM[ir,1] = rawFile.name;
+        rf1 = rawFile.rf;
+        tbM[ir, 2] = sub_dir(rf1.selfOrTranscript);
+        tbM[ir, 3] = rf1.rawFile;
+    end
+    return tbM
+end
+
+raw_file_report_list(ds) = [
+    (name = "Cumulative loans", rf = raw_cum_loans_qual_year(ds, 1)),
+    (name = "Parental transfers", rf = raw_transfers_xy(ds, [grpQuality, grpParental], 1)),
+    (name = "Tuition", rf = raw_net_price_xy(ds, [grpQuality, grpParental], 1)),
+    (name = "Earnings", rf = raw_college_earnings_qual_parental(ds)),
+    (name = "Mean AFQT by quality", rf = raw_afqt_pct_qual(ds)),
+    (name = "Experience profile", rf = exper_raw_file(ds, SchoolHSG))
+    ];
 
 
 ## ---------  Methods

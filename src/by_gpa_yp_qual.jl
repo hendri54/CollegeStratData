@@ -55,14 +55,15 @@ $(SIGNATURES)
 
 Load fraction by quality | [gpa, yp]
 As a matrix by [quality, gpa, yp].
-
-check std errors, not only b/c they depend on conditionalOnEntry ++++++
 """
 function load_qual_entry_gpa_yp(ds :: DataSettings;
 	conditionalOnEntry :: Bool = false)
 
-	# Counts should depend on conditionalOnEntry +++
-	_, _, cnt_xyM = load_entry_gpa_yp(ds);
+	if conditionalOnEntry
+		_, _, cnt_xyM = load_entry_gpa_yp(ds);
+	else
+		_, _, cnt_xyM = mass_by_gpa_yp(ds);
+	end
 
 	nc = n_colleges(ds);
 	fracEnter_qgpM = zeros(Double, n_gpa(ds), n_parental(ds), nc);

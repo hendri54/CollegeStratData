@@ -68,12 +68,12 @@ Mapping of data moment names to functions that load them.
 The user can then simply call `load_moment` to load any moment.
 """
 moment_map() = Dict([
-    # :corrGpaYp => corr_gpa_yp,
     :collEarn_qpM => coll_earn_qual_parental,
     :collEarn_qV => coll_earn_by_qual,
     :collEarn_pV => coll_earn_by_parental,
     :coursesTried_otM => courses_tried_grad_year,
     :coursesTried_qtM => courses_tried_qual_year,
+    :cumLoans_qptM => cum_loans_qual_yp_year,
     :cumLoans_qtM => cum_loans_qual_year,
     :cumLoans90_qtM => cum_loans90_qual_year,
     :cumLoans90_tV => cum_loans90_year,

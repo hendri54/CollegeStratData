@@ -62,7 +62,7 @@ function make_target_test(dsName)
 		# Read from file by quality only
 		d3, _ = load_moment(ds, :gpaMean_qV);
 		@test all(d3 .> 0.0)  &&  all(d3 .< 1.0)
-		@test isapprox(d3[2], 0.58, atol = 0.02)
+		@test isapprox(d3[2], 0.58, atol = 0.03)
 		
 		# By qual/gpa
 		d4, ses, cnts = load_moment(ds, :timeToDrop4y_qgM);
@@ -74,7 +74,7 @@ function make_target_test(dsName)
 		@test all(d5 .> 600.0)  &&  all(d5 .< 1200.0)
 
 		d6, _ = load_moment(ds, :cumLoans_qtM);
-		@test d6[2,3] > 8000.0  #  ≈ 8146.27
+		@test d6[2,3] > 7500.0 
 
 		d7 = CollegeStratData.cdf_gpa_by_qual(ds, [20], 1:4);
 		@test size(d7) == (1, 4)
@@ -114,7 +114,7 @@ function make_target_test(dsName)
 		# Cumulative loans by year; percentile
 		t = 2;
 		cumLoans = csd.cum_loans_year(ds, t; percentile = 90);
-		@test 10_000.0 < cumLoans < 12_000.0
+		@test 10_000.0 < cumLoans < 13_000.0
 		cumLoansV = csd.cum_loans_year(ds; percentile = 90);
 		@test cumLoansV[t] == cumLoans
 

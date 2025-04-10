@@ -47,6 +47,14 @@ end
 
 # File name with experience coefficients
 function exper_raw_file(ds :: DataSettings, s :: Symbol)
+    suffix = exper_file_suffix(ds, s);
+    fn = "loginc_st1" * suffix * ".dat";
+    rf = wage_regr_raw_fn(ds, fn);
+        # rf = RawDataFile(SelfReport(), GrpNone(), MtRegression(), fn, ds);
+    return rf
+end
+
+function exper_file_suffix(ds :: DataSettings, s :: Symbol)
     wr = wage_regr_settings(ds, s);
     if length(exper_groups(wr)) == 1
         suffix = "_all--same";
@@ -61,10 +69,7 @@ function exper_raw_file(ds :: DataSettings, s :: Symbol)
     else
         error("Invalid $wr");
     end
-    
-    rf = RawDataFile(SelfReport(), GrpNone(), MtRegression(), 
-        "loginc_st1" * suffix * ".dat", ds);
-    return rf
+    return suffix
 end
 
 
@@ -160,7 +165,8 @@ function wage_regr_intercepts(ds :: DataSettings)
     @assert n_school(wr) == n_school(ds)
 
     fn = "loginc_st2_3" * regr_file_suffix(wr) * ".dat";
-    rf = RawDataFile(SelfReport(), GrpNone(), MtRegression(), fn, ds);
+    rf = wage_regr_raw_fn(ds, fn);
+    # rf = RawDataFile(SelfReport(), GrpNone(), MtRegression(), fn, ds);
     rt = read_regression_file(rf; renameRegr = true);
     # rename_regressors(rt);
     return rt
@@ -203,7 +209,8 @@ function wage_regr_grads(ds :: DataSettings)
     @assert n_school(wr) == n_school(ds)
 
     fn = "loginc_st2_2" * regr_file_suffix(wr) * ".dat";
-    rawF = RawDataFile(SelfReport(), GrpNone(), MtRegression(), fn, ds);
+    # rawF = RawDataFile(SelfReport(), GrpNone(), MtRegression(), fn, ds);
+    rawF = wage_regr_raw_fn(ds, fn);
     rt = read_regression_file(rawF; renameRegr = true, renameInteractions = true);
     # rename_regressors(rt);
 
@@ -214,6 +221,7 @@ function wage_regr_grads(ds :: DataSettings)
     """
     return rt
 end
+
 
 function validate_wage_regr_grads(ds :: DataSettings, rt :: RegressionTable)
     isValid = true;

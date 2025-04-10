@@ -1,21 +1,18 @@
 # Constants hard wired everywhere
-# export ClassHsGpa, ClassQuality, ClassAll;
 
 const pkgDir = normpath(@__DIR__, "..");
 const dataDir = joinpath(pkgDir, "data");
 
-# use from BaseMM once imported there +++++
-# abstract type AbstractClassification end;
-
-# struct ClassAll <: AbstractClassification end;
 n_groups(ds, ::ClassAll) = 1; 
-
-# struct ClassHsGpa <: AbstractClassification end;
 n_groups(ds, ::ClassHsGpa) = n_gpa(ds);
-
-# struct ClassQuality <: AbstractClassification end;
 n_groups(ds, :: ClassQuality) = n_colleges(ds);
+n_groups(ds, ::ClassParental) = n_parental(ds);
+n_groups(ds, ::ClassSchooling) = n_school(ds);
 
+# Groupings for file names
+const grpQuality = :qual;
+const grpGpa = :afqt;
+const grpParental = :yp;
 
 abstract type AbstractMoment end;
 

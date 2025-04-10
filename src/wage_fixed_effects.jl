@@ -93,6 +93,7 @@ end
 Wage fixed effects by AFQT / quality. For one education level.
 Non-standard file name location.
 Format of HSG file is different from that of other files.
+Files only exist for SelfReport sample.
 """
 function wage_fixed_effects_fn(ds, edLevel; momentType = MtMean())
     prefix = wage_fe_prefix(momentType);
@@ -115,20 +116,9 @@ end
 
 """
 Wage fixed effects by [quality, AFQT]. Means only
-
-test this +++++
 """
 function wage_fixed_effects_qual_gpa(ds)
-    # Sums to 1 for each AFQT group
-    # fracQual_qgM, _ = load_moment(ds, :fracQual_qgM);
-    # @assert all(isapprox.(sum(fracQual_qgM; dims = 1), 1.0))  "Does not sum to 1";
-
     fracGrad_qgM, _ = load_moment(ds, :fracGrad_qgM);
-    nc = n_colleges(ds);
-    # Temporary fix: replace the `1` entry for AFQT 1 / q 4 +++++
-    if isapprox(fracGrad_qgM[nc, 1], 1.0)
-        fracGrad_qgM[nc, 1] = (fracGrad_qgM[nc, 2] + fracGrad_qgM[nc-1, 1]) / 2;
-    end
 
     grpVars = [ClassQuality(), ClassHsGpa()];
     # Keeping small counts is fine. They get low weight in averaging over education.

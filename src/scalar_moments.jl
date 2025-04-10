@@ -33,8 +33,11 @@ function frac_enter(ds :: DataSettings)
     return fracEnter, ses, cnt
 end
 
-
-## Graduation rate (conditional on entry)
+"""
+Graduation rate (conditional on entry).
+For consistency, constructed from joint entry mass of gpa and quality.
+Constructing from entry mass by [quality, yp] produces slightly different overall grad rate. Because samples differ between the two moments.
+"""
 function frac_gradc(ds :: DataSettings)
     massM, _ = mass_entry_qual_gpa(ds);
     massGradM, _ = mass_grad_qual_gpa(ds);
@@ -47,17 +50,6 @@ function frac_gradc(ds :: DataSettings)
 end
 
 
-## Correlation HS GPA / parental income
-# in which units? +++
-function corr_gpa_yp(ds :: DataSettings)
-    corr = read_scalar_moment(ds, "corrGpaYp");
-    @assert corr > 0.3  &&  corr < 0.8
-    return corr, 0.0, 1000
-    # return ScalarDeviation{Double}(name = :corrGpaYp, dataV = corr, modelV = 0.0,
-    #     wtV = 1.0 ./ corr,
-    #     shortStr = "corrGpaYp", longStr = "Correlation HSgpa/parental background")
-end
-
 
 # Number of college entrants in the sample
 # Useful for computing std errors
@@ -68,66 +60,6 @@ function n_entrants(ds :: DataSettings)
     return cnt
 end
 
-
-
-## Average study time
-#=
-We have NLSY79 moments in xls, but not 97 moments.
-This is based on Babcock/Marks 2011, table 2, HERI and NSSE
-For full time 4 year students. So likely a bit high
-
-Setting `wtV = 1/dataV` makes this a percentage deviation.
-=#
-# function dev_mean_study_time(ds :: DataSettings)
-#     dataV = mean_study_time(ds; modelUnits = true);
-#     return ScalarDeviation{Double}(name = :meanStudyTime, dataV = dataV, modelV = dataV,
-#         wtV = 1 ./ dataV,
-#         shortStr = "meanStudyTime", longStr = "Mean study time, hours per week")
-# end
-
-# Mean study time (hours per week)
-# function mean_study_time(; modelUnits :: Bool = true)
-#     mst = 25.0;
-#     if modelUnits
-#         mst = hours_per_week_to_mtu(mst);
-#     end
-#     return mst
-# end
-
-
-## Average work hours in college
-#=
-No good basis right now +++
-=#
-# function mean_work_time(; modelUnits :: Bool = true)
-#     mwt = 15.0;
-#     if modelUnits
-#         mwt = hours_per_week_to_mtu(mwt);
-#     end
-#     return mwt
-# end
-
-
-## Wage earned in college (per hour worked)
-#=
-Based on xls table "Average hourly wage" which does not seem to vary by quality
-=#
-# function college_wage(ds :: DataSettings; modelUnits :: Bool = true)
-#     wage = 7.0;
-#     if modelUnits
-#         wage = dollars_data_to_model(wage, :perHour);
-#     end
-#     return wage
-# end
-
-
-# function mean_course_load(; modelUnits :: Bool = true)
-#     mcl = 10;
-#     if !modelUnits
-#         mcl = mcl * dataCoursesPerCourse;
-#     end
-#     return mcl
-# end
 
 
 # ------------

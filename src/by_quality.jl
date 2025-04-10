@@ -168,8 +168,10 @@ end
 cum_loans90_qual_year(ds :: DataSettings) = 
     cum_loans_qual_year(ds; percentile = 90);
 
-# Cumulative loans by [quality, year]
-# No std errors for percentiles
+"""
+Cumulative loans by [quality, year]
+No std errors for percentiles
+"""
 function cum_loans_qual_year(ds :: DataSettings; percentile = nothing)
     T = ds.Tmax;
     outM = zeros(n_colleges(ds), T);
@@ -206,6 +208,32 @@ function cum_loans_qual_percentile(ds :: DataSettings, t :: Integer,
     outM = read_row_totals(raw_cum_loans_qual_year(ds, t; 
         momentType = MtMean(), percentile = percentile));
     return outM
+end
+
+# Checked against excel data file.
+function cum_loans_qual_yp_year(ds :: DataSettings; T = ds.Tmax)
+    sizeV = (n_colleges(ds), n_parental(ds), T);
+    outM = zeros(sizeV...);
+    sesM = zeros(sizeV...);
+    cntM = zeros(Int, sizeV...);
+    for t = 1 : T
+        outM[:,:, t], sesM[:,:,t], cntM[:,:,t] = 
+            cum_loans_qual_yp_one_year(ds, t);
+    end
+
+    # Ignore 2 year colleges after year 2 while there is no switching
+    outM[two_year_colleges(ds), :, 3 : end] .= 0.0;
+    cntM[two_year_colleges(ds), :, 3 : end] .= 0;
+    return outM, sesM, cntM
+end
+
+# The same for one year. Means only.
+function cum_loans_qual_yp_one_year(ds :: DataSettings,  t :: Integer)
+    load_fct = 
+        mt -> read_matrix_by_xy(raw_cum_loans_qual_yp_year(ds, t; 
+            momentType = mt));
+    m, ses, cnts = load_mean_ses_counts(load_fct);
+    return m, ses, cnts
 end
 
 
@@ -329,7 +357,7 @@ end
 
 # Returns a matrix of afqt percentiles by [percentile, quality]
 # Element [j, k] means: In College of quality k, the percentile[j]-th GPA percentile corresponds to the outM[j,k] percentile in the data.
-# Currently only works for percentiles in the data file. Should interpolate +++++
+# Currently only works for percentiles in the data file. Could interpolate.
 function cdf_gpa_by_qual(ds :: DataSettings, 
     percentileV :: AbstractVector, qualityV :: AbstractVector)
 

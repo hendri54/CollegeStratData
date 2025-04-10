@@ -1,7 +1,6 @@
 # Given choice probs and cell counts, compute std error of the mean choice probs.
 # This is correct when each cell contains the prob of choosing `1` given that cell.
 # Also correct when each cell contains `Prob(j | k)` and counts are `n(k)`. I.e., a multinomial choice.
-# test this +++++
 function ses_from_choice_probs(probs, cnts)
     @assert all(0.0 .<= probs .<= 1.0)
     ses = (probs .* (1.0 .- probs) ./ (max.(1.0, cnts)) .^ 0.5);
@@ -9,8 +8,10 @@ function ses_from_choice_probs(probs, cnts)
 end
 
 
-# Given a function that loads moments by (x,y), compute cell mean, its std error, and cell counts. Each cell contains the fraction that chooses "yes".
-# test this +++++
+"""
+Given a function that loads moments by (x,y), compute cell mean, its std error, and cell counts. Each cell contains the fraction that chooses "yes".
+`load_fct` accepts a `MomentType` as its argument.
+"""
 function choice_prob_from_xy(load_fct)
 	m = load_fct(MtMean());
 	cnts = load_fct(MtCount());
@@ -89,8 +90,6 @@ Given a function that loads a moment (could be a matrix or vector) (load_fct):
 * load mean, std devs, counts
 * make sure counts are Int
 * compute SES as std deviation of means
-
-test this +++++
 """
 function load_mean_ses_counts(load_fct)
     m = load_fct(MtMean());

@@ -20,11 +20,12 @@ wage_regressions_two(; useParentalDummies = true,
         maxExperExponent = 4, useParentalDummies, useAfqtQualityInteractions);
 
 
-# Suffix for a regression file, such as "_inc--same"
-# "_inc" determines whether parental income is a regressor.
-# "_interactions" determines whether AFQT / quality interactions are there.
-# "_same" or "_dif" refers to same or different experience profile by schooling.
-# "_OLD" means that the default category for graduates is q2 (no longer +++++)
+"""
+Suffix for a regression file, such as "_inc--same"
+"_inc" determines whether parental income is a regressor.
+"_interactions" determines whether AFQT / quality interactions are there.
+"_same" or "_dif" refers to same or different experience profile by schooling.
+"""
 function regr_file_suffix(wr :: WageRegressions)
     if use_parental_dummies(wr)
         incSuffix = "_inc";
@@ -46,7 +47,7 @@ function regr_file_suffix(wr :: WageRegressions)
         interSuffix = "";
     end
 
-    return incSuffix * interSuffix * groupSuffix  # +++++ * "_OLD"
+    return incSuffix * interSuffix * groupSuffix  
 end
 
 

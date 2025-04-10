@@ -22,7 +22,8 @@ function grad_rates_test(dsName, xVar)
 
         fracGrad, _ = load_moment(ds, :fracGrad);
         fracGrad2 = sum(massGrad_qgM) / sum(massEnter_qgM);
-        @test isapprox(fracGrad, fracGrad2, atol = 1e-3);
+        # The large tolerance b/c entry rate differs between [q,p] and [q,g] samples.
+        @test isapprox(fracGrad, fracGrad2, atol = 0.02);
 
         fracGrad_gV, _ = load_moment(ds, mFracGradX);
         massGrad_gV = vec(sum(massGrad_qgM, dims = 1));

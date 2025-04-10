@@ -4,6 +4,20 @@ Data routines for CollegeStrat and MismatchMM projects.
 
 Order of categories: school (s), quality (q), gpa (g), parental (p)
 
+## Change log 2025
+
+April 10 (v3)
+- v3 for submitted IBA paper
+
+## Change log 2024
+
+Feb-23 (2.13)
+- changed financial moments to SelfReport for larger sample size.
+Feb-21 (2.12)
+- all moments from Transcript files, except college earnings and experience profiles, wage regressions, wage fixed effects
+Feb-19
+- Cumulative loans by [quality, parental, year]
+
 ## Change log 2023
 
 Nov-21

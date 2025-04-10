@@ -60,25 +60,29 @@ end
 ## Mass of freshmen by quality / gpa. Sums to 1.
 function mass_entry_qual_gpa(ds :: DataSettings)
     m, ses, cnts = mass_entry_qual_x(ds, :g);
-    # m = read_matrix_by_xy(ds, :massEntry_qgM, MtMean());
     @assert size(m) == (n_colleges(ds), n_gpa(ds));
-    # # SES treats this as a discrete choice problem with total count.
-    # cnts = read_matrix_by_xy(ds, :massEntry_qgM, MtCount());
-    # cnts = fill(sum(cnts), size(cnts));
-    # cnts = clean_cnts(cnts);
-    # @assert all(m .< 1.0)  &&  all(m .> 0.0)
-    # @assert isapprox(sum(m), 1.0,  atol = 0.0001)
-    # ses = ses_from_choice_probs(m, cnts);
     return m, ses, cnts
 end
 
-# ses not correct +++++
+"""
+Fraction in each quality by gpa.
+"""
 function frac_gpa_by_qual(ds :: DataSettings)
     mass_qgM, ses_qgM, cnts_qgM = mass_entry_qual_gpa(ds);
+
+    # Fraction q | g
     frac_gqM = mass_qgM' ./ sum(mass_qgM'; dims = 1);
     @check all(isapprox.(sum(frac_gqM; dims = 1), 1.0));
-    ses_gqM = ses_qgM';
-    cnts_gqM = cnts_qgM';
+    nq, ng = size(mass_qgM);
+
+    # Counts by q. Sum to total counts.
+    totalCnt = sum(cnts_qgM);
+    cnts_gqM = round.(Int, mass_qgM' ./ sum(mass_qgM) .* totalCnt ./ length(cnts_qgM));
+    cnts_qV = vec(sum(cnts_gqM, dims = 1));
+
+    # SES treated as discrete choice. 
+    ses_gqM = ses_from_choice_probs(frac_gqM, repeat(cnts_qV', outer = (ng, 1)));
+    
     return frac_gqM, ses_gqM, cnts_gqM
 end
 
@@ -88,6 +92,7 @@ end
 
 Graduation rates by [quality, gpa]. Conditional on entry. All colleges.
 Sets grad rates for 2y colleges to 0.
+Interpolates missing entry for AFQT 1 / q 4
 """
 function frac_gradc_qual_gpa(ds :: DataSettings)
     load_fct = 
@@ -96,10 +101,16 @@ function frac_gradc_qual_gpa(ds :: DataSettings)
     @assert all(m .<= 1.0)  &&  all(m .> 0.0);
     @assert size(m) == (n_colleges(ds), n_gpa(ds));
 
+    # Interpolate missing entry for AFQT 1 / q 4
+    nc = n_colleges(ds);
+    if isapprox(m[nc, 1], 1.0)
+        m[nc, 1] = (m[nc, 2] + m[nc-1, 1]) / 2;
+    end
+
     # Set to 0 for colleges that do not produce graduates
     m[no_grad_idx(ds), :] .= 0.0;
     cnts[no_grad_idx(ds), :] .= 0;
-    # wtM = 1.0 ./ max.(0.1, m);
+    @assert check_float_array(m, 0.0, 1.0);
     return m, ses, cnts
 end
 
