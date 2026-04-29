@@ -49,6 +49,16 @@ end
 
 ## --------------------  Delimited moment files
 
+function file_exists(fPath :: AbstractString; onError = :error)
+	if isfile(fPath)
+		return true
+	elseif onError == :error
+        error("File not found: $fPath")
+	else
+        return false
+    end
+end
+
 
 # """
 # 	$(SIGNATURES)
@@ -59,11 +69,11 @@ end
 # 	return read_delim_file_to_df(data_file(target));
 # end
 
-function read_delim_file_to_df(fPath :: String)
-	@assert isfile(fPath)  "File not found: $fPath"
-	csvFile = CSV.File(fPath, header = true,  delim = '\t', comment = commentStr);
-	df = (csvFile |> DataFrame);
-	return df
+function read_delim_file_to_df(fPath :: String; onError = :error)
+    file_exists(fPath; onError)  ||  return onError;
+    csvFile = CSV.File(fPath, header = true,  delim = '\t', comment = commentStr);
+    df = (csvFile |> DataFrame);
+    return df
 end
 
 

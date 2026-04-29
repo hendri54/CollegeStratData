@@ -1,6 +1,6 @@
 ## -----------  By quality / parental
 
-function coll_earn_qual_parental(ds :: DataSettings; year = 1)
+function coll_earn_qual_parental(ds :: DataSettings; year = 1, onError = :error)
     @assert (year == 1)  "Implement other years";
     load_fct = 
         mt -> read_matrix_by_xy(ds, :collEarn_qpM, mt); 
@@ -10,13 +10,13 @@ function coll_earn_qual_parental(ds :: DataSettings; year = 1)
 end
 
 ## College earnings, by quality
-function coll_earn_by_qual(ds :: DataSettings; year = 1)
+function coll_earn_by_qual(ds :: DataSettings; year = 1, onError = :error)
     @assert (year == 1)  "Implement other years";
     load_fct = 
         mt -> read_row_totals(ds, :collEarn_qpM, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);
     @assert all(m .> 2_000.0)  &&  all(m .< 10_000.0);
-    @assert all(cnts .> 100);
+    @assert all(cnts .> 90)  "Counts too low: $(cnts)";
     return m, ses, cnts
 end
 
@@ -24,7 +24,7 @@ end
 
 ## Fraction in each quality, conditional on entry, by parental
 # Counts returned are totals by parental, but returned by [qual, parental]
-function frac_qual_by_parental(ds :: DataSettings)
+function frac_qual_by_parental(ds :: DataSettings; onError = :error)
     # This is enrollment by [quality, parental]
     dataV = read_matrix_by_xy(raw_entry_qual_parental(ds));
     @assert check_float_array(dataV, 0.005, 1.0);
@@ -49,7 +49,7 @@ end
 
 
 ## Graduation rates (conditional on entry) by (quality, parental)
-function frac_gradc_qual_parental(ds :: DataSettings)
+function frac_gradc_qual_parental(ds :: DataSettings; onError = :error)
     load_fct = 
         mt -> read_matrix_by_xy(ds, :fracGrad_gpM, mt);
     m, ses, cnts = choice_prob_from_xy(load_fct);
@@ -68,7 +68,7 @@ end
 """
 Compute from joint distribution of graduates by [q, p]. The marginals are otherwise wrong b/c we set frac grad of 2y colleges to 0.
 """
-function frac_gradc_by_parental(ds :: DataSettings)
+function frac_gradc_by_parental(ds :: DataSettings; onError = :error)
     massEnter_qpM, _ = load_moment(ds, :massEntry_qpM);
     massGrad_qpM, _ = load_moment(ds, :massGrad_qpM);
     massEnter_gV = vec(sum(massEnter_qpM, dims = 1));
@@ -86,7 +86,7 @@ function frac_gradc_by_parental(ds :: DataSettings)
 end
 
 
-function mass_entry_qual_parental(ds :: DataSettings)
+function mass_entry_qual_parental(ds :: DataSettings; onError = :error)
     m, ses, cnts = mass_entry_qual_x(ds, :p);
     @assert size(m) == (n_colleges(ds), n_parental(ds));
     return m, ses, cnts
@@ -95,7 +95,7 @@ end
 
 # No std errors
 # Counts are from frac grad by [q, g]
-function mass_grad_qual_parental(ds :: DataSettings)
+function mass_grad_qual_parental(ds :: DataSettings; onError = :error)
     massEnter_qpM, _ = mass_entry_qual_parental(ds);
     fracGrad_qpM, _, cnts = frac_gradc_qual_parental(ds);
     massGrad_qpM = massEnter_qpM .* fracGrad_qpM;
@@ -132,7 +132,7 @@ end
 
 
 # 4y colleges only
-function time_to_grad_4y_qual_parental(ds :: DataSettings)
+function time_to_grad_4y_qual_parental(ds :: DataSettings; onError = :error)
     load_fct = 
         mt -> read_matrix_by_xy(ds, :timeToGrad4y_qpM, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);

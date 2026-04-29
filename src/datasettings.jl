@@ -200,7 +200,7 @@ end
 ## --------------  Individual settings
 
 # List of data settings names. Useful for testing.
-data_settings_list() = [:default];		# , :uneven, :twoProfiles];
+data_settings_list() = [:default, :nlsy79];		# , :uneven, :twoProfiles];
 
 
 """
@@ -220,9 +220,17 @@ function make_data_settings(dsName :: Symbol; baseDir :: String = "",
 		# baseDir = joinpath(homedir(), "Documents", "projects", "p2019", 
 		# 	"college_stratification", "CollegeStrat", "data");
 	end
-	srcDir = "NLSY 97 moments by AFQT";
 
-	if dsName ∈ (:default, :test)
+	hasTrOrSelfReport = true;
+
+	if dsName == :nlsy79
+		srcDir = "NLSY 79 moments by AFQT";
+		hasTrOrSelfReport = false;
+	else
+		srcDir = "NLSY 97 moments by AFQT";
+	end
+
+	if dsName ∈ (:default, :nlsy79, :test)
 		subDir = "Updated Types";
 	elseif dsName ∈ (:uneven, :twoProfiles)
 		error("No longer updated: $dsName")
@@ -238,8 +246,8 @@ function make_data_settings(dsName :: Symbol; baseDir :: String = "",
 			useAfqtQualityInteractions);
 	end
 
-	ds = DataSettings(name = dsName, dataSubDir = joinpath(subDir, srcDir),
-		baseDir = baseDir, wageRegressions = wageRegr);
+	ds = DataSettings(; name = dsName, dataSubDir = joinpath(subDir, srcDir),
+		baseDir = baseDir, hasTrOrSelfReport, wageRegressions = wageRegr);
 	@assert validate_ds(ds);
 	return ds
 end

@@ -278,12 +278,18 @@ data_file(rf :: RawDataFile) =
 
 # Subdir relative to `raw_data_base_dir` or `data_dir`
 data_sub_dir(rf :: RawDataFile) =
-	data_sub_dir(rf.selfOrTranscript, rf.momentType, rf.group);
+	rf_sub_dir(data_settings(rf), rf.selfOrTranscript, rf.momentType, rf.group);
 
-function data_sub_dir(selfReportOrTranscript :: AbstractSelfOrTranscript,  
+function rf_sub_dir(ds :: DataSettings,
+        selfReportOrTranscript :: AbstractSelfOrTranscript,  
         momentType, momentGroup :: AbstractGroup)
-    return joinpath(sub_dir(selfReportOrTranscript),  "dat_files", 
-		sub_dir(momentType),  sub_dir(momentGroup))
+    fDir = joinpath("dat_files", sub_dir(momentType),  sub_dir(momentGroup))
+	if ds.hasTrOrSelfReport
+        # Prepend subdir for self-report / transcript distinction
+        # only if data have that distinction
+		fDir = joinpath(sub_dir(selfReportOrTranscript), fDir);
+	end
+	return fDir
 end
 
 function file_name(rf :: RawDataFile)

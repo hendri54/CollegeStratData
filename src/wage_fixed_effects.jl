@@ -4,7 +4,7 @@
 By [school, grpVar]. If no grouping, just by school.
 Zeros for missing values (such as CGs from 2y colleges).
 """
-function wage_fixed_effects(ds :: DataSettings, grpVar)
+function wage_fixed_effects(ds :: DataSettings, grpVar; onError = :error)
     sizeV = (length(EdLevels), n_groups(ds, grpVar));
     m = zeros(sizeV);
     ses = zeros(sizeV);
@@ -25,6 +25,13 @@ function wage_fixed_effects(ds :: DataSettings, grpVar)
     end
     return m, ses, cnts
 end
+
+wage_fixed_effects_gpa(ds :: DataSettings; onError = :error) = 
+    wage_fixed_effects(ds, ClassHsGpa(); onError);
+wage_fixed_effects_qual(ds :: DataSettings; onError = :error) = 
+    wage_fixed_effects(ds, ClassQuality(); onError);
+wage_fixed_effects_all(ds :: DataSettings; onError = :error) = 
+    wage_fixed_effects(ds, ClassAll(); onError);
 
 
 """
@@ -109,7 +116,7 @@ function wage_fixed_effects_fn(ds, edLevel; momentType = MtMean())
         edStr = "CG";
     end
     fn = prefix * "_$(edStr)_fe_same.dat";
-    fDir = joinpath(data_dir(ds), data_sub_dir(SelfReport(), subDirMt, GrpNone()), "Reg");
+    fDir = joinpath(data_dir(ds), rf_sub_dir(ds, SelfReport(), subDirMt, GrpNone()), "Reg");
     return joinpath(fDir, fn)
 end
 

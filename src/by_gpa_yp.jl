@@ -13,7 +13,7 @@ read_by_gpa_yp(ds :: DataSettings, mName :: Symbol; momentType = nothing) =
 ## -------------  Individual moments
 
 
-function load_entry_gpa_yp(ds :: DataSettings)
+function load_entry_gpa_yp(ds :: DataSettings; onError = :error)
 	load_fct = mt -> read_by_gpa_yp(ds, :fracEnter_gpM; momentType = mt);
 	m, ses, cnts = choice_prob_from_xy(load_fct);
 	# m = read_by_gpa_yp(ds, :fracEnter_gpM);
@@ -36,7 +36,7 @@ end
 #         mass_by_gpa_yp, plot_gpa_yp)
 # end
 
-function mass_by_gpa_yp(ds :: DataSettings)
+function mass_by_gpa_yp(ds :: DataSettings; onError = :error)
 	m = read_by_gpa_yp(ds, :mass_gpM; momentType = MtMean());
 	cnts = read_by_gpa_yp(ds, :mass_gpM; momentType = MtCount());
 	ses = ses_from_choice_probs(m, cnts);

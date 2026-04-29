@@ -25,7 +25,7 @@ end
 # Out of total 4y entrants. First 3 years only.
 
 # Return the fractions; std errors are not exactly right
-function frac_drop_4y_by_year(ds :: DataSettings; T = 3)
+function frac_drop_4y_by_year(ds :: DataSettings; T = 3, onError = :error)
     # # Rows are years, cols are colleges + dropouts + grads
     # m, _, cnts = load_moment(ds, :statusByYear);
     # @assert size(m, 2) == (n_colleges(ds) + 2)  "Invalid size: $(size(m))"
@@ -81,7 +81,7 @@ end
 
 ## ----------  90th percentile of cumulative loans by year.
 # No counts or std errors.
-function cum_loans90_year(ds :: DataSettings)
+function cum_loans90_year(ds :: DataSettings; onError = :error)
     outV = cum_loans_year(ds; percentile = 90);
     cntV = zeros(Int, size(outV));
     sesV = zeros(Double, size(outV));

@@ -1,20 +1,35 @@
 ## ----------------  Individual moments
 
+transfers_qg(ds :: DataSettings; onError = :error) = 
+    transfers_xy(ds, [:qual, :gpa]; onError);
+transfers_qp(ds :: DataSettings; onError = :error) = 
+    transfers_xy(ds, [:qual, :parental]; onError);
+
+
 ## Transfers
-function transfers_xy(ds :: DataSettings, xyGroups; yr = 1)
+function transfers_xy(ds :: DataSettings, xyGroups; yr = 1, onError = :error)
     load_fct = 
-        mt -> read_matrix_by_xy(raw_transfers_xy(ds, xyGroups, yr; momentType = mt));
-    m, ses, cnts = load_mean_ses_counts(load_fct);
+        mt -> read_matrix_by_xy(
+            raw_transfers_xy(ds, xyGroups, yr; momentType = mt); onError);
+    m, ses, cnts = load_mean_ses_counts(load_fct; onError);
+    isnothing(m)  &&  return nothing, nothing, nothing;
     @assert size(m) == (n_colleges(ds), n_gpa(ds));
     @assert all(m[1,:] .< 5_000.0); # 2y colleges
     @assert all(m .< 18_000.0)  &&  all(m .> 0.0);
     return m, ses, cnts
 end
 
-function net_price_xy(ds :: DataSettings, xyGroups; yr = 1)
+net_price_qg(ds :: DataSettings; onError = :error) = 
+    net_price_xy(ds, [:qual, :gpa]; onError);
+net_price_qp(ds :: DataSettings; onError = :error) = 
+    net_price_xy(ds, [:qual, :parental]; onError);
+
+function net_price_xy(ds :: DataSettings, xyGroups; yr = 1, onError = :error)
     load_fct = 
-        mt -> read_matrix_by_xy(raw_net_price_xy(ds, xyGroups, yr; momentType = mt));
-    m, ses, cnts = load_mean_ses_counts(load_fct);
+        mt -> read_matrix_by_xy(
+            raw_net_price_xy(ds, xyGroups, yr; momentType = mt); onError);
+    m, ses, cnts = load_mean_ses_counts(load_fct; onError);
+    isnothing(m)  &&  return nothing, nothing, nothing;
     @assert size(m) == (n_colleges(ds), n_gpa(ds));
     @assert all(m[1,:] .< 2_000.0); # 2y colleges
     @assert all(m .< 12_000.0)  &&  all(m .> -5000.0);
@@ -24,10 +39,12 @@ end
 
 ## Mean time to dropout (conditional on dropping out)
 # Some small cells. 4Y only.
-function time_to_drop_4y_qual_gpa(ds :: DataSettings)
+function time_to_drop_4y_qual_gpa(ds :: DataSettings; onError = :error)
     load_fct = 
-        mt -> read_matrix_by_xy(ds, :timeToDrop4y_qgM, mt);
-    m, ses, cnts = load_mean_ses_counts(load_fct);
+        mt -> read_matrix_by_xy(
+            raw_time_to_drop_4y_qual_gpa(ds; momentType = mt); onError);
+    m, ses, cnts = load_mean_ses_counts(load_fct; onError);
+    isnothing(m)  &&  return nothing, nothing, nothing;
     @assert size(m) == (n_4year(ds), n_gpa(ds));
     @assert all(m .< 6.0)  &&  all(m .>= 0.0)
     return m, ses, cnts
@@ -35,7 +52,7 @@ end
 
 
 ## Fraction in each quality, conditional on entry, by gpa
-function frac_qual_by_gpa(ds :: DataSettings)
+function frac_qual_by_gpa(ds :: DataSettings; onError = :error)
     dataV = read_matrix_by_xy(raw_entry_qual_gpa(ds));
     @assert check_float_array(dataV, 0.001, 1.0);
     @assert isapprox(sum(dataV), 1.0, atol = 1e-6);
@@ -58,7 +75,7 @@ end
 
 
 ## Mass of freshmen by quality / gpa. Sums to 1.
-function mass_entry_qual_gpa(ds :: DataSettings)
+function mass_entry_qual_gpa(ds :: DataSettings; onError = :error)
     m, ses, cnts = mass_entry_qual_x(ds, :g);
     @assert size(m) == (n_colleges(ds), n_gpa(ds));
     return m, ses, cnts
@@ -67,7 +84,7 @@ end
 """
 Fraction in each quality by gpa.
 """
-function frac_gpa_by_qual(ds :: DataSettings)
+function frac_gpa_by_qual(ds :: DataSettings; onError = :error)
     mass_qgM, ses_qgM, cnts_qgM = mass_entry_qual_gpa(ds);
 
     # Fraction q | g
@@ -94,7 +111,7 @@ Graduation rates by [quality, gpa]. Conditional on entry. All colleges.
 Sets grad rates for 2y colleges to 0.
 Interpolates missing entry for AFQT 1 / q 4
 """
-function frac_gradc_qual_gpa(ds :: DataSettings)
+function frac_gradc_qual_gpa(ds :: DataSettings; onError = :error)
     load_fct = 
         mt -> read_matrix_by_xy(ds, :fracGrad_qgM, mt);
     m, ses, cnts = choice_prob_from_xy(load_fct);
@@ -117,7 +134,7 @@ end
 
 # No std errors
 # Counts are from frac grad by [q, g]
-function mass_grad_qual_gpa(ds :: DataSettings)
+function mass_grad_qual_gpa(ds :: DataSettings; onError = :error)
     massEnter_qgM, _ = mass_entry_qual_gpa(ds);
     fracGrad_qgM, _, cnts = frac_gradc_qual_gpa(ds);
     massGrad_qgM = massEnter_qgM .* fracGrad_qgM;
@@ -130,7 +147,7 @@ end
 Cumulative fraction dropping out at end of year 2.
 Std errors questionable.
 """
-function cum_frac_drop_yr2_qual_gpa(ds :: DataSettings)
+function cum_frac_drop_yr2_qual_gpa(ds :: DataSettings; onError = :error)
     tMax = 2;
     m = zeros(n_colleges(ds), n_gpa(ds));
     ses = zeros(size(m));
@@ -173,7 +190,7 @@ Study time from NLSY79. Class and study time combined.
 Files are copied BY HAND from Dropbox to DataCollegeStrat.
 But need to adjust b/c grand mean should be lower for NLSY97.
 """
-function study_time_qual(ds :: DataSettings)
+function study_time_qual(ds :: DataSettings; onError = :error)
     studyV = [read_row_totals(study_time79_path(ds; momentType = mt)) 
         for mt in (MtMean(), MtStd(), MtCount())];
     classV = [read_row_totals(class_time79_path(ds; momentType = mt)) 
@@ -229,7 +246,7 @@ function total_study_time(studyV, classV)
 end
 
 
-function study_time_qual_gpa(ds :: DataSettings)
+function study_time_qual_gpa(ds :: DataSettings; onError = :error)
     studyV = [read_matrix_by_xy(study_time79_path(ds; momentType = mt)) 
         for mt in (MtMean(), MtStd(), MtCount())];
     classV = [read_matrix_by_xy(class_time79_path(ds; momentType = mt)) 
@@ -275,7 +292,7 @@ function study_time_qual_gpa(ds :: DataSettings)
     return dataM, ses, cnts
 end
 
-function study_time(ds :: DataSettings)
+function study_time(ds :: DataSettings; onError = :error)
     studyV = [read_total(study_time79_path(ds; momentType = mt)) 
         for mt in (MtMean(), MtStd(), MtCount())];
     classV = [read_total(class_time79_path(ds; momentType = mt)) 
@@ -327,7 +344,7 @@ end
 
 # This is not a useful target. High quality / low AFQT cells are almost empty.
 # Instead, use marginals (by quality, AFQT) computed for 4y colleges only.
-function time_to_grad_4y_qual_gpa(ds :: DataSettings)
+function time_to_grad_4y_qual_gpa(ds :: DataSettings; onError = :error)
     load_fct = 
         mt -> read_matrix_by_xy(ds, :timeToGrad4y_qgM, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);

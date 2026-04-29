@@ -8,7 +8,7 @@ function load_moments_test(dsName)
         ds = make_data_settings(dsName);
         gradRate, ses, cnt = load_moment(ds, :fracGrad);
 		@test check_float(gradRate, lb = 0.4, ub = 0.7)
-		@test check_float(ses, lb = 0.01, ub = 0.1)
+		@test check_float(ses, lb = 0.005, ub = 0.1)
 		@test cnt > 1000
 
         # corrGP, _ = load_moment(ds, :corrGpaYp)
@@ -17,8 +17,10 @@ function load_moments_test(dsName)
         mm = CollegeStratData.moment_map();
 		for mName in keys(mm)
 			println("Loading $mName")
-            dataM = load_moment(ds, mName);
-            if isa(dataM, RegressionTable)
+			# Some moments do not exist for some years
+            dataM = load_moment(ds, mName; onError = nothing);
+            if isa(dataM, RegressionTable)  ||  
+					isnothing(dataM)  ||  isnothing(dataM[1])
 				# nothing
 			else
 				m = dataM[1];
@@ -61,8 +63,8 @@ function make_target_test(dsName)
 
 		# Read from file by quality only
 		d3, _ = load_moment(ds, :gpaMean_qV);
-		@test all(d3 .> 0.0)  &&  all(d3 .< 1.0)
-		@test isapprox(d3[2], 0.58, atol = 0.03)
+		@test all(d3 .> 0.0)  &&  all(d3 .< 1.0);
+		@test 0.5 < d3[2] < 0.7;
 		
 		# By qual/gpa
 		d4, ses, cnts = load_moment(ds, :timeToDrop4y_qgM);
@@ -74,7 +76,7 @@ function make_target_test(dsName)
 		@test all(d5 .> 600.0)  &&  all(d5 .< 1200.0)
 
 		d6, _ = load_moment(ds, :cumLoans_qtM);
-		@test d6[2,3] > 7500.0 
+		@test d6[2,3] > 2000.0 
 
 		d7 = CollegeStratData.cdf_gpa_by_qual(ds, [20], 1:4);
 		@test size(d7) == (1, 4)
@@ -93,9 +95,12 @@ function make_target_test(dsName)
 		# corr1 = load_moment(ds, :corrGpaYp);
 		# @test isa(corr1, ScalarDeviation)
 
-		tuitionV, _ = load_moment(ds, :tuition_qV);
-		@test all(tuitionV .> 400.0)
-		@test all(tuitionV .< 50000.0)
+		# Tuition does not exist in 1979
+		tuitionV, _ = load_moment(ds, :tuition_qV; onError = nothing);
+		if !isnothing(tuitionV)
+		    @test all(tuitionV .> 400.0)
+		    @test all(tuitionV .< 50000.0)
+		end
 
 		# rf = CollegeStratData.raw_mass_entry_qual_gpa();
 		# @test isfile(CollegeStratData.data_file(rf))

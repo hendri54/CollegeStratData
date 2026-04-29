@@ -14,7 +14,7 @@
 
 
 # Entry rate by GPA
-function frac_enter_by_gpa(ds :: DataSettings)
+function frac_enter_by_gpa(ds :: DataSettings; onError = :error)
     # Read COL totals b/c file is transposed
     load_fct = 
         mt -> read_col_totals(raw_entry_gpa_parental(ds; momentType = mt));
@@ -34,7 +34,7 @@ end
 """
 Compute from joint distribution of graduates by [q, g]. The marginals are otherwise wrong b/c we set frac grad of 2y colleges to 0.
 """
-function frac_gradc_by_gpa(ds :: DataSettings)
+function frac_gradc_by_gpa(ds :: DataSettings; onError = :error)
     massEnter_qgM, _ = load_moment(ds, :massEntry_qgM);
     massGrad_qgM, _ = load_moment(ds, :massGrad_qgM);
     massEnter_gV = vec(sum(massEnter_qgM, dims = 1));
@@ -54,7 +54,7 @@ end
 
 # Mean time to drop by quality / gpa
 # Contains one 0 cell that needs to be interpolated. 4Y only.
-function time_to_drop_4y_by_gpa(ds :: DataSettings)
+function time_to_drop_4y_by_gpa(ds :: DataSettings; onError = :error)
     load_fct = 
         mt -> read_col_totals(ds, :timeToDrop4y_qgM, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);
@@ -70,7 +70,7 @@ end
 
 Mean time to graduation by GPA. 4Y colleges only.
 """
-function time_to_grad_4y_by_gpa(ds :: DataSettings)
+function time_to_grad_4y_by_gpa(ds :: DataSettings; onError = :error)
     load_fct = 
         mt -> read_col_totals(ds, :timeToGrad4y_qgM, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);
@@ -86,7 +86,7 @@ end
 
 Work hours, year 1, by GPA.
 """
-function work_hours_by_gpa(ds :: DataSettings)
+function work_hours_by_gpa(ds :: DataSettings; onError = :error)
     m = read_col_totals(raw_work_hours_qual_gpa(ds, ds.workTimeYear));
     stdV = read_col_totals(
         raw_work_hours_qual_gpa(ds, ds.workTimeYear; momentType = MtStd()));
@@ -106,7 +106,7 @@ end
 # Fraction of initial entrants dropping out at end of each year.
 # Standard errors are questionable. The `N`s are given as the total number of students in each college in year 1. 
 # Dropout rates for 2y starters only sum to about 0.9. But 1/3 occur after year 2.
-function frac_drop_gpa_year(ds :: DataSettings)
+function frac_drop_gpa_year(ds :: DataSettings; onError = :error)
     # target = :fracDrop_gtM;
 
     T = ds.Tmax;

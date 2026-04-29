@@ -45,6 +45,9 @@ Base.@kwdef mutable struct DataSettings
 	baseDir :: String
 	# Data dir relative to base directory for all data files
 	dataSubDir :: String
+	# Do data have self-report / transcript distinction?
+	# Affects sub-dirs to raw data files
+	hasTrOrSelfReport :: Bool = true
 	# Uses afqt or gpa
 	afqtGpa :: String = "afqt"
 	# School groups

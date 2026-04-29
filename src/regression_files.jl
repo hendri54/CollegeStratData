@@ -24,8 +24,8 @@ OUT
 		se.b1 is the std error of b1
 """
 function read_regression_file(fPath :: String; 
-        renameRegr = true, renameInteractions = true)
-    @assert isfile(fPath)  "File not found: $fPath"
+        renameRegr = true, renameInteractions = true, onError = :error)
+    file_exists(fPath; onError)  ||  return onError;
     csvFile = CSV.File(fPath, header = true,  delim = '\t', comment = commentStr);
 	df = (csvFile |> DataFrame);
 

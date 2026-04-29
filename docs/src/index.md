@@ -26,6 +26,8 @@ make_data_settings
 
 A `DataSettings` object is constructed with [`make_data_settings`](@ref).
 
+`data_settings_list()` contains all the DataSettings that are actually used. Those are tested when `runtests` is run.
+
 The following functions give access to properties of the data:
 
 ```@docs
@@ -51,6 +53,8 @@ The raw data files are created in delimited text format and stored in a nested d
 For each data file, a function makes a [`RawDataFile`](@ref) object. It contains information where the file is to be found in the directory structure. 
 
 A mapping from data moments to raw data files is constructed in `raw_file_map`. This makes it easy to locate the data file that belongs to a given moment by simply calling [`raw_file_path`](@ref).
+
+Note that the 1997 data contain files for the "SelfReport" and for the "Transcript" sample. For 1979, everything is "SelfReport" (no transcript data). 
 
 ## Updating data files
 

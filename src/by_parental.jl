@@ -1,4 +1,4 @@
-function frac_enter_by_parental(ds :: DataSettings)
+function frac_enter_by_parental(ds :: DataSettings; onError = :error)
     # Read ROW totals b/c file is transposed
     load_fct = 
         mt -> read_row_totals(raw_entry_gpa_parental(ds; momentType = mt));
@@ -12,7 +12,7 @@ end
 
 
 ## College earnings, year 1
-function coll_earn_by_parental(ds :: DataSettings; year = 1)
+function coll_earn_by_parental(ds :: DataSettings; year = 1, onError = :error)
     @assert (year == 1)  "Implement other years";
     load_fct = 
         mt -> read_col_totals(ds, :collEarn_qpM, mt);
@@ -24,7 +24,7 @@ end
 
 
 ## Hours worked, year 1
-function work_hours_by_parental(ds :: DataSettings)
+function work_hours_by_parental(ds :: DataSettings; onError = :error)
     load_fct = 
         mt -> read_col_totals(ds, :workTime_qpM, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);

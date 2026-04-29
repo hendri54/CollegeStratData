@@ -1,7 +1,7 @@
 ## ----------------  Individual files
 
 # Convenience abbreviation
-rf(ds :: DataSettings, baseFn, groups, selfTrans, area, momentType) = 
+rfn(ds :: DataSettings, baseFn, groups, selfTrans, area, momentType) = 
     RawDataFile(selfTrans, area, momentType,
         file_name(ds, baseFn, groups), ds);
 
@@ -16,7 +16,7 @@ raw_frac_local_qual(ds :: DataSettings; momentType = MtMean()) =
         file_name(ds, "frac_loc_50", [grpQuality]), ds);
 
 rf_qg(ds :: DataSettings, baseFn, selfTrans, area, momentType) = 
-    rf(ds, baseFn, [grpQuality, grpGpa], selfTrans, area, momentType);
+    rfn(ds, baseFn, [grpQuality, grpGpa], selfTrans, area, momentType);
 
 
 # ---------  Entry and graduation
@@ -42,7 +42,7 @@ raw_frac_drop_qual_gpa(ds :: DataSettings, year :: Integer;
     rf_qg(ds, "drop_rate_y$year", Transcript(), GrpProgress(), momentType);
 
 raw_frac_gradc_qual_gpa(ds :: DataSettings; momentType = MtMean()) = 
-    rf_qg(ds, "grad_rate", Transcript(), GrpProgress(), momentType)
+    rf_qg(ds, "grad_rate", Transcript(), GrpProgress(), momentType);
         # file_name(ds, "grad_rate", [:quality, :afqt]), ds);
   
 # Transcript time to drop contains a 0 in one cell
@@ -142,7 +142,7 @@ raw_college_earnings_qual_parental(ds :: DataSettings;
 # -----  By quality / parental
 
 rf_qp(ds :: DataSettings, baseFn, selfTrans, area :: AbstractGroup, momentType) = 
-    rf(ds, baseFn, [:qual, :yp], selfTrans, area, momentType);
+    rfn(ds, baseFn, [:qual, :yp], selfTrans, area, momentType);
 
 # Conditional on entry, fraction of students in each [quality, parental] cell
 raw_entry_qual_parental(ds :: DataSettings; momentType = MtMean()) =

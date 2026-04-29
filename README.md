@@ -6,6 +6,10 @@ Order of categories: school (s), quality (q), gpa (g), parental (p)
 
 ## Change log 2025
 
+May 22
+- fixed paths for 79 files where distinction between transcripts and self-reports does not exist
+- updated classtime and studytime files (now from 2023)
+
 April 10 (v3)
 - v3 for submitted IBA paper
 

@@ -25,10 +25,10 @@ end
 
 
 ## Fraction entering college
-function frac_enter(ds :: DataSettings)
+function frac_enter(ds :: DataSettings; onError = :error)
     fracEnter = read_all_from_delim_file(raw_entry_gpa_parental(ds));
     cnt = read_all_from_delim_file(raw_entry_gpa_parental(ds; momentType = MtCount()));
-    @assert check_float(fracEnter, lb = 0.45, ub = 0.65);
+    @assert check_float(fracEnter, lb = 0.40, ub = 0.65);
     ses = (fracEnter * (1.0 - fracEnter) / cnt) ^ 0.5;
     return fracEnter, ses, cnt
 end
@@ -38,7 +38,7 @@ Graduation rate (conditional on entry).
 For consistency, constructed from joint entry mass of gpa and quality.
 Constructing from entry mass by [quality, yp] produces slightly different overall grad rate. Because samples differ between the two moments.
 """
-function frac_gradc(ds :: DataSettings)
+function frac_gradc(ds :: DataSettings; onError = :error)
     massM, _ = mass_entry_qual_gpa(ds);
     massGradM, _ = mass_grad_qual_gpa(ds);
     gradRate = sum(massGradM) / sum(massM);

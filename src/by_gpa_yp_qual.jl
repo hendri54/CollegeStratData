@@ -85,6 +85,9 @@ function load_qual_entry_gpa_yp(ds :: DataSettings;
 	return fracEnter_qgpM, ses_qgpM, cnt_qgpM
 end
 
+load_qual_entry_gpa_yp_cond(ds :: DataSettings; onError = :error) = 
+	load_qual_entry_gpa_yp(ds; conditionalOnEntry = true);
+
 
 # Load fraction by quality | [gpa, yp]. Conditional on entry or not.
 function load_qual_entry_gpa_yp(ds :: DataSettings, iCollege;

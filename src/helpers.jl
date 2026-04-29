@@ -91,10 +91,17 @@ Given a function that loads a moment (could be a matrix or vector) (load_fct):
 * make sure counts are Int
 * compute SES as std deviation of means
 """
-function load_mean_ses_counts(load_fct)
+function load_mean_ses_counts(load_fct; onError = :error)
     m = load_fct(MtMean());
     cnts = load_fct(MtCount());
     stdV = load_fct(MtStd());
+    if isnothing(m)  ||  isnothing(cnts)  ||  isnothing(stdV)
+        if onError == :error
+            error("Invalid moment")
+        else
+            return nothing, nothing, nothing
+        end
+    end
     ses = std_dev_of_means(stdV, cnts);
     cnts = clean_cnts(cnts);
     return m, ses, cnts

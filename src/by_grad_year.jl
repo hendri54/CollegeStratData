@@ -2,7 +2,7 @@
 
 # Credits attempted by [grad status, year]
 # Not cumulative
-function courses_tried_grad_year(ds :: DataSettings)
+function courses_tried_grad_year(ds :: DataSettings; onError = :error)
     T = ds.Tmax;
     nr = 2;
     outM = zeros(nr, T);

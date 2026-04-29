@@ -160,7 +160,7 @@ Log wage = intercept + experience profile(experience)
 It is legitimate to match these intercepts to model wages of workers with experience 1.
 Substantive test is plotting the implied wage profiles.
 """
-function wage_regr_intercepts(ds :: DataSettings)
+function wage_regr_intercepts(ds :: DataSettings; onError = :error)
     wr = wage_regr_settings(ds, :All);
     @assert n_school(wr) == n_school(ds)
 
@@ -204,7 +204,7 @@ end
 ## ------------  Wage regressions; grads; with quality dummies
 # Omitted category is the first quality from which one can graduate.
 # Note: label of afqt/qual interactions varies across files. Some are `interactionJ` ; others are `aftqJ_qK`
-function wage_regr_grads(ds :: DataSettings)
+function wage_regr_grads(ds :: DataSettings; onError = :error)
     wr = wage_regr_settings(ds, SchoolCG);
     @assert n_school(wr) == n_school(ds)
 

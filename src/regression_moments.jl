@@ -1,8 +1,9 @@
 ## ---------  Transfer regression
 
-function transfer_regr(ds :: DataSettings)
+function transfer_regr(ds :: DataSettings; onError = :error)
     # Regression deviations use RegressionTables as inputs
     fPath = data_file(raw_transfer_regr(ds));
+    file_exists(fPath; onError)  ||  return onError;
     rt = read_regression_file(fPath);
     rename_regressors(rt);
     return rt
@@ -15,7 +16,7 @@ raw_transfer_regr(ds :: DataSettings; momentType = nothing) =
 # Transfer regression with quality dummies and quality / income percentile interactions
 # (called interaction2 etc)
 # `inc_pctile` regressor, scaled for percentiles in [0, 1]
-function transfer_regr_w_qp_interactions(ds :: DataSettings)
+function transfer_regr_w_qp_interactions(ds :: DataSettings; onError = :error)
     fPath = data_file(raw_transfer_regr_w_qp_interactions(ds));
     rt = read_regression_file(fPath; renameRegr = true, renameInteractions = false);
     # rename_regressors(rt);
@@ -34,14 +35,10 @@ raw_transfer_regr_w_qp_interactions(ds :: DataSettings; momentType = nothing) =
 ## -----------  Tuition regression (net price)
 # on quality, parental, gpa
 
-function tuition_regr(ds :: DataSettings)
+function tuition_regr(ds :: DataSettings; onError = :error)
     # Regression deviations use RegressionTables as inputs
     fPath = data_file(raw_tuition_regr(ds));
-    rt = read_regression_file(fPath; renameRegr = true);
-    # rename_regressors(rt);
-    # Adjust all means and std errors to match model units 
-    # modelUnits  &&  convert_to_model_dollars!(rt);
-    return rt
+    return read_regression_file(fPath; renameRegr = true, onError);
 end
 
 # Tuition regression with AFQT, parental, quality dummies.
@@ -52,8 +49,9 @@ raw_tuition_regr(ds :: DataSettings; momentType = nothing) =
 # Tuition regression with quality dummies and quality / income percentile interactions
 # (called interaction2 etc)
 # `inc_pctile` regressor, scaled for percentiles in [0, 1]
-function tuition_regr_w_qp_interactions(ds :: DataSettings)
+function tuition_regr_w_qp_interactions(ds :: DataSettings; onError = :error)
     fPath = data_file(raw_tuition_regr_w_qp_interactions(ds));
+    file_exists(fPath; onError)  ||  return onError;
     rt = read_regression_file(fPath; renameRegr = true, renameInteractions = false);
     # rename_regressors(rt);
 

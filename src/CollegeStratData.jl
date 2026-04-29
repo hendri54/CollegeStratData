@@ -95,7 +95,7 @@ moment_map() = Dict([
     :fracGrad_qgM => frac_gradc_qual_gpa,
     :fracLocal_qV => frac_local_by_quality,
     # Fraction in each quality among [gpa, yp] HS grads (conditional on entry)
-    :fracQual_qgpM => (ds -> load_qual_entry_gpa_yp(ds; conditionalOnEntry = true)),
+    :fracQual_qgpM => load_qual_entry_gpa_yp_cond, #(ds -> load_qual_entry_gpa_yp(ds; conditionalOnEntry = true)),
     :fracQual_qpM => frac_qual_by_parental,
     :fracQual_qgM => frac_qual_by_gpa,
     :fracGpa_gqM => frac_gpa_by_qual,
@@ -116,14 +116,14 @@ moment_map() = Dict([
     :timeToGrad4y_qV => time_to_grad_4y_by_quality,
     :timeToGrad4y_qpM => time_to_grad_4y_qual_parental,
     :timeToGrad4y_qgM => time_to_grad_4y_qual_gpa,
-    :transfers_qgM => (ds -> transfers_xy(ds, [:qual, :gpa])),
-    :transfers_qpM => (ds -> transfers_xy(ds, [:qual, :parental])),
-    :tuition_qgM => (ds -> net_price_xy(ds, [:qual, :gpa])),
-    :tuition_qpM => (ds -> net_price_xy(ds, [:qual, :parental])),
+    :transfers_qgM => transfers_qg,
+    :transfers_qpM => transfers_qp,  # (ds -> transfers_xy(ds, [:qual, :parental])),
+    :tuition_qgM => net_price_qg, # (ds -> net_price_xy(ds, [:qual, :gpa])),
+    :tuition_qpM => net_price_qp, #(ds -> net_price_xy(ds, [:qual, :parental])),
     :tuition_qV => college_tuition,
-    :wageFe_sgM => (ds -> wage_fixed_effects(ds, ClassHsGpa())),
-    :wageFe_sqM => (ds -> wage_fixed_effects(ds, ClassQuality())),
-    :wageFe_sV => (ds -> wage_fixed_effects(ds, ClassAll())),
+    :wageFe_sgM => wage_fixed_effects_gpa, #(ds -> wage_fixed_effects(ds, ClassHsGpa())),
+    :wageFe_sqM => wage_fixed_effects_qual, #(ds -> wage_fixed_effects(ds, ClassQuality())),
+    :wageFe_sV => wage_fixed_effects_all, #(ds -> wage_fixed_effects(ds, ClassAll())),
     :workTime_gV => work_hours_by_gpa,
     :workTime_qV => work_hours_by_qual,
     :workTime_pV => work_hours_by_parental,
@@ -140,15 +140,16 @@ moment_map() = Dict([
 	$(SIGNATURES)
 
 Load a data moment by name.
+Most load function support `onError` argument. If file not found, they either error or return `nothing`.
 
 For regression moments, this returns a `RegressionTable`. For other moments, it returns means, std errors of means, and cell counts.
 """
-function load_moment(ds :: DataSettings, mName :: Symbol)
+function load_moment(ds :: DataSettings, mName :: Symbol; onError = :error)
     mm = moment_map();
     if !haskey(mm, mName)
         error("Moment $mName does not exist");
     end
-    return mm[mName](ds)
+    return mm[mName](ds; onError)
 end
 
 

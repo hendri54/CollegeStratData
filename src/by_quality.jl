@@ -23,19 +23,31 @@ end
 # -------------  Individual moments
 
 
-## Tuition (out of pocket). Average by college type
-function college_tuition(ds :: DataSettings)
-    load_fct =  mt -> read_row_totals(
-        raw_net_price_xy(ds, [:qual, :gpa], ds.tuitionYear; momentType = mt));
-    tuitionV, ses, cnts = load_mean_ses_counts(load_fct);
+# Tuition (out of pocket). Average by college type
+# Does not exist for 1979.
+function college_tuition(ds :: DataSettings; onError = :error)
+    load_fct = mt -> read_row_totals(
+        raw_net_price_xy(ds, [:qual, :gpa], ds.tuitionYear; momentType = mt); onError);
+    tuitionV, ses, cnts = load_mean_ses_counts(load_fct; onError);
+    isnothing(tuitionV) && return nothing, nothing, nothing;
     @assert all(tuitionV .> 400.0)  &&  all(tuitionV .< 20000.0)
     @assert length(tuitionV) == n_colleges(ds)
     return tuitionV, ses, cnts
 end
 
+# function college_tuition_raw_file(ds :: DataSettings, grpVars, varName, momentType)
+#     fPath = raw_net_price_xy(ds, grpVars, varName; momentType);
+#     return fPath;
+# end
+
+# function college_tuition_load_fct(ds :: DataSettings, grpVars, varName, momentType; onError = :error)
+#     fPath = raw_net_price_xy(ds, grpVars, varName; momentType);
+#     return read_row_totals(fPath; onError);
+# end
+
 
 # Mean work hours PER YEAR
-function work_hours_by_qual(ds :: DataSettings)
+function work_hours_by_qual(ds :: DataSettings; onError = :error)
     load_fct = 
         mt -> read_row_totals(raw_work_hours_qual_parental(ds; momentType = mt));
     m, ses, cnts = load_mean_ses_counts(load_fct);
@@ -50,7 +62,7 @@ end
 
 
 ## Graduation rate by quality
-function frac_gradc_by_quality(ds :: DataSettings)
+function frac_gradc_by_quality(ds :: DataSettings; onError = :error)
     load_fct = 
         mt -> read_row_totals(raw_frac_gradc_qual_gpa(ds; momentType = mt));
     m, ses, cnts = choice_prob_from_xy(load_fct);
@@ -67,7 +79,7 @@ end
 
 
 ## Mean time to drop out by quality. 4y only
-function time_to_drop_4y_by_quality(ds :: DataSettings)
+function time_to_drop_4y_by_quality(ds :: DataSettings; onError = :error)
     load_fct = 
         mt -> read_row_totals(ds, :timeToDrop4y_qgM, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);
@@ -79,7 +91,7 @@ end
 
 ## Mean time to graduate by quality (conditional on graduation)
 # Only 4y colleges (output length = no of 4y colleges).
-function time_to_grad_4y_by_quality(ds :: DataSettings)
+function time_to_grad_4y_by_quality(ds :: DataSettings; onError = :error)
     load_fct = 
         mt -> read_row_totals(ds, :timeToGrad4y_qV, mt);
     m, ses, cnts = load_mean_ses_counts(load_fct);
@@ -90,7 +102,7 @@ end
 
 
 ## Mean AFQT percentile
-function afqt_mean_by_quality(ds :: DataSettings)
+function afqt_mean_by_quality(ds :: DataSettings; onError = :error)
     # target = :gpaMean_qV;
     rawFileFct = mt -> raw_afqt_pct_qual(ds; momentType = mt);
     m, ses, cnts = read_pct_by_quality(ds :: DataSettings, rawFileFct);
@@ -113,7 +125,7 @@ end
 
 
 # Enrollment by quality, sums to 1
-function frac_enroll_by_qual(ds :: DataSettings)
+function frac_enroll_by_qual(ds :: DataSettings; onError = :error)
     load_fct = 
         mt -> read_row_totals(raw_entry_qual_parental(ds; momentType = mt));
     m, ses, cnts = choice_prob_from_xy(load_fct);
@@ -121,13 +133,14 @@ function frac_enroll_by_qual(ds :: DataSettings)
     # rf = raw_entry_qual_parental(ds);
     # dataV = read_row_totals(data_file(rf));
     @assert check_float_array(m, 0.05, 1.0);
-    @check sum(m) ≈ 1.0
+    @check isapprox(sum(m), 1.0, atol = 0.0001);
+    m = m ./ sum(m);
     return m, ses, cnts
 end
 
 
 # Fraction of HSG who enter each quality, unconditional.
-function frac_enroll_uncond_by_qual(ds :: DataSettings)
+function frac_enroll_uncond_by_qual(ds :: DataSettings; onError = :error)
     fracEnter, _ = load_moment(ds, :fracEnter);
     fracEnroll_qV, ses, cnts = load_moment(ds, :fracEnroll_qV);
     @assert sum(fracEnroll_qV) ≈ 1.0
@@ -138,7 +151,7 @@ function frac_enroll_uncond_by_qual(ds :: DataSettings)
 end
 
 
-function frac_local_by_quality(ds :: DataSettings)
+function frac_local_by_quality(ds :: DataSettings; onError = :error)
     rawFileFct = mt -> raw_frac_local_qual(ds; momentType = mt);
     # Cannot use this b/c std errors are constructed differently
     # m, ses, cnts = read_pct_by_quality(ds :: DataSettings, rawFileFct);
@@ -165,14 +178,14 @@ end
 # Multiple raw data files
 
 # No std errors
-cum_loans90_qual_year(ds :: DataSettings) = 
+cum_loans90_qual_year(ds :: DataSettings; onError = :error) = 
     cum_loans_qual_year(ds; percentile = 90);
 
 """
 Cumulative loans by [quality, year]
 No std errors for percentiles
 """
-function cum_loans_qual_year(ds :: DataSettings; percentile = nothing)
+function cum_loans_qual_year(ds :: DataSettings; percentile = nothing, onError = :error)
     T = ds.Tmax;
     outM = zeros(n_colleges(ds), T);
     sesM = zeros(n_colleges(ds), T);
@@ -211,7 +224,7 @@ function cum_loans_qual_percentile(ds :: DataSettings, t :: Integer,
 end
 
 # Checked against excel data file.
-function cum_loans_qual_yp_year(ds :: DataSettings; T = ds.Tmax)
+function cum_loans_qual_yp_year(ds :: DataSettings; T = ds.Tmax, onError = :error)
     sizeV = (n_colleges(ds), n_parental(ds), T);
     outM = zeros(sizeV...);
     sesM = zeros(sizeV...);
@@ -241,7 +254,7 @@ end
 
 # Fraction of initial entrants dropping out at end of each year.
 # Dropout rates for 2y starters only sum to about 0.9. But 1/3 occur after year 1.
-function frac_drop_qual_year(ds :: DataSettings; T = 3)
+function frac_drop_qual_year(ds :: DataSettings; T = 3, onError = :error)
     # T = 3; # could calculate for higher years
     outM = zeros(n_colleges(ds), T);
     sesM = zeros(n_colleges(ds), T);
@@ -308,16 +321,24 @@ end
 ## -----------  Courses attempted by quality / year
 # Sets two year colleges to 0 after year 2
 
-function courses_tried_qual_year(ds :: DataSettings)
-    target = :coursesTried_qtM;
-
+function courses_tried_qual_year(ds :: DataSettings; onError = :error)
     T = ds.Tmax;
     outM = zeros(n_colleges(ds), T);
     sesM = zeros(n_colleges(ds), T);
     cntsM = zeros(Int, n_colleges(ds), T);
+    filesFound = true;
     for t = 1 : T
-        outM[:, t], sesM[:,t], cntsM[:,t] = courses_tried_qual(ds, t);
+        m, ses, cnts = courses_tried_qual(ds, t; onError);
+        if isnothing(m)
+            filesFound = false;
+        else
+            outM[:, t] = m;
+            sesM[:,t] = ses;
+            cntsM[:,t] = cnts;
+        end
     end
+
+    filesFound  ||  return nothing, nothing, nothing;
 
     # Ignore 2 year colleges after year 2 while there is no switching
     outM[two_year_colleges(ds), 3 : end] .= 0.0;
@@ -326,10 +347,13 @@ function courses_tried_qual_year(ds :: DataSettings)
 end
 
 
-function courses_tried_qual(ds :: DataSettings, t :: Integer)
+function courses_tried_qual(ds :: DataSettings, t :: Integer; onError = :error)
     load_fct = 
-        mt -> read_row_totals(raw_credits_taken_qual_gpa(ds, t; momentType = mt));
-    m, ses, cnts = load_mean_ses_counts(load_fct);
+        mt -> read_row_totals(
+            raw_credits_taken_qual_gpa(ds, t; momentType = mt); 
+            onError);
+    m, ses, cnts = load_mean_ses_counts(load_fct; onError);
+    isnothing(m)  &&  return nothing, nothing, nothing;
     @assert check_float_array(m, 1.0, 50.0)
     @assert length(m) == n_colleges(ds)
     m = credits_to_courses(ds, m);
